@@ -1,0 +1,16 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "reference": "",
+   "sys_id": "5ab461c0a52903108bb220b7a4d21281",
+   "sys_updated_by": "system",
+   "sys_created_on": "2026-06-13 10:06:32",
+   "sys_mod_count": "0",
+   "sys_updated_on": "2026-06-13 10:06:32",
+   "internal_type": "string"
+  }
+ ]
+}

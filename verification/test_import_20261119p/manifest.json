@@ -1,0 +1,18 @@
+{
+ "update_set": "Transpiler Test 20261119p",
+ "retrieved_set_sys_id": "60c73cc0c86e2ae9861b3006ad0fe14e",
+ "flows": [
+  {
+   "name": "TT17 Compact Script Publish",
+   "id": "327152db998fcf46f95318b9076e034f",
+   "snap": "",
+   "steps": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  }
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "sys_id": "45f341698333121014c5f26b022bc060",
+ "decoded": [
+  {
+   "label": "Repeat",
+   "internalType": "glide_duration",
+   "mandatory": true,
+   "fromTemplate": false,
+   "order": 100,
+   "valueSysId": "",
+   "name": "repeat",
+   "value": "1970-01-01 00:15:00",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "id": "1c5f4d94c32222002841b63b12d3aeb3",
+    "label": "Repeat",
+    "name": "repeat",
+    "type": "glide_duration",
+    "order": 100,
+    "extended": false,
+    "mandatory": true,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 100,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "displayField": "",
+   "scriptActive": false
+  }
+ ]
+}

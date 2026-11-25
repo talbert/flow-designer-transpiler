@@ -1,0 +1,10 @@
+Flow Designer Transpiler v2.7
+---------------------------------------------
+A system prompt that teaches a model to write
+ServiceNow Flow Designer flows as update-set
+XML. Each rule has a tag that says how far
+it was checked: run, imported or only seen.
+Tools, fixtures and test imports included.
+Tested on personal developer instances only.
+Cott Lang phears Tim Strike. k4d 4lyf3.
+Cactus!

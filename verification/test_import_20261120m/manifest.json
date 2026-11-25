@@ -1,0 +1,57 @@
+{
+ "generated_utc": "2026-11-20 17:23:49",
+ "update_set": "Transpiler Test 20261120m",
+ "retrieved_set_sys_id": "b4a2676befec6ae067d8d5cadb2cd2b6",
+ "recurrence_start_pacific": "2026-11-19 23:30:00",
+ "end_date_time": "2026-11-23 00:00:00",
+ "flows": [
+  {
+   "name": "TT26A Error Handler",
+   "id": "1ca13ef20232b5fd753148d3b1c06708",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT26V Visual Task Board",
+   "id": "b6a1470f8d216d69d0d82955edadee2b",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT26K Knowledge Publish",
+   "id": "5f89881fb71f74a76e567f1c94653c0e",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT26R Recurrence Yearly",
+   "id": "97a7e56c10e33b449bdac96a4e669591",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT26R Recurrence Every2Days",
+   "id": "b1945106df7f56fb29e648a3aa3b3a1b",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT26R Recurrence TwoWeekdays",
+   "id": "6a213e698fd2462ec5bbc8e8a1d996d9",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT26R Recurrence SecondTuesday",
+   "id": "204d48ca8df2aa9a82f4a94e220db156",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT26R Recurrence EndDate",
+   "id": "50337ccb7a7699dac88d7081d3bfe623",
+   "snap": "",
+   "steps": []
+  }
+ ]
+}

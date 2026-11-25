@@ -1,0 +1,49 @@
+{
+ "generated_utc": "2026-11-20 16:27:49",
+ "update_set": "Transpiler Test 20261120e",
+ "retrieved_set_sys_id": "fa9f453d9c90d5bba5d9fd8421a26949",
+ "flows": [
+  {
+   "name": "TT21E5 Submit Catalog Item JSON",
+   "id": "8be3595473683aca5ee76848d4f9c8e1",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT21E6 Record Producer JSON",
+   "id": "e9a7f5cf824a7995ef198e6fc3e8e0d1",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT21B2 Email Actions",
+   "id": "c737c7b3d8e1ec0b8f9bc0cf46a123cc",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT21C2 CI Support Group",
+   "id": "7939a67fd3f2444627114013b4b6300b",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT21D2 Change Helpers",
+   "id": "a4e0ef2ecddf711f4c190914ba281173",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT21A2 Copy Attachment",
+   "id": "c82c344ee82212018a5c032553a85e46",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT22C Append To Flow Variables",
+   "id": "341eca5f2ad64e15b5f6037e2bbd91d9",
+   "snap": "",
+   "steps": []
+  }
+ ]
+}

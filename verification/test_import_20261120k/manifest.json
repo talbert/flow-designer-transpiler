@@ -1,0 +1,35 @@
+{
+ "generated_utc": "2026-11-20 17:05:22",
+ "update_set": "Transpiler Test 20261120k",
+ "retrieved_set_sys_id": "aed147e4470c115fb6f5df4ccef33b01",
+ "action": {
+  "name": "TT24 Send Flow Message",
+  "id": "91212807843605c9b9af7c3ea9967d6b"
+ },
+ "flows": [
+  {
+   "name": "TT24A Append From Rules",
+   "id": "c45543c323c2c4138d3f48c0e14215f6",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT24B Wait For Message",
+   "id": "8b52556c3c9fe14a70f94b81418e0152",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT24C Send Message",
+   "id": "dec6a3b3e37918201fc6d657dd282ad2",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT24D Wait For Email Reply",
+   "id": "c515c0aeb37cc6d356e648c12352343e",
+   "snap": "",
+   "steps": []
+  }
+ ]
+}

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unload unload_date="2026-11-20 02:47:04">
+<sys_remote_update_set action="INSERT_OR_UPDATE">
+<application display_value="TT11 SDK Probe">8f6baeba9ba94590969cbe31fc69e713</application>
+<application_name>TT11 SDK Probe</application_name>
+<application_scope>x_906694_tt11</application_scope>
+<application_version>0.0.1</application_version>
+<collisions/>
+<commit_date/>
+<deleted/>
+<description>Transpiler prompt test 12, corrected: the Fluent SDK's payload shape with its blobs re-identified. Safe to delete.</description>
+<inserted/>
+<name>Transpiler Test 20261119l3</name>
+<origin_sys_id/>
+<parent display_value=""/>
+<release_date/>
+<remote_base_update_set display_value=""/>
+<remote_parent_id/>
+<remote_sys_id>dcba774643c371dfb7d48d007ccd8b90</remote_sys_id>
+<state>loaded</state>
+<summary/>
+<sys_class_name>sys_remote_update_set</sys_class_name>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2026-11-20 02:47:04</sys_created_on>
+<sys_id>6cbde81143e62c201e4e7c3a9638341b</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2026-11-20 02:47:04</sys_updated_on>
+<update_set display_value=""/>
+<update_source display_value=""/>
+<updated/>
+</sys_remote_update_set>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="TT11 SDK Probe">8f6baeba9ba94590969cbe31fc69e713</application>
+<category>retrieved</category>
+<comments/>
+<name>sys_hub_flow_1e75ecd1186301a7f63fb4fffd059468</name>
+<payload><![CDATA[<?xml version="1.0"?>
+<record_update table="sys_hub_flow">
+  <sys_hub_flow action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>1e75ecd1186301a7f63fb4fffd059468</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_flow_1e75ecd1186301a7f63fb4fffd059468</sys_update_name>
+    <access>public</access>
+    <active>false</active>
+    <allow_high_security_roles>false</allow_high_security_roles>
+    <annotation/>
+    <category/>
+    <description>Transpiler comparison test. Written in Fluent, installed with the SDK. Runs for incidents whose short description starts with TT12RUN. Safe to delete.</description>
+    <flow_priority>MEDIUM</flow_priority>
+    <generation_source>fluent</generation_source>
+    <label_cache>[{"name":"Created_1.current.urgency","label":"Trigger - Record Created➛incident Record➛Urgency","type":"string","base_type":"string","usedInstances":{"ae8b1e82-2633-4a9c-95f8-f6ffead74c6c":["condition"]},"attributes":{}},{"name":"Created_1.current.sys_id","label":"Trigger - Record Created➛incident Record➛Sys Id","type":"reference","base_type":"reference","usedInstances":{"489d6441-6789-4314-8e58-58d20ac976c3":["record"],"7b33c348-a046-4845-a8e8-c30661b17d93":["record"]},"attributes":{}},{"name":"Created_1.current.number","label":"Trigger - Record Created➛incident Record➛Number","type":"string","base_type":"string","usedInstances":{"489d6441-6789-4314-8e58-58d20ac976c3":["values"],"7b33c348-a046-4845-a8e8-c30661b17d93":["values"]},"attributes":{}},{"name":"1074bbe4-4edc-4600-b9f0-003e2766c9c6.Record.name","label":"1074bbe4-4edc-4600-b9f0-003e2766c9c6➛Record➛name","type":"string","base_type":"string","usedInstances":{"489d6441-6789-4314-8e58-58d20ac976c3":["values"]},"attributes":{}}]</label_cache>
+    <name>TT12 SDK Shape Via Update Set</name>
+    <run_as>system</run_as>
+    <run_with_roles/>
+    <show_draft_actions>false</show_draft_actions>
+    <status>draft</status>
+    <sys_policy/>
+    <type>flow</type>
+    <version>2</version>
+  </sys_hub_flow>
+  <sys_hub_trigger_instance_v2 action="delete_multiple" query="flow=1e75ecd1186301a7f63fb4fffd059468^sys_idNOT INd0316a8c6f2b59298fe18b4fca3c45bd"/>
+  <sys_hub_trigger_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>d0316a8c6f2b59298fe18b4fca3c45bd</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_trigger_instance_v2_d0316a8c6f2b59298fe18b4fca3c45bd</sys_update_name>
+    <category/>
+    <comment/>
+    <flow>1e75ecd1186301a7f63fb4fffd059468</flow>
+    <name>Created</name>
+    <trigger_definition>798916a0c31322002841b63b12d3ae7c</trigger_definition>
+    <trigger_inputs>H4sIAAAAAAAC/71XTW/bMAz9K4JPG5AB6469deuGBehaoHHXQ1EYikUnwhQpkOi0RpH/Psofqew4TYK4PbWiZPLx8VFUHl4itHI2AzvWDrlOYVK4sYjOo2gUKT4FRf/GfKqA1lIjWM1VXCyBzOjNieYLvydgCVqAxurTdG5kClfS0frhcRQtuBYcjS2ic7Q5jCJjBdjo/Ozr11FUuqj90bcrrnK/ljqVpUfyLt1S8eLvzp1fElSN2qVWLvEiRbmisxlXDjweqYQFXaFZcksh0QOg/Huy6SBqE7Fejw5h7TbX7Eazn8/oiRGs/Nht01hRtYfClyhrkvf80XZ2FcQxmqW5pfyQEdEMmpjYxMzGCz6DynE2AQUpgtiwk925cPVHOif1rDb4bDfBS8t2dFWEEBraTgna1kx9qEc0NteJ0UmTcSCfBmpHOx3z6cLZ1G8nor2K4EhymuZIC/LLxcpLSjS1Xh8huPs5aDYBotL4v4ie0pMlNzU47xY9M5Z9Jzsbe9+8ZK0U37XRX0JbjWZIFWriV76GCKHdeC02+HZAGRDJISjImWXDwzimQ55IFonbyGHVrmunQ9rW92mQDqADJDxcj2TKPFE9Tm8LroutrvC+paZGKFhqyP0zDqi2KU//zazJtdgV9/UE+yQg47nCz0Ne/8bC2wDaJz5I3j44XQihskOmuvru2Xsflb/i6tffMJr+YbSQWF0oXUU3W+6oJ9puttMgVsO1mxuLiYCKONqbxBe38eR+HP+O47Nvt3fX2zU45psBahPS0JNJH5Pt2jxxjS5Bk3AhksDd5jm2MALUZcBwXTcq/zJHF60D/ul5EDwucwdJUBrv79iBX06YwaZ937VGY8xfaYTVDnidGA2JyXoHp8xYTQA9lKYFwzkQCkWtQ75KHMM+KHxRumAuDaMNZj8EztHj3AftmelV9Trt1jK+40TvYNon1IHfvaX3Us9bPTBT9IMxUdXeEBdhO+XacVOD7QIczn7pI8hyfzVaub0F703C9tbi8T810l+5LBAAAA==</trigger_inputs>
+    <trigger_outputs/>
+    <trigger_type>record_create</trigger_type>
+  </sys_hub_trigger_instance_v2>
+  <sys_hub_action_instance_v2 action="delete_multiple" query="flow=1e75ecd1186301a7f63fb4fffd059468^sys_idNOT IN47fff54e44826b16f8136ff9ff549241,bdc1ad16a1972d6e96e0d64017cfcfb4,c44fd3ffce57b68ade8dacd925db0d63"/>
+  <sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>47fff54e44826b16f8136ff9ff549241</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_instance_v2_47fff54e44826b16f8136ff9ff549241</sys_update_name>
+    <action_type>9d09f99587003300663ca1bb36cb0ba3</action_type>
+    <action_type_parent>9d09f99587003300663ca1bb36cb0ba3</action_type_parent>
+    <active>true</active>
+    <comment/>
+    <display_text/>
+    <flow>1e75ecd1186301a7f63fb4fffd059468</flow>
+    <generation_source/>
+    <order>1</order>
+    <parent_ui_id/>
+    <sys_class_name>sys_hub_action_instance_v2</sys_class_name>
+    <ui_id>1074bbe4-4edc-4600-b9f0-003e2766c9c6</ui_id>
+    <updation_source/>
+    <values>H4sIAAAAAAAC/5WRTQqDQAyF75K1JxC66CW6KWVIZ0YaGGeGJAoivXtVij/Vhd3mPd73ktx7iFh7KEESq9EueyigxdDMMxQ7jBxJDtjd9opYpqxXq9QOSoVBfAEZeYhVz1D2MKWWYF+JrIf3u5ihNkVHSinKitqIZzMaLuhqinv43nC+wwJc91B8hs3inZiRcrD4opyGTulT4Q2UKlM3QSkPInub2IlB9qZKTXQG7VhzexZTEYt+zYd3+XX8/5zHB1sYC10TAgAA</values>
+  </sys_hub_action_instance_v2>
+  <sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>bdc1ad16a1972d6e96e0d64017cfcfb4</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_instance_v2_bdc1ad16a1972d6e96e0d64017cfcfb4</sys_update_name>
+    <action_type>f9d01dd2c31332002841b63b12d3aea1</action_type>
+    <action_type_parent>f9d01dd2c31332002841b63b12d3aea1</action_type_parent>
+    <active>true</active>
+    <comment/>
+    <display_text/>
+    <flow>1e75ecd1186301a7f63fb4fffd059468</flow>
+    <generation_source/>
+    <order>3</order>
+    <parent_ui_id>ae8b1e82-2633-4a9c-95f8-f6ffead74c6c</parent_ui_id>
+    <sys_class_name>sys_hub_action_instance_v2</sys_class_name>
+    <ui_id>489d6441-6789-4314-8e58-58d20ac976c3</ui_id>
+    <updation_source/>
+    <values>H4sIAAAAAAAC/8WRTWvDMAyG/0rwOQlOG1Ja2KGMDXrcKLuMLfhDYYbECbJdCEH/fW4Ko1sG621HSa/0PpJeJ2ZFB2zHvJAt1HOQspNowzlprDIarI8pbdzQivFlWXEKzeD3yptTrDSidZCyQWAc5QHZbmJ+HH5YEKVfzgiqR33lOk33CMKDrotcBcRok7vR1UYTLUn+UN9Mp3sVutgcG7/hzVTuCk/DZabp7d3xWKySw2MiUVj1kTQ9Jr/x2NBJQKIoCFZHScE3pZRQZiVolZUV55ncNjzjfA2rTVWprary5/kw+ZmD6P3habn7f6Lc/nboIrOH+nJAordP//S9XXYCAAA=</values>
+  </sys_hub_action_instance_v2>
+  <sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>c44fd3ffce57b68ade8dacd925db0d63</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_instance_v2_c44fd3ffce57b68ade8dacd925db0d63</sys_update_name>
+    <action_type>f9d01dd2c31332002841b63b12d3aea1</action_type>
+    <action_type_parent>f9d01dd2c31332002841b63b12d3aea1</action_type_parent>
+    <active>true</active>
+    <comment/>
+    <display_text/>
+    <flow>1e75ecd1186301a7f63fb4fffd059468</flow>
+    <generation_source/>
+    <order>5</order>
+    <parent_ui_id>efc5745d-cae2-4c0a-b1bf-be92a0a3a401</parent_ui_id>
+    <sys_class_name>sys_hub_action_instance_v2</sys_class_name>
+    <ui_id>7b33c348-a046-4845-a8e8-c30661b17d93</ui_id>
+    <updation_source/>
+    <values>H4sIAAAAAAAC/62RTwuCMBiHv4rsLIIdhQ4R3rpE0iVqzO2VBrrJuynI2HdvKYRlkIeOe//8nudlF0cUa4BkxLKyBjo+YtKzunsWpeJSgLKhJKRpazaclx3DUbZ2x63sQ6ditYGYtAxDlAUkmSN2aD8Q3scvMgLXKGZU5/YIzIKgacI7xIBJzGCoFN4vTX5Mr7YTmndNWA6Lb3qjlZnpCZgypVbbokg3UX445VGJTPF7VGmMvhmprikBvb/lx+UJf0hc/wnQBLQFOp3j/fUBiMpsYgQCAAA=</values>
+  </sys_hub_action_instance_v2>
+  <sys_hub_alias_mapping action="delete_multiple" query="source_id=47fff54e44826b16f8136ff9ff549241"/>
+  <sys_hub_alias_mapping action="delete_multiple" query="source_id=bdc1ad16a1972d6e96e0d64017cfcfb4"/>
+  <sys_hub_alias_mapping action="delete_multiple" query="source_id=c44fd3ffce57b68ade8dacd925db0d63"/>
+  <sys_hub_flow_logic_instance_v2 action="delete_multiple" query="flow=1e75ecd1186301a7f63fb4fffd059468^sys_idNOT IN81c654df56d2a2658f5161c583f54125,b5f6dbdcf3a0db650b10e6fa4062f76f"/>
+  <sys_hub_flow_logic_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>81c654df56d2a2658f5161c583f54125</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_flow_logic_instance_v2_81c654df56d2a2658f5161c583f54125</sys_update_name>
+    <comment/>
+    <flow>1e75ecd1186301a7f63fb4fffd059468</flow>
+    <logic_definition>af4e1945c3e232002841b63b12d3ae3e</logic_definition>
+    <order>2</order>
+    <ui_id>ae8b1e82-2633-4a9c-95f8-f6ffead74c6c</ui_id>
+    <values>H4sIAAAAAAAC/42OsQrDMAxE/0VzCGQNdAiduocuJRTXVlJR1w6ynRCM/702aSFjt9PT3UkRbPBz8K63nXM0GWhvQwWLYBIPjW4fFUpyZE1f2MUU/3exGfEmeUSr5deo7Xpk9NMRSEELUEHOYVbSGkU+V0M5qkNhMZ4ZhUd1b2oZmNH4OvCERm4pnZrsVORmLbbr3wH5JK0y39+ZBefrHhnamCpwkmn2nfS05LZRaIdpSB+GySHZGgEAAA==</values>
+  </sys_hub_flow_logic_instance_v2>
+  <sys_hub_flow_logic_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>b5f6dbdcf3a0db650b10e6fa4062f76f</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_flow_logic_instance_v2_b5f6dbdcf3a0db650b10e6fa4062f76f</sys_update_name>
+    <comment/>
+    <flow>1e75ecd1186301a7f63fb4fffd059468</flow>
+    <logic_definition>1f781bf3c32232002841b63b12d3aee6</logic_definition>
+    <order>4</order>
+    <ui_id>efc5745d-cae2-4c0a-b1bf-be92a0a3a401</ui_id>
+    <values>H4sIAAAAAAAC/6tWyi8tKSgtKQ7JdywuzkzPU7KKjtVRKkssykxMykkthnBTUpMzizPz80JAYp55IPVQicq8xNzMZGSh8vyi7LSc/HJksUw4uxYAKGKfk3EAAAA=</values>
+  </sys_hub_flow_logic_instance_v2>
+</record_update>]]></payload>
+<payload_hash>1776865927</payload_hash>
+<remote_update_set display_value="Transpiler Test 20261119l3">6cbde81143e62c201e4e7c3a9638341b</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2026-11-20 02:47:04</sys_created_on>
+<sys_id>02a3a5b91e7aa8d7ec02f6ed450eb551</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>1a1f6d9b0630000001</sys_recorded_at>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2026-11-20 02:47:04</sys_updated_on>
+<table>sys_hub_flow</table>
+<target_name>TT12 SDK Shape Via Update Set</target_name>
+<type>Flow</type>
+<update_domain>global</update_domain>
+<update_guid>6caa954509224e230cc9b07b016f2805</update_guid>
+<update_guid_history>6caa954509224e230cc9b07b016f2805:1776865927</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+</unload>

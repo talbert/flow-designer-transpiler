@@ -1,0 +1,4 @@
+#!/bin/sh
+# Blocks a commit that carries content unfit for a public repository.
+# Enable once per clone:  git config core.hooksPath .githooks
+exec python3 tools/check_public_safe.py $(git diff --cached --name-only --diff-filter=ACMR)

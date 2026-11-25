@@ -1,0 +1,335 @@
+{
+ "generated_utc": "2026-11-20 00:20:18",
+ "update_set": "Transpiler Test 20261119e",
+ "retrieved_set_sys_id": "750e48b738aaea7bdcf4e9b7385f90c9",
+ "run_once_value": "2026-11-19 17:00:00",
+ "action": {
+  "name": "TT4 Scratch Action",
+  "id": "8a704253072e6c14a994534354a880ea",
+  "snap": "2d286d17409722165532156825fce3da",
+  "cid": "f1225b26-df81-453a-a7d0-3a49c2395b6c",
+  "fd": "FDce8134d61caca6a6dea24c24ba059760"
+ },
+ "flows": [
+  {
+   "name": "TT4 Subflow",
+   "id": "e389abc2d931e7e4acbb086a5e36dec9",
+   "snap": "c95934d16b86ab04f51b648aff926b52",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "ead511cd-92c0-4da1-a109-cd90f6d500dc",
+     "id": "70bf3a43253ebcdad909f6a6047cdbc4",
+     "sid": "36640631a955d47d224a600e2260aadc",
+     "label": "Look Up Record"
+    },
+    {
+     "kind": "logic",
+     "order": 2,
+     "ui": "641d3daf-58a7-4b31-a98b-b389a5113e86",
+     "id": "992c64bf23040408f66ed6ea34b2703c",
+     "sid": "029a52a9be5cae1d40cb0edf893497ca",
+     "label": "Assign Subflow Outputs"
+    }
+   ]
+  },
+  {
+   "name": "TT4 Runtime Created",
+   "id": "a2c77fc410167b40d10efc39dc3bd742",
+   "snap": "389cf26d146b9cfa1464fb97db930bdf",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "fe5e0836-024f-4d6f-a2d6-20ad581fc460",
+     "id": "8d09d76b0db41806ee7a1776bffddd47",
+     "sid": "609a703b3f7ae044ba26998105308e48",
+     "label": "Look Up Record"
+    },
+    {
+     "kind": "logic",
+     "order": 2,
+     "ui": "b7447a8b-9d51-49af-bd3f-2a512bd9639e",
+     "id": "783905c9f7f10d989f8f1e90c9cc86ba",
+     "sid": "e827ac44169e3e68ece63dfbf1a652d4",
+     "label": "Set Flow Variables"
+    },
+    {
+     "kind": "logic",
+     "order": 3,
+     "ui": "69babd0b-d075-4b1a-ae38-50c733e4d220",
+     "id": "f742f0b312425d5537e8af2ed3d03a1d",
+     "sid": "1d637448a46f9e5380467151fdd1aaa2",
+     "label": "If"
+    },
+    {
+     "kind": "action",
+     "order": 4,
+     "ui": "c12cf8d1-087a-4dfb-bf79-1dfab5145c0a",
+     "id": "32099a9e0361167a2b9306a274bf0329",
+     "sid": "e68335a7c5c72482b53026316b48e4c8",
+     "label": "Update Record"
+    },
+    {
+     "kind": "logic",
+     "order": 5,
+     "ui": "40780bc5-17d4-46f9-919b-2d4238637e52",
+     "id": "5f771a1655404acae3b460da5ec2cda4",
+     "sid": "28b0a76a7a0f719ce9a1887bb3e09ab1",
+     "label": "Else If"
+    },
+    {
+     "kind": "action",
+     "order": 6,
+     "ui": "7847e4e9-5a17-466c-ba82-f2b1cac0934a",
+     "id": "5cbeeecb804dd33d6c73811406b55df7",
+     "sid": "9183ba8d914754b767494283956f32de",
+     "label": "Update Record"
+    },
+    {
+     "kind": "logic",
+     "order": 7,
+     "ui": "be83c51e-e6f9-48b6-8ff0-239117e5a281",
+     "id": "ee690c03ac477c457a55546f3b9fe822",
+     "sid": "3c20569c2f97b66c516ab669cc9c8603",
+     "label": "Else"
+    },
+    {
+     "kind": "action",
+     "order": 8,
+     "ui": "f7d7395b-e174-4c69-b73d-3759f5f95c2a",
+     "id": "84446318ce7ba226f70ba9972ac1b2f1",
+     "sid": "c72eae7ccac224887f4160408c7a8c0e",
+     "label": "Update Record"
+    },
+    {
+     "kind": "action",
+     "order": 9,
+     "ui": "6f1f9b53-f940-4418-9843-f60514c08341",
+     "id": "beb46e055aa3dd26a46313768b9ccb28",
+     "sid": "0eabf7b109d4d9d998be0bd8f6d90186",
+     "label": "Look Up Records"
+    },
+    {
+     "kind": "logic",
+     "order": 10,
+     "ui": "f6c9fa67-e740-4f87-b13c-04f834f37460",
+     "id": "70c66c19bd71badcf4b33d3d8579da0b",
+     "sid": "b436f98ccfb43fd731b037268edbbe1a",
+     "label": "For Each"
+    },
+    {
+     "kind": "action",
+     "order": 11,
+     "ui": "5c585c49-f0a3-4abc-b3a7-1a3d341a5617",
+     "id": "98de3344d07ea994e3df663a5b0147ce",
+     "sid": "afa679ff386f0b900be9f799ca91cd87",
+     "label": "Create Record"
+    },
+    {
+     "kind": "logic",
+     "order": 12,
+     "ui": "7f782629-8364-49cc-bdfd-5b5b90fa9e3f",
+     "id": "d24d040f6f18372a42ff8dde859936ad",
+     "sid": "e97e73a57c45a9f62ad990c933f73a78",
+     "label": "Set Flow Variables"
+    },
+    {
+     "kind": "subflow",
+     "order": 13,
+     "ui": "13081eee-c762-4355-bf52-86dfaa7be6a9",
+     "id": "f6e5dfb42e958629235e09f7b577e02e",
+     "sid": "9de83832afe9962a4a0b29aeb8ca90fd",
+     "label": "TT4 Subflow"
+    },
+    {
+     "kind": "action",
+     "order": 14,
+     "ui": "5cbe57ea-097b-4417-b1e3-3b639b355f15",
+     "id": "050c91cdeafa5ebda0f85a13a735d0b8",
+     "sid": "3c366685f3903c1af19bb66a6309cc31",
+     "label": "TT4 Scratch Action"
+    },
+    {
+     "kind": "action",
+     "order": 15,
+     "ui": "995b2ef2-48c6-4fa6-9eb2-5021fa140146",
+     "id": "35ed67416197b781f91ebbc66bc8f4a4",
+     "sid": "456f1904300bf5e16fc6a338a79deaba",
+     "label": "Update Record"
+    },
+    {
+     "kind": "action",
+     "order": 16,
+     "ui": "11594d9d-11a2-4081-902b-a96aad0adfe1",
+     "id": "6647cbb07b1e5b844ab4ba98298efc5c",
+     "sid": "032a808bf5d95498c137c43456cc14b5",
+     "label": "Fire Event"
+    },
+    {
+     "kind": "action",
+     "order": 17,
+     "ui": "8c2a170c-d28c-46e1-bbf1-2509383e0ad4",
+     "id": "a7c4478eb50d0df990f9d26cceda78d7",
+     "sid": "82a628ad691a94b84473a109ad049f84",
+     "label": "Send Email"
+    },
+    {
+     "kind": "logic",
+     "order": 18,
+     "ui": "19fb54b9-2aea-4d74-ad86-68456ff33773",
+     "id": "d9fc5ab7cb4abdd169a025f628a1f83f",
+     "sid": "1b078cf4940f69416fec372ca93bcba4",
+     "label": "Do the following until"
+    },
+    {
+     "kind": "action",
+     "order": 19,
+     "ui": "8942bb94-5d6e-4a1b-93fe-0af346847945",
+     "id": "126f441caf240b3568b6d2c50708a2fd",
+     "sid": "9032bc76beffebbc2c6df63184f9bda2",
+     "label": "Look Up Record"
+    }
+   ]
+  },
+  {
+   "name": "TT4 Runtime Updated",
+   "id": "034d3ac8f7f370dd6c889b8924c0ecbb",
+   "snap": "ff374223c9c01fa16b23c7bbc624e45e",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "dce4d246-c718-4648-a2d0-8879828fdace",
+     "id": "7e63366c20e724f04e248dc755e3c02a",
+     "sid": "f4e83984f4789c5589afe3ebae90eaa6",
+     "label": "Update Record"
+    }
+   ]
+  },
+  {
+   "name": "TT4 Runtime Approval",
+   "id": "3e805dbe62ede0f6839f31867b5eb704",
+   "snap": "09f572390f690d8349bbbb6dddedcffa",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "1dd214fc-adae-49c8-a4d4-d6f1d66b02aa",
+     "id": "ebefc42f307ff17876888d2eec577560",
+     "sid": "690f796c1f17a1dbb40f934c16193e22",
+     "label": "Ask For Approval"
+    },
+    {
+     "kind": "logic",
+     "order": 2,
+     "ui": "9d7d6a01-7b8e-4a8a-8a36-6a9b4728b989",
+     "id": "d349f0ea0c58b00a0a49dc4e365a1d6d",
+     "sid": "63c479783bc026fb0758af37ba06b02a",
+     "label": "If"
+    },
+    {
+     "kind": "action",
+     "order": 3,
+     "ui": "d29d3896-e90d-49ef-b837-eaa035f152cd",
+     "id": "18928a7c354eaf6d68a504f49b0765b0",
+     "sid": "51b5bde882d4bc8c6a6640e3765ffc49",
+     "label": "Update Record"
+    },
+    {
+     "kind": "logic",
+     "order": 4,
+     "ui": "edac0e1b-a2bb-4843-98ec-c6c6f31c4ee1",
+     "id": "7eb2927cc099322f110c5448e8b2af5f",
+     "sid": "c144bb032478c69f71fb401fc82699dc",
+     "label": "End"
+    },
+    {
+     "kind": "logic",
+     "order": 5,
+     "ui": "f5b69a52-5034-4d22-beb9-97b8decb48f3",
+     "id": "7be3b48df8fbaa982c287387b40b76a2",
+     "sid": "4247479a1e7c4ba396c67b89980b1013",
+     "label": "Else"
+    },
+    {
+     "kind": "action",
+     "order": 6,
+     "ui": "85dffc54-0872-44ee-af9c-e062231a2f14",
+     "id": "071516d89d0c474faa402f65bc16bb80",
+     "sid": "0b0b61c60810c9a9b71f286b3511d034",
+     "label": "Update Record"
+    },
+    {
+     "kind": "action",
+     "order": 7,
+     "ui": "ad4d5daa-08e3-49f5-8fed-89386ca4da97",
+     "id": "560336dfea04970fefffb03ea55123eb",
+     "sid": "52cf0a240aa41695b60526b51f24222a",
+     "label": "Update Record"
+    }
+   ]
+  },
+  {
+   "name": "TT4 Runtime Notification",
+   "id": "fe4fe52adc75bc76c1539d6b2b03d294",
+   "snap": "ad5b7e1646da8af842617f4c7ea62343",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "42451c6c-98c9-4bf7-8fff-7f8f500cfa1c",
+     "id": "4990898c8e2df7e69a42e8e03fa38ade",
+     "sid": "ac0cb01a163545c40966f27e01bfea5f",
+     "label": "Send Notification"
+    }
+   ]
+  },
+  {
+   "name": "TT4 Weekly",
+   "id": "75ccf1ae7f259f62aaeaa83478358392",
+   "snap": "1c6f49263657fc92b5b4acf72220645f",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "79e4dd2c-8517-4a86-85b1-70dca1874690",
+     "id": "0d7c50aa2835bc8eae9a20c84f455512",
+     "sid": "693e2eb21b2b8e54400c83cedc62a04b",
+     "label": "Look Up Record"
+    }
+   ]
+  },
+  {
+   "name": "TT4 Monthly",
+   "id": "d7044d3b2b3fd2fea87969c3805607be",
+   "snap": "7a456a83b2f80da6cd100f28b33f1c5a",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "6e5f6389-8327-4d27-a526-5461e7eeb2dc",
+     "id": "4b94ca32bf0843f1911804ab4ffc05bb",
+     "sid": "b6efa13e3685ea0040eb0653b36c5d3e",
+     "label": "Look Up Record"
+    }
+   ]
+  },
+  {
+   "name": "TT4 Run Once",
+   "id": "976d48503cbfddd2112868adb4cbc572",
+   "snap": "9c20633360e3feadca11c84a02f93f25",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "2915f72b-e590-4690-96d2-e29fe2222049",
+     "id": "9267848b7bfcdd4f7d953560abc6d1a9",
+     "sid": "de17b531159a7a517e4e083b0091e29f",
+     "label": "Look Up Record"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,850 @@
+--- flow_designer_prompt20261015.md	2026-10-15 10:01:14
++++ flow_designer_prompt20261119.md	2026-11-19 15:42:05
+@@ -4,7 +4,7 @@
+ 
+ You output XML that can be saved as a `.xml` file and imported directly into a ServiceNow instance via **Retrieved Update Sets** (`System Update Sets > Retrieved Update Sets > Import Update Set from XML`).
+ 
+-**Target release family:** Before generation, identify the target release family. If the user does not specify one, assume **Australia** and explicitly mark that assumption in `CONFIGURATION_NOTES`. The sys_ids and parameter IDs in Sections 5 and 7 are verified on Zurich (Patch 10), Australia (Patch 2) and Brazil (Patch 1). The payload structure in Section 2 follows a platform-written flow unload captured on Brazil Patch 1. Older families (Yokohama, Xanadu, Washington DC) and newer ones require the release check in Section 14 step 1, and re-verifying action type IDs, trigger definition IDs, logic definition IDs, parameter IDs, blob schemas, and snapshot child structure against the target instance.
++**Target release family:** Before generation, identify the target release family. If the user does not specify one, assume **Australia** and explicitly mark that assumption in `CONFIGURATION_NOTES`. The sys_ids and parameter IDs in Sections 5 and 7 are verified on Zurich (Patch 10), Australia (Patch 2) and Brazil (Patch 1). Section 0 lists the rules proven by importing generated XML into a Brazil Patch 1 instance. The payload structure in Section 2 follows a platform-written flow unload captured on Brazil Patch 1. Older families (Yokohama, Xanadu, Washington DC) and newer ones require the release check in Section 14 step 1, and re-verifying action type IDs, trigger definition IDs, logic definition IDs, parameter IDs, blob schemas, and snapshot child structure against the target instance.
+ 
+ **Canonical alternative:** `[DOCUMENTED]` The ServiceNow Fluent SDK (`@servicenow/sdk` 4.8.1+) has a Flow, Subflow and Action API (`now-sdk explain flow-api`, `subflow-api`, `custom-action-api`, `trigger-api`) that compiles flows into these same `sys_hub_*` records. For new flows inside a Fluent app, prefer the SDK. Use this prompt when the deliverable must be update-set XML.
+ 
+@@ -14,10 +14,48 @@
+ - `[OBSERVED]` -- Verified against live instances: Brazil Patch 1 (2026-10-15), Zurich Patch 10 (2026-10-14) and Australia Patch 2 (2026-07-01). Originally extracted from Yokohama exports.
+ - `[PLATFORM_EXPORT]` -- Matches a flow unload that the platform itself wrote (read from `sys_update_version` on Brazil Patch 1). This is the strongest evidence in this prompt: when it disagrees with any other claim, follow it.
+ - `[REVERSE_ENGINEERED]` -- Inferred from exported artifacts, decoded blobs, or structural analysis.
++- `[IMPORT_TESTED]` -- XML generated from this rule was imported, opened in Workflow Studio and activated on Brazil Patch 1 (2026-11-19), and the platform's re-export was compared with what was sent.
+ - `[TARGET_VERIFY]` -- Must be checked on the target instance before trusting.
+ 
+ ---
+ 
++## 0. IMPORT-TESTED RULES `[IMPORT_TESTED]`
++
++These rules come from seven generated flows, one generated subflow and two generated custom actions that were imported, opened and activated or published on Brazil Patch 1. **Where any later section disagrees with this section, this section wins.**
++
++**What was tested and passed:** record-created trigger, daily trigger, Service Catalog trigger; Look Up Record, Look Up Records, Create Record, Update Record, Send Email, Fire Event; If, Else If, Else, End Flow, For Each, Do the following until, Set Flow Variables, Assign Subflow Outputs; a flow variable; a subflow with one input and one output; a flow calling that subflow; data pills from the trigger, from steps, from a For Each item, from a flow variable and from a subflow input; a custom action with four inputs, one Script step and one output (Section 10.0).
++
++**What failed, and what it proves:**
++
++1. **`version` must be `2`.** With `1` the flow commits but opens empty.
++2. **Blobs need their full structure.** Two flows with reduced blob entries (only `name` + `value`; or `id`, `name`, `value`, `displayValue` and a 4-key `parameter`) committed cleanly but Workflow Studio showed **"Corrupted flow. This flow can't be opened."** Every blob entry must carry the complete entry shape and a complete `parameter` object (Section 7.0).
++3. **A `delete_multiple` for a table that does not exist** logs an error at commit. Use only the tables in Section 2.1.
++4. **`label_cache` is not rebuilt by activation.** With `[]`, a pill in a condition renders blank. With entries (Section 7.10), it renders with its label.
++5. **One failed record write silently drops the rest of the payload.** A custom action was imported whose `sys_complex_object` had a `name` already used on the instance. Preview showed no problems and the commit reported success, but the update set log had `Write for … was unsuccessful, subsequent records in the file will skip loading`, and every record after the failed one was missing (two outputs, all labels, the plan and the whole snapshot). **After every commit, read the update set log** (`sys_update_set_log` for the local update set) and treat any `unsuccessful` or `Error` line as a failed import.
++
++**What to emit and what to leave to the platform:**
++
++| Emit | Do not emit (activation or Workflow Studio builds it) |
++|---|---|
++| `sys_hub_flow` (inactive, `version` 2) and its snapshot | `sys_flow_record_trigger`, `sys_flow_timer_trigger`, `sys_flow_catalog_trigger` |
++| `sys_hub_trigger_instance_v2` with a full `trigger_inputs` blob | `sys_trigger_runner_mapping`, `sys_flow_trigger_auto_script` |
++| Action, subflow and logic instances with full blobs | `sys_flow_trigger_plan`, `sys_flow_subflow_plan` |
++| Flow inputs, outputs, variables and their `sys_documentation` | `sys_hub_flow_version` |
++| `label_cache` entries for every pill used | The two automatic flow inputs of a record or catalog trigger (`current`, `table_name`) |
++
++Activation built every item in the right column from the trigger blob: the record trigger (table, condition, run options), the timer trigger (`timer_type` 11 and the time, converted from the activating user's time zone to UTC), and the catalog trigger.
++
++**Rules for ids inside blobs:**
++
++- Flow-section rows and snapshot-section rows have different `sys_id`s and the same `ui_id`s.
++- **Blobs in the snapshot section still point at flow-section ids**: `triggerInstanceSysId`, `flowLogicInstanceSysId`, flow variable ids and subflow output ids are the flow-section values in both sections.
++- A logic row and its snapshot mirror carry the **same** `block` value.
++- `sys_hub_sub_flow_instance_v2.subflow` is the sys_id of the called subflow's **master snapshot** (`sys_hub_flow_snapshot`), not of its `sys_hub_flow` record. Each `subflow_inputs` entry `id` and `parameter.id` is the sys_id of that snapshot's `sys_hub_flow_input` row.
++
++**The platform normalizes on activation.** It renumbers `order` to 1, 2, 3…, rewrites `block` ids, fills `hint`/`help`/`defaultDisplayValue` and choice lists in parameters, and reorders `label_cache`. None of these need to be exact in generated XML.
++
++---
++
+ ## 1. OUTER XML WRAPPER
+ 
+ Every output must follow this exact envelope structure:
+@@ -128,15 +166,12 @@
+   <!-- 1. PRIMARY FLOW RECORD -->
+   <sys_hub_flow action="INSERT_OR_UPDATE">...</sys_hub_flow>
+ 
+-  <!-- 2. CLEAN EXISTING VARIABLE VALUES -->
++  <!-- 2. CLEAN TRANSLATIONS AND VARIABLE VALUES -->
++  <sys_translated_text action="delete_multiple" query="documentkey={{FLOW_SYS_ID}}"/>
+   <sys_variable_value action="delete_multiple" query="document_key={{FLOW_SYS_ID}}"/>
+ 
+-  <!-- 3. TRIGGER (catalog, record, scheduled) -->
+-  <!-- catalog example: -->
+-  <sys_flow_catalog_trigger action="INSERT_OR_UPDATE">...</sys_flow_catalog_trigger>
+-  <!-- record-triggered: emit NO trigger record; Activate creates sys_flow_record_trigger (Section 3.1) -->
+-  <!-- scheduled/timer example (see Section 3.13; [TARGET_VERIFY], not yet seen in a platform unload): -->
+-  <!-- <sys_flow_timer_trigger action="INSERT_OR_UPDATE">...</sys_flow_timer_trigger> -->
++  <!-- 3. TRIGGER RECORD: emit none. Activation creates sys_flow_record_trigger / sys_flow_timer_trigger /
++       sys_flow_catalog_trigger from the trigger_inputs blob (Section 0). -->
+ 
+   <!-- 4. CLEAN AND REBUILD RUNTIME MAPPINGS -->
+   <sys_trigger_runner_mapping action="delete_multiple" query="identifier={{FLOW_SYS_ID}}"/>
+@@ -166,15 +201,17 @@
+   <!-- 10. ACTION STEP INSTANCES -->
+   <sys_hub_action_instance_v2 action="delete_multiple" query="flow={{FLOW_SYS_ID}}^sys_idNOT IN{{STEP_IDS_CSV}}"/>
+   <sys_hub_action_instance_v2 action="INSERT_OR_UPDATE">...</sys_hub_action_instance_v2>
+-  <!-- Repeat for each action step -->
++  <sys_hub_alias_mapping action="delete_multiple" query="source_id={{STEP_SYS_ID}}"/>
++  <!-- Repeat the insert + alias delete pair for each action step -->
+ 
+   <!-- 11. SUBFLOW INSTANCES -->
+   <sys_hub_sub_flow_instance_v2 action="delete_multiple" query="flow={{FLOW_SYS_ID}}^sys_idNOT IN{{SUBFLOW_IDS}}"/>
+   <sys_hub_sub_flow_instance_v2 action="INSERT_OR_UPDATE">...</sys_hub_sub_flow_instance_v2>
+ 
+   <!-- 12. FLOW LOGIC (If/Else, For Each, Set Variables, Wait, End) -->
+-  <!-- Always emit this delete_multiple to clean up any pre-existing logic on the target, even if the new flow has no logic blocks -->
+-  <sys_hub_flow_logic_instance_v2 action="delete_multiple" query="flow={{FLOW_SYS_ID}}"/>
++  <!-- Always emit this delete_multiple, even if the new flow has no logic blocks -->
++  <sys_hub_flow_logic_instance_v2 action="delete_multiple" query="flow={{FLOW_SYS_ID}}^sys_idNOT IN{{LOGIC_IDS_CSV}}"/>
++  <sys_hub_flow_logic_instance_v2 action="INSERT_OR_UPDATE">...</sys_hub_flow_logic_instance_v2>
+ 
+   <!-- 13. PILL COMPOUNDS (data pill transforms) -->
+   <sys_hub_pill_compound action="delete_multiple" query="attached_to={{FLOW_SYS_ID}}"/>
+@@ -208,6 +245,7 @@
+   </sys_hub_flow>
+ 
+   <!-- 20. PLAN CLEANUP — delete only; activation builds the plans (Section 3.10) -->
++  <!-- For a subflow (type=subflow) omit the sys_trigger_runner_mapping delete in item 4. -->
+   <sys_flow_trigger_plan action="delete_multiple" query="plan_id={{FLOW_SYS_ID}}"/>
+   <sys_flow_subflow_plan action="delete_multiple" query="plan_id={{FLOW_SYS_ID}}"/>
+ 
+@@ -270,7 +308,7 @@
+   <flow_priority/>
+   <generation_source/>
+   <internal_name>{{snake_case_name}}</internal_name>
+-  <label_cache>[]</label_cache>
++  <label_cache>{{LABEL_CACHE_JSON}}</label_cache>
+   <master_snapshot>{{SNAPSHOT_SYS_ID}}</master_snapshot>
+   <master_snapshot_digest/>
+   <name>{{FLOW_DISPLAY_NAME}}</name>
+@@ -288,16 +326,14 @@
+   <sys_class_name>sys_hub_flow</sys_class_name>
+   <sys_created_by>{{CREATOR}}</sys_created_by>
+   <sys_created_on>{{TIMESTAMP}}</sys_created_on>
+-  <sys_customer_update>true</sys_customer_update>
+   <sys_domain>global</sys_domain>
+-  <sys_domain_path/>
++  <sys_domain_path>/</sys_domain_path>
+   <sys_id>{{FLOW_SYS_ID}}</sys_id>
+   <sys_mod_count>0</sys_mod_count>
+   <sys_name>{{FLOW_DISPLAY_NAME}}</sys_name>
+   <sys_overrides/>
+   <sys_package display_value="Global" source="global">global</sys_package>
+   <sys_policy/>
+-  <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+   <sys_scope display_value="Global">global</sys_scope>
+   <sys_update_name>sys_hub_flow_{{FLOW_SYS_ID}}</sys_update_name>
+   <sys_updated_by>{{CREATOR}}</sys_updated_by>
+@@ -313,19 +349,21 @@
+ 
+ **Note on `active`:** `[PLATFORM_EXPORT]` Import the flow inactive (`false`). The user activates it in Flow Designer after import (Section 13). Activation builds the record trigger, the trigger plan and the runtime state that this payload does not carry.
+ 
+-**Note on `sys_customer_update`:** Set to `true` for all records generated by this prompt. This marks them as customer customizations, which protects them from being overwritten during ServiceNow family upgrades. Setting `false` marks a record as out-of-box platform content -- the platform may overwrite it during upgrades. Only use `false` if you are intentionally creating records that should be treated as platform-managed (rare for customer-generated flows).
++**Note on `sys_customer_update` and `sys_replace_on_upgrade`:** `[PLATFORM_EXPORT]` Do not emit them. The platform's own export of a flow has neither element on `sys_hub_flow`, `sys_hub_flow_snapshot` or any child record.
+ 
++**Note on `type`:** `flow` or `subflow`. A subflow has no trigger instance, uses `run_as` `user` in live data, and is called through its master snapshot (Section 3.4).
++
+ **Note on `remote_trigger_id`:** `[OBSERVED]` This field references the specialized trigger record, NOT the `sys_hub_trigger_instance_v2`:
+ 
+ | Trigger type | `remote_trigger_id` value |
+ |---|---|
+ | Record-triggered (Created, Updated, Created or Updated) | sys_id of the `sys_flow_record_trigger` record (holds `table`, `condition`, `on_insert`/`on_update`/`on_delete`, `run_flow_in`, `run_on_extended`, `run_when_setting`, `run_when_user_setting`, `run_when_user_list`, `active`) |
+-| Service Catalog | sys_id of the `sys_flow_catalog_trigger` record (Section 3.11) |
++| Service Catalog | sys_id of the `sys_flow_catalog_trigger` record (Section 3.11), set by activation |
+ | Scheduled/Timer | sys_id of the `sys_flow_timer_trigger` record (Section 3.13) |
+ 
+ `[PLATFORM_EXPORT]` For record-triggered flows, **leave `remote_trigger_id` empty and do not emit a `sys_flow_record_trigger` record.** The platform's own flow unload does not contain one (it carries a `remote_trigger_id` that does not exist on the target), and activation creates the trigger record and fills the field. All record-triggered OOTB flows have it populated after activation.
+ 
+-**Note on `label_cache`:** `[OBSERVED]` A JSON array of data pill metadata objects used by Flow Designer's UI to render pill labels. Format: `[{"name":"<ui_id>.<output>","label":"<Step N - Action Name>/<Output Label>","type":"<type>","base_type":"<base_type>","attributes":{...}}, ...]`. Every published flow has this populated (typically 1-30 KB). **Set to `[]` (empty JSON array) in generated XML.** Republishing the flow on the target instance (which is already mandatory per Section 3.9) regenerates `label_cache` from the current flow structure. An empty array will not prevent import or commit; it only means the Flow Designer canvas won't show pill labels until the flow is republished.
++**Note on `label_cache`:** `[IMPORT_TESTED]` A JSON array with one entry for each data pill the flow uses. Flow Designer reads it to draw pill labels. **Generate it** (Section 7.10); activation does not rebuild it, and with `[]` pills in conditions render blank. Put the same array on the flow and on the snapshot.
+ 
+ ### 3.2 `sys_hub_trigger_instance_v2` (Trigger)
+ 
+@@ -353,7 +391,7 @@
+ </sys_hub_trigger_instance_v2>
+ ```
+ 
+-**Important:** The `trigger_inputs` field contains a **base64-encoded gzip** blob that encodes the trigger's configuration (table name, conditions, filter). For record-create and record-update triggers, generate this blob using the templates in Section 7.4. For scheduled triggers see Section 7.4.4. For service catalog and other trigger types, use Strategy A (Section 7.8).
++**Important:** The `trigger_inputs` field contains a **base64-encoded gzip** blob that encodes the trigger's configuration (table name, conditions, filter). For record-create and record-update triggers, generate this blob using the templates in Section 7.4. For scheduled triggers see Section 7.4.4. For the Service Catalog trigger see Section 7.4.5. For other trigger types, use Strategy A (Section 7.8).
+ 
+ ### 3.3 `sys_hub_action_instance_v2` (Action Step — v2)
+ 
+@@ -385,7 +423,7 @@
+ 
+ **Fields that do not exist:** `[OBSERVED]` The instance tables (`sys_hub_action_instance_v2`, `sys_hub_sub_flow_instance_v2`, `sys_hub_flow_logic_instance_v2`) are not metadata tables. Do not emit `sys_customer_update`, `sys_name`, `sys_package`, `sys_policy`, `sys_replace_on_upgrade` or `sys_update_name` on them.
+ 
+-**Important:** The `values` field is a base64-gzip blob containing the step's input/output mappings. For OOB action types (Create Record, Update Record, Look Up Record, Look Up Records), generate this blob using the templates in Section 7.3. For custom actions or spokes, use Strategy A (Section 7.8).
++**Important:** The `values` field is a base64-gzip blob containing the step's input/output mappings. For the OOB action types in Appendix A, generate this blob from the parameter objects there. For any other action (custom or spoke), build the parameter objects from the action's input definitions with the rule in Section 7.0; if the definitions are not available, use Strategy A (Section 7.8).
+ 
+ **Field notes:**
+ 
+@@ -404,7 +442,8 @@
+   <generation_source/>
+   <order>{{STEP_ORDER}}</order>
+   <parent_ui_id/>
+-  <subflow display_value="{{SUBFLOW_NAME}}">{{SUBFLOW_SYS_ID}}</subflow>
++  <show_stages>false</show_stages>
++  <subflow display_value="{{SUBFLOW_NAME}}">{{SUBFLOW_MASTER_SNAPSHOT_SYS_ID}}</subflow>
+   <subflow_inputs>{{BASE64_GZIP_SUBFLOW_INPUTS}}</subflow_inputs>
+   <sys_class_name>sys_hub_sub_flow_instance_v2</sys_class_name>
+   <sys_created_by>{{CREATOR}}</sys_created_by>
+@@ -420,6 +459,8 @@
+ </sys_hub_sub_flow_instance_v2>
+ ```
+ 
++`[IMPORT_TESTED]` **`subflow` holds the called subflow's master snapshot sys_id** (`sys_hub_flow.master_snapshot` of the subflow), not the subflow's own sys_id; 52 of 53 live rows do this. When the subflow is generated in the same update set, use the snapshot sys_id you generated for it. When it already exists on the target, the user must supply its `master_snapshot` and the sys_ids of that snapshot's `sys_hub_flow_input` rows (Section 7.6).
++
+ ### 3.5 `sys_hub_flow_logic_instance_v2` (Flow Logic — If, Else, For Each, etc.)
+ 
+ ```xml
+@@ -456,9 +497,9 @@
+ 
+ - **`parent_ui_id`** — The `ui_id` of the enclosing logic block. Empty for top-level logic blocks. For an If nested inside a For Each, this would be the For Each's `ui_id`. Action steps (`sys_hub_action_instance_v2`) and subflow instances also have a `parent_ui_id` field that works the same way -- set it to the `ui_id` of the enclosing logic block, or leave empty for top-level steps.
+ 
+-- **`connected_to`** `[OBSERVED]` — Set on **Else** and **Else If** blocks to the `ui_id` of the If they belong to (190 of 190 Else blocks on Brazil Patch 1). Empty on If, For Each and End. An Else's `parent_ui_id` is the block that encloses the whole If group (empty at top level), not the If itself.
++- **`connected_to`** `[IMPORT_TESTED]` — Set on **Else** and **Else If** blocks to the `ui_id` of the **If** that opens the group (80 of 80 Else and 67 of 67 Else If rows in live flows point at the If, never at a preceding Else If). Empty on every other logic type. An Else or Else If has the same `parent_ui_id` as its If.
+ 
+-- **`block`** `[OBSERVED]` — A reference field (`internal_type=reference`, `reference=sys_hub_flow_block`) holding a compiler-generated scope id. In real published flows these ids do **not** resolve to any `sys_hub_flow_block` row (the platform tolerates them as opaque/dangling) and each logic instance carries its own distinct value — there is no observed parent/child scope-sharing. **Do not attempt to create `sys_hub_flow_block` records and do not model parent-scope inheritance.** Emit a fresh unique 32-char GUID per logic instance; because republishing on the target regenerates the scope/block structure (mandatory, Section 13), the imported value is not authoritative. Nesting is expressed entirely through `parent_ui_id`, not `block`.
++- **`block`** `[OBSERVED]` — A reference field (`internal_type=reference`, `reference=sys_hub_flow_block`) holding a compiler-generated scope id. In real published flows these ids do **not** resolve to any `sys_hub_flow_block` row (the platform tolerates them as opaque/dangling) and each logic instance carries its own distinct value — there is no observed parent/child scope-sharing. **Do not attempt to create `sys_hub_flow_block` records and do not model parent-scope inheritance.** Emit a fresh unique 32-char GUID per logic instance, and reuse the same value on that instance's snapshot mirror; because republishing on the target regenerates the scope/block structure (mandatory, Section 13), the imported value is not authoritative. Nesting is expressed entirely through `parent_ui_id`, not `block`.
+ 
+ - **`order`** — Globally sequential across the entire flow. Steps at order 1 execute first, order 10 next, etc. **Order numbers do NOT restart inside nested blocks.** A flow with an If at order 1, a nested Create Record at order 3, and a top-level Update Record at order 10 uses orders 1, 3, 10 -- not 1, 1, 2. Leave gaps between order values (e.g., 1, 5, 10, 15) to allow for future insertions. Logic blocks like If/Else If/Else/End that form a group share a common ordering region but each has its own order value.
+ 
+@@ -530,13 +571,11 @@
+   <sys_class_name>sys_hub_flow_input</sys_class_name>
+   <sys_created_by>{{CREATOR}}</sys_created_by>
+   <sys_created_on>{{TIMESTAMP}}</sys_created_on>
+-  <sys_customer_update>true</sys_customer_update>
+   <sys_id>{{INPUT_SYS_ID}}</sys_id>
+   <sys_mod_count>0</sys_mod_count>
+   <sys_name/>
+   <sys_package/>
+   <sys_policy/>
+-  <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+   <sys_scope display_value="Global">global</sys_scope>
+   <sys_update_name/>
+   <sys_updated_by>{{CREATOR}}</sys_updated_by>
+@@ -564,6 +603,8 @@
+ - `glide_date_time` (Date/Time)
+ - `GUID` (Sys ID)
+ 
++`[IMPORT_TESTED]` Flow inputs, outputs and variables share this record shape. A subflow with one input and one output, and a flow with one variable, were generated this way and passed the import test. Each record is followed in the snapshot section by a copy with a new sys_id, `model`/`model_id` = the snapshot, `model_table` = `sys_hub_flow_snapshot`, `name` = `var__m_<table>_<snapshot sys_id>`, and the **same** `uiUniqueId` in `attributes`.
++
+ ### 3.7 `sys_hub_flow_variable` (Scratchpad Variables)
+ 
+ Same schema as `sys_hub_flow_input` but with `sys_class_name` = `sys_hub_flow_variable` and `model_table` = `sys_hub_flow`. Used for intermediate values set via "Set Flow Variables" logic blocks.
+@@ -611,7 +652,7 @@
+   <description>{{FLOW_DESCRIPTION}}</description>
+   <flow_priority/>
+   <internal_name>{{snake_case_name}}</internal_name>
+-  <label_cache>[]</label_cache>
++  <label_cache>{{LABEL_CACHE_JSON}}</label_cache>
+   <master>true</master>
+   <name>{{FLOW_DISPLAY_NAME}}</name>
+   <natlang/>
+@@ -625,16 +666,14 @@
+   <sys_class_name>sys_hub_flow_snapshot</sys_class_name>
+   <sys_created_by>{{CREATOR}}</sys_created_by>
+   <sys_created_on>{{TIMESTAMP}}</sys_created_on>
+-  <sys_customer_update>true</sys_customer_update>
+   <sys_domain>global</sys_domain>
+-  <sys_domain_path/>
++  <sys_domain_path>/</sys_domain_path>
+   <sys_id>{{SNAPSHOT_SYS_ID}}</sys_id>
+   <sys_mod_count>0</sys_mod_count>
+   <sys_name/>
+   <sys_overrides/>
+   <sys_package/>
+   <sys_policy/>
+-  <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+   <sys_scope display_value="Global">global</sys_scope>
+   <sys_update_name/>
+   <sys_updated_by>{{CREATOR}}</sys_updated_by>
+@@ -668,7 +707,7 @@
+ - **model/model_id/flow references** point to `{{SNAPSHOT_SYS_ID}}` instead of `{{FLOW_SYS_ID}}`
+ - **model_table** = `sys_hub_flow_snapshot` instead of `sys_hub_flow`
+ 
+-**Minimum viable snapshot approach:** The XML must include a snapshot because the flow is un-openable in Flow Designer without one. However, the snapshot is NOT the source of truth -- it is a **minimum viable shell** that enables import and initial rendering. The real authored state lives in the flow-section records (inputs, blobs, conditions, step ordering). Republishing on the target instance regenerates the snapshot from the authored state, aligned with the target's action type versions, plugin state, and environment-specific artifacts. **Republishing after import is mandatory.** Given this, use `[]` for `label_cache` and set `compiled_snapshot` equal to `action_type` -- both are regenerated on republish. Put all care into the authored state (blob content, step ordering, nesting, data pill references).
++**Minimum viable snapshot approach:** The XML must include a snapshot because the flow is un-openable in Flow Designer without one. However, the snapshot is NOT the source of truth -- it is a **minimum viable shell** that enables import and initial rendering. The real authored state lives in the flow-section records (inputs, blobs, conditions, step ordering). Republishing on the target instance regenerates the snapshot from the authored state, aligned with the target's action type versions, plugin state, and environment-specific artifacts. **Republishing after import is mandatory.** Set `compiled_snapshot` equal to `action_type`. Generate `label_cache` (Section 7.10), set the snapshot's `description` equal to the flow's, and use the snapshot-section blob shape (Section 7.0). Put all care into the authored state (blob content, step ordering, nesting, data pill references).
+ 
+ ### 3.10 `sys_flow_trigger_plan` / `sys_flow_subflow_plan`
+ 
+@@ -676,39 +715,10 @@
+ 
+ ### 3.11 `sys_flow_catalog_trigger` (Catalog/Service Catalog Trigger)
+ 
+-For flows triggered by Service Catalog item requests:
++`[IMPORT_TESTED]` **Do not emit this record.** Emit the `sys_hub_trigger_instance_v2` with the Service Catalog trigger definition and the `trigger_inputs` blob in Section 7.4.5. Activation creates the `sys_flow_catalog_trigger` record and sets `remote_trigger_id`.
+ 
+-```xml
+-<sys_flow_catalog_trigger action="INSERT_OR_UPDATE">
+-  <active>true</active>
+-  <cat_item display_value="{{CATALOG_ITEM_NAME}}">{{CATALOG_ITEM_SYS_ID}}</cat_item>
+-  <condition/>
+-  <flow display_value="{{FLOW_NAME}}">{{FLOW_SYS_ID}}</flow>
+-  <order>100</order>
+-  <published_version/>
+-  <run_flow_in/>
+-  <sys_class_name>sys_flow_catalog_trigger</sys_class_name>
+-  <sys_created_by>{{CREATOR}}</sys_created_by>
+-  <sys_created_on>{{TIMESTAMP}}</sys_created_on>
+-  <sys_customer_update>true</sys_customer_update>
+-  <sys_domain>global</sys_domain>
+-  <sys_id>{{CATALOG_TRIGGER_SYS_ID}}</sys_id>
+-  <sys_mod_count>0</sys_mod_count>
+-  <sys_name/>
+-  <sys_overrides/>
+-  <sys_package/>
+-  <sys_policy/>
+-  <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+-  <sys_scope display_value="Global">global</sys_scope>
+-  <sys_update_name/>
+-  <sys_updated_by>{{CREATOR}}</sys_updated_by>
+-  <sys_updated_on>{{TIMESTAMP}}</sys_updated_on>
+-  <trigger_definition/>
+-</sys_flow_catalog_trigger>
+-```
++`[OBSERVED]` The table's fields are `active`, `catalog_item`, `name`, `published_version`, `run_flow_in` and `trigger_definition`, plus system fields. It has no `cat_item`, `condition`, `flow` or `order` field. The link from a catalog item to the flow is set on the catalog item (its Flow field), not on this record; tell the user in `CONFIGURATION_NOTES` to set it.
+ 
+-This record is referenced by the flow's `<remote_trigger_id>` field. The `<cat_item>` sys_id is instance-specific — it references a catalog item on the target instance. Include a `CONFIGURATION_NOTES` entry telling the user to verify/update this reference after import. If the catalog item sys_id is unknown at generation time, leave it as a placeholder and note it for manual configuration — the flow will be inactive until re-linked. The association between flow and catalog item may also need to be configured separately in the catalog item's Flow field or via the Process Engine.
+-
+ ### 3.12 `sys_hub_flow_version` (Zurich+ Versioning)
+ 
+ `[PLATFORM_EXPORT]` **Do not emit a `sys_hub_flow_version` record, and leave `sys_hub_flow.version_record` empty** (`<version_record/>` on the flow, the snapshot, and the final UPDATE in Section 2.1 item 19).
+@@ -722,6 +732,8 @@
+ 
+ ### 3.13 `sys_flow_timer_trigger` (Scheduled/Timer Trigger)
+ 
++`[IMPORT_TESTED]` **Do not emit this record.** Emit the `sys_hub_trigger_instance_v2` with the schedule's trigger definition and the `trigger_inputs` blob in Section 7.4.4. Activation creates the `sys_flow_timer_trigger` record and a `sys_flow_trigger_auto_script` record, and sets `remote_trigger_id`. The template below documents what activation writes; it is reference only.
++
+ For flows triggered on a schedule (daily, weekly, monthly, repeat interval, or one-time):
+ 
+ ```xml
+@@ -736,7 +748,6 @@
+   <sys_class_name>sys_flow_timer_trigger</sys_class_name>
+   <sys_created_by>{{CREATOR}}</sys_created_by>
+   <sys_created_on>{{TIMESTAMP}}</sys_created_on>
+-  <sys_customer_update>true</sys_customer_update>
+   <sys_domain>global</sys_domain>
+   <sys_id>{{TIMER_TRIGGER_SYS_ID}}</sys_id>
+   <sys_mod_count>0</sys_mod_count>
+@@ -744,7 +755,6 @@
+   <sys_overrides/>
+   <sys_package/>
+   <sys_policy/>
+-  <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+   <sys_scope display_value="Global">global</sys_scope>
+   <sys_update_name/>
+   <sys_updated_by>{{CREATOR}}</sys_updated_by>
+@@ -777,6 +787,8 @@
+ 
+ **Relationship to the flow:** This record is referenced by the flow's `<remote_trigger_id>` field, the same pattern used by `sys_flow_catalog_trigger` (Section 3.11). The `sys_hub_trigger_instance_v2` for a scheduled flow references the matching schedule-type trigger definition listed in Section 5.1 (Daily, Weekly, Monthly, Repeat, Run Once, Recurrence), with `trigger_type` set to that row's key (e.g. `daily`, `repeat`). Its `trigger_inputs` blob is covered in Section 7.4.4.
+ 
++`[IMPORT_TESTED]` The `time` value in the **trigger blob** is in the time zone of the user who activates the flow: a blob value of `03:15:00` activated by a US/Pacific user produced `sys_flow_timer_trigger.time` = `11:15:00`. State the intended local time in `CONFIGURATION_NOTES`.
++
+ **Important:** The `time` field in `sys_flow_timer_trigger` is stored in **UTC**. The Flow Designer UI converts it to the user's timezone for display. When generating XML, always use UTC values and note the timezone assumption in `CONFIGURATION_NOTES` so the importer can verify the intended schedule.
+ 
+ ### 3.14 `sys_documentation` (Input/Output/Variable Labels)
+@@ -831,13 +843,11 @@
+   <sys_class_name>sys_flow_cat_variable_model</sys_class_name>
+   <sys_created_by>{{CREATOR}}</sys_created_by>
+   <sys_created_on>{{TIMESTAMP}}</sys_created_on>
+-  <sys_customer_update>true</sys_customer_update>
+   <sys_id>{{MODEL_SYS_ID}}</sys_id>
+   <sys_mod_count>0</sys_mod_count>
+   <sys_name>{{MODEL_DISPLAY_NAME}}</sys_name>
+   <sys_package display_value="Global" source="global">global</sys_package>
+   <sys_policy/>
+-  <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+   <sys_scope display_value="Global">global</sys_scope>
+   <sys_update_name/>
+   <sys_updated_by>{{CREATOR}}</sys_updated_by>
+@@ -947,7 +957,7 @@
+ |---|---|
+ | Script | `106afb6647032200b4fad7527c9a71e7` |
+ | REST | `07a762fb47222200b4fad7527c9a7129` |
+-| JSON Parser | `502328c387523300f917e55936cb0bf0` `[TARGET_VERIFY]` — needs plugin `com.glide.hub.action_step.jsonparser` (inactive on a baseline Zurich PDI; not verified) |
++| JSON Parser | `502328c387523300f917e55936cb0bf0` `[OBSERVED]` — exists only after plugin `com.glide.hub.action_step.jsonparser` is installed (inactive on a baseline instance; confirmed on Brazil Patch 1 after install, 2026-11-19) |
+ 
+ Step types reference `sys_flow_step_definition`.
+ 
+@@ -979,6 +989,49 @@
+ ## 7. BASE64/GZIP BLOB GENERATION
+ 
+ The `<values>`, `<trigger_inputs>`, and `<subflow_inputs>` fields in V2 records contain **gzip-compressed, base64-encoded JSON**. The format has been reverse-engineered from real instances and is fully generatable for OOB action types.
++
++### 7.0 Blob Shape Rules `[IMPORT_TESTED]`
++
++**Every entry must be complete.** A blob entry with a reduced `parameter` object, or with none, makes Workflow Studio report the flow as corrupted (Section 0). Emit one entry for **every** input the action, trigger or logic definition has, including inputs you leave empty (`"value": ""`).
++
++**Entry shape for action `values` and `subflow_inputs`:**
++
++```json
++{"id": "<input sys_id>", "name": "<input element>", "value": "<value or pill>", "displayValue": "<label of the value, or the value>",
++ "children": [], "parameter": { ...parameter object... }, "scriptActive": false}
++```
++
++**Two parameter shapes, one per section:**
++
++| Section | Shape | Keys |
++|---|---|---|
++| Flow section (rows whose `flow` is the `sys_hub_flow` sys_id) | compact | `type_label`; `choices` and `defaultChoices` only on choice inputs |
++| Snapshot section (rows whose `flow` is the snapshot sys_id) | full | `typeLabel` instead of `type_label`; always `choices`, `defaultChoices`, `fDataStructure` (`""`), `sysClassName` (`""`) |
++
++Both shapes carry `help` and `reference_display`. To make the full shape from the compact one: rename `type_label` to `typeLabel` and add `"choices": []`, `"defaultChoices": []`, `"fDataStructure": ""`, `"sysClassName": ""` where they are missing. The platform accepted the same compact objects in both sections for logic blobs, then rewrote the snapshot side to the full shape.
++
++**Building a parameter object for any action** `[OBSERVED]`. The object is a projection of the input's definition row (`sys_hub_action_input` for actions, `sys_hub_flow_input` for subflow inputs, `sys_hub_flow_variable` for flow variables). Checked against 522 entries in live flows: no value disagreed.
++
++| Parameter key | Definition field |
++|---|---|
++| `id` | `sys_id` |
++| `name` | `element` |
++| `label` | `label` |
++| `type` | `internal_type` |
++| `type_label` | label of the internal type (for example `String`, `Table Name`, `Choice`, `True/False`) |
++| `order` | `order` (integer) |
++| `mandatory`, `readOnly` | `mandatory`, `read_only` (booleans) |
++| `maxsize` | `max_length` (integer) |
++| `reference`, `reference_display` | `reference`, label of that table |
++| `hint`, `help` | `hint`, `help` |
++| `choiceOption`, `table`, `columnName` | `choice`, `choice_table`, `choice_field` |
++| `defaultValue` | `default_value` |
++| `ref_qual`, `dependent_on`, `use_dependent` | `reference_qual`, `dependent_on_field`, `use_dependent_field` |
++| `attributes` | the `attributes` string (`k=v,k=v`) as a JSON object |
++| `children`, `extended`, `fShowReferenceFinder`, `local` | `[]`, `false`, `false`, `false` |
++| `choices`, `defaultChoices` | for choice inputs: `[{"label","value","order"}]` from the input's choice list |
++
++Appendix A has ready-made compact objects for the tested OOB actions. For a custom or spoke action, ask the user for the action's input definitions (a list export of `sys_hub_action_input` filtered by `model=<action type sys_id>`) and apply the table.
+ 
+ ### 7.1 Blob Encoding `[REVERSE_ENGINEERED]`
+ 
+@@ -1042,17 +1095,18 @@
+ 
+ | Pattern | Meaning | Example |
+ |---|---|---|
+-| `{{trigger.current.<field>}}` | Field from the trigger record (record-triggered flows) | `{{trigger.current.sys_id}}` |
+-| `{{trigger.current.<dotwalked>}}` | Dot-walked reference from trigger record | `{{trigger.current.assignment_group.manager.email}}` |
+-| `{{<trigger_display>_<N>.current.<field>}}` | Alternative trigger pill format using trigger display name and sequence number | `{{Created_1.current.short_description}}` |
++| `{{<trigger name>_1.current}}` | The trigger record (record-triggered flows) | `{{Created_1.current}}` |
++| `{{<trigger name>_1.current.<field>}}` | Field or dot-walked field of the trigger record | `{{Updated_1.current.assignment_group.manager.email}}` |
+ | `{{<trigger_display>_<N>.<output>}}` | Trigger output (e.g., catalog variables) | `{{Service Catalog_1.request_item}}` |
+ | `{{<ui_id>.<output_name>}}` | Output from an action step, referenced by the step's `ui_id` | `{{27944fdd-a4c0-4014-968f-8125d304ae6d.record}}` |
+ | `{{<ui_id>.<output>.<field>}}` | Dot-walked field from a step output | `{{27944fdd-a4c0-4014-968f-8125d304ae6d.record.number}}` |
+ 
+ `[OBSERVED]` **Output names are case-sensitive** and differ by action (`sys_hub_action_output.element`): Create Record and Update Record → `record`, `table_name`; Look Up Record → `Record`, `Table`, `status`, `error_message`; Look Up Records → `Records`, `Count`, `Table`. A pill such as `{{<lookup ui_id>.record}}` does not resolve; use `.Record`.
+ | `{{subflow.<input_name>}}` | Subflow input reference (used inside subflows) | `{{subflow.record_sys_id}}` |
+-| `{{flow_var.<variable_name>}}` | Flow scratchpad variable | `{{flow_var.counter}}` |
++| `{{flow_variable.<variable_name>}}` | Flow variable | `{{flow_variable.counter}}` |
+ | `{{<for_each_ui_id>.item.<field>}}` | Current item in a For Each iteration | `{{ccc12345-abcd-4xxx-yxxx-xxxxxxxxxxxx.item.sys_id}}` |
++
++`[IMPORT_TESTED]` **Trigger pills start with the trigger instance's `name` plus `_1`**: `Created_1`, `Updated_1`, `Created or Updated_1`, `Service Catalog_1`. In live flows this form appears 245 times and `{{trigger.…}}` 5 times; use the name form. **Flow variables are `{{flow_variable.<name>}}`** (109 live uses); `{{flow_var.…}}` does not occur. A For Each item is `{{<for each ui_id>.item}}` or `{{<for each ui_id>.item.<field>}}`. In every example below, read `{{trigger.current…}}` as `{{<trigger name>_1.current…}}`.
+ 
+ **Pill usage in encoded query conditions:**
+ 
+@@ -1067,7 +1121,7 @@
+ ```
+ {{trigger.current.priority}}=1^{{trigger.current.state}}!=7
+ {{subflow.field}}ISEMPTY
+-{{flow_var.counter}}>10
++{{flow_variable.counter}}>10
+ ```
+ 
+ ### 7.2.2 `template_value` Field Format
+@@ -1338,7 +1392,7 @@
+ | `if_multiple_records_are_found_action` | `1909f99587003300663ca1bb36cb0bb9` | `choice` | false | 4 | Behavior on multiple results |
+ | `__snc_dont_fail_on_error` | `ceab42a673110010d70877186bf6a74f` | `boolean` | false | — | Error suppression flag |
+ 
+-**Template:** Same array structure as Create/Update Record. The `parameter` blocks use the same schema with `attributes` containing `"element_mapping_provider"` and `"filter_table_source": "v_cluster_transaction"` on the `table` parameter. The `conditions` parameter has `"dependent_on": "table"`. The `sort_column` parameter has an additional attribute `"fd_field_inline": "true"`. The `sort_type` parameter includes `choices` array:
++**Template:** `[IMPORT_TESTED]` Use the six parameter objects in Appendix A. `displayValue` for `if_multiple_records_are_found_action` = `use_first_record` is `Return only the first record`. Older note: the `parameter` blocks use the same schema with `attributes` containing `"element_mapping_provider"` and `"filter_table_source": "v_cluster_transaction"` on the `table` parameter. The `conditions` parameter has `"dependent_on": "table"`. The `sort_column` parameter has an additional attribute `"fd_field_inline": "true"`. The `sort_type` parameter includes `choices` array:
+ 
+ ```json
+ {"label": "a to z", "value": "sort_asc", "order": 0},
+@@ -1357,7 +1411,7 @@
+ | `sort_type` | `0f400a1587003300663ca1bb36cb0b59` | `choice` | false | 3 | `sort_asc` or `sort_desc` |
+ | `max_results` | `4f400a1587003300663ca1bb36cb0b61` | `integer` | false | 4 | Result limit |
+ 
+-**Template:** Same array structure. The `parameter` blocks mirror Look Up Record with the IDs above substituted.
++**Template:** `[IMPORT_TESTED]` Use the five parameter objects in Appendix A.
+ 
+ #### 7.3.5 Send Email (`c1806bf4a70323008299b39f087901cb`)
+ 
+@@ -1374,7 +1428,7 @@
+ | `ah_subject` | `5d806bf4a70323008299b39f087901ec` | `string` | true | 6 | Email subject |
+ | `ah_body` | `ad806bf4a70323008299b39f087901f2` | `html` | false | 7 | Email body (HTML) |
+ 
+-**Template:** Same array structure as other action types. The `ah_to`, `ah_cc`, and `ah_bcc` fields accept comma-separated emails or data pills resolving to email addresses.
++**Template:** `[IMPORT_TESTED]` Use the eight parameter objects in Appendix A. The `ah_to`, `ah_cc`, and `ah_bcc` fields accept comma-separated emails or data pills resolving to email addresses.
+ 
+ #### 7.3.6 Send Notification (`0d8dd9f10f11101051218e8ebc767e27`)
+ 
+@@ -1400,7 +1454,7 @@
+ | `parm1` | `d8a30edeff30311077a95dac793bf1ab` | `string` | false | 4 | Event parameter 1 |
+ | `parm2` | `d4a30edeff30311077a95dac793bf1af` | `string` | false | 5 | Event parameter 2 |
+ 
+-**Template:** Same array structure. Maps directly from `gs.eventQueue(event_name, record, parm1, parm2)`.
++**Template:** `[IMPORT_TESTED]` Use the five parameter objects in Appendix A. `event_name` takes the sys_id of the `sysevent_register` row as `value` and the event name as `displayValue`. Maps directly from `gs.eventQueue(event_name, record, parm1, parm2)`.
+ 
+ #### 7.3.8 Ask For Approval (`f8f2e9920b10030085c083eb37673abd`)
+ 
+@@ -1507,12 +1561,20 @@
+ 
+ The `choiceList` `fParameters.name` references use `var__m_sys_hub_trigger_input_a45d9180c32222002841b63b12d3aea7`.
+ 
++`[IMPORT_TESTED]` **Record trigger entries:** each entry also carries `"fromTemplate": false`, `"triggerInstanceSysId": "<flow-section trigger instance sys_id>"` (the same value in the snapshot copy), and each `choiceList` item carries `"fSequence": -1`. Appendix B has the complete seven-entry Record Created blob that passed the import test; Record Updated and Record Created or Updated use the same entry shape with the parameter ids in 7.4.2 and 7.4.3 plus the `trigger_strategy` entry.
++
+ #### 7.4.4 Scheduled/Timer Triggers
+ 
+-Scheduled triggers keep their schedule in the `sys_flow_timer_trigger` record (Section 3.13), **and** their `sys_hub_trigger_instance_v2.trigger_inputs` carries a blob mirroring it. `[OBSERVED]` On Zurich, all 4 sampled daily/repeat instances were non-empty. Daily has one entry `time` (`glide_time`, parameter id `3ad4edc0c32222002841b63b12d3aee5`, value like `1970-01-01 06:00:00`). Repeat has one entry `repeat` (`glide_duration`, parameter id `1c5f4d94c32222002841b63b12d3aeb3`, value like `1970-01-01 00:15:00`). Weekly, monthly and run-once were not observed (no OOTB instances).
++`[IMPORT_TESTED]` Emit only the trigger instance and its one-entry `trigger_inputs` blob. Activation builds `sys_flow_timer_trigger` from it (Section 3.13).
+ 
+-When generating a scheduled-triggered flow, generate the `sys_flow_timer_trigger` record per Section 3.13. For Daily and Repeat, also emit the matching one-entry `trigger_inputs` blob using the entry shape in Section 7.4 and the parameter ids above. For other schedule types, leave `trigger_inputs` empty and rely on republish, noting it in `CONFIGURATION_NOTES`.
++- **Daily** (definition `89142dc0c32222002841b63b12d3ae8a`, `trigger_type` `daily`, name `Daily`): one entry `time`. Tested: a blob with `"value": "1970-01-01 03:15:00"` rendered as "Daily at 03:15:00" and activated. Full entry in Appendix B.
++- **Repeat** (definition `f63f0d94c32222002841b63b12d3aeed`, `trigger_type` `repeat`, name `Repeat`): one entry `repeat`, value like `1970-01-01 00:15:00` for 15 minutes. `[OBSERVED]` Full entry in Appendix B; not import-tested.
++- **Weekly, Monthly, Run Once:** no live example exists on a baseline instance. `[TARGET_VERIFY]` Build the entries from the trigger definition's `sys_hub_trigger_input` rows in the Daily entry shape, and say so in `CONFIGURATION_NOTES`.
+ 
++#### 7.4.5 Service Catalog Trigger (`c43a1011c36813002841b63b12d3ae15`)
++
++`[IMPORT_TESTED]` `trigger_type` `service_catalog`, name `Service Catalog`. One entry, `run_flow_in` (parameter id `6090c72977203300f5bfcfcc78106159`, value `background`). Full entry in Appendix B. Trigger pills are `{{Service Catalog_1.request_item}}` and `{{Service Catalog_1.table_name}}`. Activation creates the `sys_flow_catalog_trigger` record.
++
+ ### 7.5 Flow Logic `values` `[REVERSE_ENGINEERED]` — JSON Object Format
+ 
+ Flow logic blobs (`sys_hub_flow_logic_instance_v2.values`) use a **different shape**: a JSON object (not an array) with six top-level keys.
+@@ -1615,13 +1677,13 @@
+ Same JSON object structure as If, same two inputs (`condition_name` + `condition`), but **different parameter ID for `condition_name`**:
+ 
+ - `condition_name`: `f0af19c1c32632002841b63b12d3aea2` (note: last character is `2`, not `3`)
+-- `condition`: `9a5f5105c32632002841b63b12d3ae46` (same as If)
++- `condition`: `f0af19c1c32632002841b63b12d3aea1` `[IMPORT_TESTED]` (not the If id; last character is `1`)
+ 
+-The `parameter` boilerplate blocks are identical to If except for the `id` field in `condition_name`.
++The `parameter` boilerplate blocks are identical to If except for the two `id` fields. Set `connected_to` to the opening If's `ui_id`.
+ 
+ #### 7.5.3 Else
+ 
+-No blob needed. The `values` field is either empty or absent. Else blocks have no condition to configure. Set `connected_to` to the If's `ui_id` (Section 3.5).
++`[IMPORT_TESTED]` Use the empty-structure blob shown under End (all six arrays empty); the platform writes that blob for an Else. Set `connected_to` to the If's `ui_id` (Section 3.5).
+ 
+ #### 7.5.4 End
+ 
+@@ -1706,8 +1768,10 @@
+ Same JSON object structure as If, same two inputs (`condition_name` + `condition`), but **different parameter IDs**:
+ 
+ - `condition_name`: `bda2cb0473031300612c273ffff6a750` (order: 100)
+-- `condition`: uses a different ID from If/Else If (verify from instance if needed)
++- `condition`: `d7138f0473031300612c273ffff6a78c` `[IMPORT_TESTED]` (order: 200)
+ 
++The steps inside the loop have `parent_ui_id` = the Do Until block's `ui_id`. The `condition_name` parameter has no `use_basic_input` attribute here.
++
+ The `parameter` boilerplate is structurally identical to If but with these substituted IDs and `order: 100` on `condition_name`.
+ 
+ #### 7.5.7 Set Flow Variables
+@@ -1773,7 +1837,7 @@
+ 
+ **Key differences from other logic types:**
+ 
+-- The `id` field at entry level is an **empty string** (not a stable OOB ID)
++- `[IMPORT_TESTED]` In the flow section, `inputs` entries have **no** `id` key and `variables` entries have `id` = the flow variable's sys_id. In the snapshot section both have `id`. The id is always the **flow-section** `sys_hub_flow_variable` sys_id
+ - Parameter IDs come from the flow's `sys_hub_flow_variable` records (instance-specific)
+ - The `inputs` and `variables` arrays contain **identical content** -- both must be populated
+ - The corresponding `sys_hub_flow_logic_instance_v2` record's `flow_variables_assigned` field must contain a CSV of the variable element names being set
+@@ -1790,13 +1854,25 @@
+ - `{{trigger.current.state}}CHANGESTO7` -- changed to value (record-update triggers only)
+ - `{{trigger.current.priority}}VALCHANGES` -- any value change (record-update triggers only)
+ 
++#### 7.5.9 Assign Subflow Outputs `[IMPORT_TESTED]`
++
++Used inside a subflow to set its outputs. The `outputsToAssign` array is populated; `inputs` and `variables` are empty. The logic row's `outputs_assigned` field holds a CSV of the output element names.
++
++```json
++{"outputsToAssign": [{"flowLogicInstanceSysId": "<flow-section sys_id of this logic row>", "id": "<flow-section sys_hub_flow_output sys_id>",
++   "name": "<output element>", "value": "<value or pill>", "displayValue": "<same>", "children": [],
++   "parameter": { ...parameter object built from the sys_hub_flow_output row, id = same output sys_id... }, "scriptActive": false}],
++ "inputs": [], "variables": [], "decisionTableInputs": [], "dynamicInputs": [], "workflowInputs": []}
++```
++
+ ### 7.6 Subflow Instance `subflow_inputs` — JSON Array Format
+ 
+ Subflow input blobs (`sys_hub_sub_flow_instance_v2.subflow_inputs`) use the **same JSON array format** as action instance `values`. Each entry has `id`, `name`, `value`, `displayValue`, `children`, `parameter`, and `scriptActive`.
+ 
+-**However, parameter IDs are NOT stable.** Unlike OOB action types, subflow input IDs come from the subflow's own `sys_hub_flow_input` records, which are instance-specific. This means the blob cannot be generated from a static template -- the parameter IDs must be looked up from the target subflow's definition on the target instance.
++`[IMPORT_TESTED]` **The ids are those of the subflow's master snapshot.** Each entry's `id` and `parameter.id` is the sys_id of the `sys_hub_flow_input` row whose `model` is the subflow's master snapshot. The `parameter` object is built from that row (Section 7.0); its `attributes` include `uiType`, `uiTypeLabel`, `element_mapping_provider` and the input's `uiUniqueId`.
+ 
+-**For subflow instances, use Strategy A** (Section 7.8) and note the intended input mappings in `CONFIGURATION_NOTES`.
++- **Subflow generated in the same update set:** you chose those snapshot-section input sys_ids yourself, so generate the blob. This was tested: the caller rendered the subflow step and the subflow's publish dialog listed the caller.
++- **Subflow that already exists on the target:** ask the user for the subflow's `master_snapshot` sys_id and its snapshot inputs (`sys_hub_flow_input` where `model` = that snapshot). Without them, use Strategy A (Section 7.8).
+ 
+ ### 7.7 Blob Generation Capability
+ 
+@@ -1903,6 +1979,22 @@
+ - `{{27944fdd-a4c0-4014-968f-8125d304ae6d.asset}}` -- step output by ui_id
+ - `asset={{uuid.field1}}^task={{uuid.field2}}` -- encoded query style for multi-field values
+ 
++### 7.10 `label_cache` Entries `[IMPORT_TESTED]`
++
++One entry per distinct pill used anywhere in the flow. The same array goes on `sys_hub_flow` and `sys_hub_flow_snapshot`.
++
++```json
++{"name": "<pill text without the braces>", "label": "<label>", "reference": "<table, for a record>", "reference_display": "<table label or field label>",
++ "type": "<type>", "base_type": "<type>", "usedInstances": {"<ui_id of a step that uses the pill>": ["<input name>", "..."]},
++ "attributes": {"element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"}}
++```
++
++- A pill for a **field** (dot-walked) drops `attributes` and adds `"parent_table_name": "<table that owns the field>", "column_name": "<field>"`.
++- A **choice** output adds `"choices": [{"label","value","order"}]`.
++- `label` conventions seen in live flows: step output `"<order> - <Action name>➛<Output label>"` (for example `1 - Look Up Record➛User Record`); trigger `"Trigger - Record Created➛Incident Record➛Priority"`; subflow input `"Input➛<Input label>"`; flow variable `"Flow Variables➛<label>"`. The separator is `➛` (U+279B).
++- `type` examples: `reference` for a record, `records` for a record list, `string`, `integer`, `choice`.
++- The platform rewrites labels and order on activation, so the label text need not be exact; the entry must exist and `name` must match the pill.
++
+ ---
+ 
+ ## 8. GUID GENERATION AND FIELD CONVENTIONS
+@@ -1937,6 +2029,116 @@
+ 
+ ## 10. CUSTOM ACTION DEFINITION STRUCTURE
+ 
++> **Import-tested in one form.** A custom action built in the exact shape of Section 10.0, with every sys_id, the step `cid` and the complex-object name regenerated, was imported on Brazil Patch 1 and opened in Action Designer as Published with its inputs, Script step, pill mappings and outputs intact. The older skeleton in 10.0.1 was not tested. Drop `sys_customer_update` and `sys_replace_on_upgrade` as in Section 3.1.
++
++### 10.0 Platform Export of a Published Custom Action `[PLATFORM_EXPORT]`
++
++This outline was read from the platform's own export of a published Script-step action on Brazil Patch 1 (a copy of the OOTB "Create Outage" action: four inputs, one Script step, one output). **Follow it over the older skeleton below.** `[IMPORT_TESTED]`
++
++**Uniqueness rules** `[IMPORT_TESTED]`: generate a new sys_id for every record, a new UUID for each step `cid` (and use it in every `{{step[<cid>]…}}` pill), and a new name `FD` + 32 hex characters for each `sys_complex_object` (the same new name wherever the old one appears: the complex object's `name`, its `serialized_content`, and the `co_type_name` attribute of the `__action_status__` output). A complex-object name that already exists on the target makes that record fail, and everything after it is skipped (Section 0, item 5).
++
++**CDATA:** the platform writes `calculation` and script values inside `<![CDATA[ … ]]>` in the inner payload. When the payload goes into the outer `<payload><![CDATA[ … ]]></payload>`, split every inner `]]>` as `]]]]><![CDATA[>`.
++
++**How an action differs from a flow:** an action does not use base64-gzip blobs. Step configuration is stored in `sys_variable_value` rows (for example the Script step's `script`), and every input-to-step and step-to-output mapping is a `sys_element_mapping` row. Pills inside an action are `{{action.<input element>}}` and `{{step[<step cid>].<step output element>}}`.
++
++**Operation order, definition section** (the snapshot section repeats everything from the first `sys_translated_text` delete to the last `sys_choice` delete with the snapshot's ids, and the payload ends with a `sys_hub_action_type_definition` UPDATE):
++
++```
++INSERT_OR_UPDATE sys_hub_action_type_definition
++DELETE sys_translated_text  query: documentkey={{ACTION}}
++DELETE sys_variable_value  query: document_key={{ACTION}}
++INSERT_OR_UPDATE sys_variable_value   (x2)
++DELETE sys_element_mapping  query: id={{ACTION}}
++INSERT_OR_UPDATE sys_element_mapping   (x3)
++DELETE sys_hub_step_instance  query: action={{ACTION}}^sys_idNOT IN{{STEP}}
++INSERT_OR_UPDATE sys_hub_step_instance
++DELETE sys_variable_value  query: document_key={{STEP}}
++INSERT_OR_UPDATE sys_variable_value   (x2)
++DELETE sys_element_mapping  query: id={{STEP}}
++INSERT_OR_UPDATE sys_element_mapping   (x6)
++DELETE sys_element_mapping  query: table=var__m_sys_hub_step_ext_output_{{STEP}}^id={{STEP}}
++DELETE sys_element_mapping  query: table=var__m_sys_flow_step_definition_input_{{STEP_TYPE}}^id={{STEP}}
++DELETE sys_translated_text  query: documentkey={{STEP}}
++DELETE sys_hub_step_ext_input  query: model={{STEP}}^sys_idNOT IN{{ID}},{{ID}},{{ID}},{{ID}}
++INSERT_OR_UPDATE sys_hub_step_ext_input   (x4)
++DELETE sys_hub_step_ext_output  query: model={{STEP}}^sys_idNOT IN{{ID}}
++INSERT_OR_UPDATE sys_hub_step_ext_output
++DELETE sys_hub_input_scripts  query: instance={{STEP}}
++INSERT_OR_UPDATE sys_documentation
++DELETE sys_hub_action_input  query: model={{ACTION}}^sys_idNOT IN{{ID}},{{ID}},{{ID}},{{ID}}
++INSERT_OR_UPDATE sys_hub_action_input
++DELETE sys_hub_action_input_action_instance  query: action_input={{ID}}
++INSERT_OR_UPDATE sys_hub_action_input
++DELETE sys_hub_action_input_action_instance  query: action_input={{ID}}
++INSERT_OR_UPDATE sys_hub_action_input
++DELETE sys_hub_action_input_action_instance  query: action_input={{ID}}
++INSERT_OR_UPDATE sys_hub_action_input
++DELETE sys_hub_action_input_action_instance  query: action_input={{ID}}
++DELETE sys_hub_action_output  query: model={{ACTION}}^sys_idNOT IN{{ID}},{{ID}},{{ID}}
++INSERT_OR_UPDATE sys_hub_action_output
++DELETE sys_hub_action_input_action_instance  query: action_input={{ID}}
++DELETE sys_hub_input_scripts  query: instance={{ID}}
++INSERT_OR_UPDATE sys_complex_object
++INSERT_OR_UPDATE sys_hub_action_output
++DELETE sys_hub_action_input_action_instance  query: action_input={{ID}}
++DELETE sys_hub_input_scripts  query: instance={{ID}}
++INSERT_OR_UPDATE sys_hub_action_output
++DELETE sys_hub_action_input_action_instance  query: action_input={{ID}}
++DELETE sys_hub_input_scripts  query: instance={{ID}}
++DELETE sys_hub_pill_compound  query: attached_to={{ACTION}}
++DELETE sys_hub_action_status_metadata  query: action_type_id={{ACTION}}^sys_idNOT IN{{ID}}
++INSERT_OR_UPDATE sys_hub_action_status_metadata
++DELETE sys_hub_status_condition  query: action_status_metadata_id={{ID}}
++INSERT_OR_UPDATE sys_documentation   (x4)
++DELETE sys_choice  query: name=var__m_sys_hub_action_input_{{ACTION}}^sys_idNOT IN{{ID}},{{ID}},{{ID}},{{ID}}
++INSERT_OR_UPDATE sys_choice
++INSERT_OR_UPDATE sys_documentation   (x3)
++DELETE sys_choice  query: name=var__m_sys_hub_action_output_{{ACTION}}
++DELETE sys_hub_action_plan  query: action_id={{ACTION}}^sys_idNOT IN{{ID}}
++INSERT_OR_UPDATE sys_hub_action_plan
++```
++
++**`sys_hub_action_type_definition` fields:** access, acls, action_status, action_template, active, annotation, attributes, authored_on_release_version, callable_by_client_api, category, copied_from, copied_from_name, description, flow_priority, ih_action, internal_name, label_cache, master_snapshot, master_snapshot_digest, name, natlang, outputs, outputs, pre_compiled, state, sys_class_name, sys_created_by, sys_created_on, sys_domain, sys_domain_path, sys_id, sys_mod_count, sys_name, sys_overrides, sys_package, sys_policy, sys_scope, sys_update_name, sys_updated_by, sys_updated_on, system_level, type
++
++**`sys_hub_action_type_snapshot` fields:** access, acls, action_status, action_template, annotation, attributes, authored_on_release_version, callable_by_client_api, category, copied_from, copied_from_name, description, flow_priority, internal_name, label_cache, master, name, natlang, outputs, outputs, parent_action, sys_class_name, sys_created_by, sys_created_on, sys_domain, sys_domain_path, sys_id, sys_mod_count, sys_name, sys_overrides, sys_package, sys_policy, sys_scope, sys_update_name, sys_updated_by, sys_updated_on, system_level, type
++
++**`sys_hub_step_instance`** (non-empty fields): `<sys_hub_step_instance><action>{{ACTION}}</action><cid>7b6159d4-91d7-4931-a602-f291c730f83a</cid><error_handling_type>1</error_handling_type><label>Script step</label><order>1</order><step_type>{{STEP_TYPE}}</step_type><sys_id>{{STEP}}</sys_id><sys_scope>global</sys_scope></sys_hub_step_instance>`
++
++**`sys_variable_value` rows** (first four; `document` + `document_key` name the owner, `variable` is the step-definition input):
++
++```
++document=sys_hub_action_type_definition document_key={{ACTION}} variable=Don't Treat as Error value='0'
++document=sys_hub_action_type_definition document_key={{ACTION}} variable=Action Status value='{"version":"1.0","complexObject":{"code":{"$cv":{"$c":"java.lang.Strin'
++document=sys_hub_step_instance document_key={{STEP}} variable=Script value='(function execute(inputs, outputs) {\n  var parentTable = GlideDBObject'
++document=sys_hub_step_instance document_key={{STEP}} variable=MID Application value='{{ID}}'
++```
++
++**`sys_element_mapping` rows** (first nine; `table` is the `var__m_` virtual table of the target, `id` is the owning record, `field` is the target element, `value` is the pill):
++
++```
++table=var__m_sys_hub_action_output_{{ACTION}} id={{ACTION}} field=outagegr value='{{step[7b6159d4-91d7-4931-a602-f291c730f83a].OutageRecord}}'
++table=var__m_sys_hub_action_output_{{ACTION}} id={{ACTION}} field=__action_status__ value=''
++table=var__m_sys_hub_action_output_{{ACTION}} id={{ACTION}} field=__dont_treat_as_error__ value=''
++table=var__m_sys_flow_step_definition_input_{{STEP_TYPE}} id={{STEP}} field=application value=''
++table=var__m_sys_hub_step_ext_input_{{STEP}} id={{STEP}} field=begin value='{{action.ah_begin}}'
++table=var__m_sys_hub_step_ext_input_{{STEP}} id={{STEP}} field=cmdbCi value='{{action.ah_configuration_item}}'
++table=var__m_sys_flow_step_definition_input_{{STEP_TYPE}} id={{STEP}} field=script value=''
++table=var__m_sys_hub_step_ext_input_{{STEP}} id={{STEP}} field=source value='{{action.ah_source_record}}'
++table=var__m_sys_hub_step_ext_input_{{STEP}} id={{STEP}} field=type value='{{action.ah_type}}'
++```
++
++**`sys_hub_action_status_metadata`** (non-empty fields): `<sys_hub_action_status_metadata><action_type_id>{{ACTION}}</action_type_id><sys_id>{{ID}}</sys_id></sys_hub_action_status_metadata>`
++
++**`sys_hub_action_plan`** (non-empty fields): `<sys_hub_action_plan><action_id>{{ACTION}}</action_id><plan>{"@class":"com.snc.process_flow.engine.serialization.plan_data.ChunkingPlanData","chunk_data":{"table":"sys_hub_action_plan","id":"{{ID}}","name":"plan","plan_signature":null},"plan_data":"CHUNKING_PL…</plan><snapshot>{{ID}}</snapshot><sys_domain>global</sys_domain><sys_domain_path>/</sys_domain_path><sys_id>{{ID}}</sys_id></sys_hub_action_plan>`
++
++**`sys_complex_object`** (non-empty fields): `<sys_complex_object><name>FD{{ID}}</name><namespace>FlowDesigner</namespace><scope_name>global</scope_name><serialized_content>{"FlowDesigner:FD{{ID}}":{"code":"Integer","code.$field_facets":{"SimpleMapFacet":"{\"uiTypeLabel\":\"Integer\",\"help\":\"\",\"read_only\":\"false\",\"hint\":\…</serialized_content><sys_class_name>sys_complex_object</sys_class_name><sys_domain>global</sys_domain><sys_domain_path>/</sys_domain_path><sys_id>{{ID}}</sys_id><sys_scope>global</sys_scope><type>complex_object_schema</type></sys_complex_object>`
++
++**Final UPDATE fields:** sys_id, latest_snapshot, compiler_build
++
++The complete export is kept beside this prompt as `verification/fixtures/dev435256/platform_unload_action_0_current.xml`; the draft-state export (before publish, no snapshot) is `platform_unload_action_3_previous.xml`.
++
++### 10.0.1 Older Skeleton (superseded where it differs from 10.0)
++
+ For converting Script Includes or complex reusable logic into custom Actions:
+ 
+ ```xml
+@@ -2258,8 +2460,8 @@
+    - If you see "Could not find a record in sys_hub_flow_version": the payload has a non-empty `version_record` — see Section 3.12.
+    - If the commit log shows `Table '<name>' does not exist`: the payload has a `delete_multiple` for a table the target does not have. Remove that line (Section 2).
+    - If you see "Could not find record" for action types: the OOB sys_ids may differ on your instance — see Section 5.
+-2. **Commit the update set.**
+-3. **Open the flow in Flow Designer** (`Process Automation > Flow Designer`). If it opens with no trigger and no actions, check `sys_hub_flow.version`; it must be `2` (Section 3.1).
++2. **Commit the update set.** Then open the committed update set's log and confirm it has no `unsuccessful` or `Error` line; a failed record write drops every record after it without failing the commit (Section 0).
++3. **Open the flow in Flow Designer** (`Process Automation > Flow Designer`). If it opens with no trigger and no actions, check `sys_hub_flow.version`; it must be `2` (Section 3.1). If it says **"Corrupted flow. This flow can't be opened"**, a blob entry is incomplete (Section 7.0).
+ 4. **Configure any remaining step inputs** marked with `<!-- CONFIGURE_IN_FLOW_DESIGNER -->`. Steps using OOB action types (Create Record, Update Record, Look Up Record, Look Up Records) and flow logic (If/Else) will have their inputs pre-populated via generated blobs. Steps using custom actions, spokes, or subflow invocations may still need manual configuration:
+    - Map data pills between steps
+    - Set trigger conditions/filters (if not a record-create or record-update trigger)
+@@ -2309,7 +2511,7 @@
+ ## 15. CRITICAL RULES
+ 
+ 1. **Never omit the snapshot section.** Every published flow needs both the flow definition and a minimum viable snapshot mirror (Section 3.9). The snapshot enables import and Flow Designer rendering; republishing regenerates it from the authored state.
+-2. **Generate real base64-gzip blobs for OOB action types** using Section 7 templates. For unsupported action types, use Strategy A placeholders (Section 7.8). Never fabricate blob content outside of the documented JSON structures.
++2. **Generate real base64-gzip blobs with complete entries** (Section 7.0). An incomplete entry corrupts the flow. Where the input definitions are not known, use Strategy A placeholders (Section 7.8). Never fabricate blob content outside of the documented JSON structures.
+ 3. **Always use the delete-before-insert pattern** for child record collections.
+ 4. **Always XML-entity-escape** any scripts in the payload.
+ 5. **Generate unique GUIDs** for every record. Never reuse sys_ids.
+@@ -2318,8 +2520,8 @@
+ 8. **Include documentation records** (`sys_documentation`) for each flow input, output, and variable per Section 3.14. Use the `var__m_sys_hub_flow_{input|output|variable}_{{FLOW_SYS_ID}}` naming convention.
+ 9. **The `<name>` tag** in the outer `sys_update_xml` must match the pattern `sys_hub_flow_{{FLOW_SYS_ID}}` (or `sys_hub_action_type_definition_{{SYS_ID}}` for actions).
+ 10. **Set `<table>` correctly** in the outer `sys_update_xml` — use `sys_hub_flow` for flows, `sys_hub_action_type_definition` for actions.
+-11. **Set `sys_customer_update` to `true`** on `sys_hub_flow` and `sys_hub_flow_snapshot`. Do not emit it on instance records (Section 3.3).
+-12. **Do not emit `sys_hub_flow_version`, `sys_flow_record_trigger` or `sys_flow_trigger_plan` records**, and leave `version_record` empty (Sections 3.1, 3.10, 3.12). The platform builds them on activation or when the flow is opened.
++11. **Do not emit `sys_customer_update` or `sys_replace_on_upgrade`** on any record (Section 3.1).
++12. **Do not emit `sys_hub_flow_version`, `sys_flow_record_trigger`, `sys_flow_timer_trigger`, `sys_flow_catalog_trigger` or plan records**, and leave `version_record` empty (Sections 3.1, 3.10, 3.12). The platform builds them on activation or when the flow is opened.
+ 13. **Include `sys_complex_object`** records when custom actions parse JSON/XML — and scope them to the action's scope (Section 10.1, Section 11.2).
+ 14. **Set `parent_ui_id` correctly on all nested steps.** Every action instance, subflow instance, and logic block inside a logic block must have `parent_ui_id` set to the enclosing block's `ui_id`. Top-level items have empty `parent_ui_id`.
+ 15. **Validate your output** — walk through the XML as if you were the import engine, checking each item in this list:
+@@ -2338,4 +2540,102 @@
+     - `<version>2</version>` on `sys_hub_flow` and `sys_hub_flow_snapshot`; `<active>false</active>` on `sys_hub_flow`
+     - Every `delete_multiple` names a table from Section 2.1 (or one the release check confirmed on the target)
+     - Pill output names match the action's output case (Section 7.2.1)
+-16. **Follow the platform.** When this prompt and a platform-written unload from the target release disagree, the unload wins (Section 14 step 1).
++16. **Generate `label_cache`** with one entry per pill (Section 7.10).
++17. **Use the live pill forms:** `{{<trigger name>_1.current…}}` and `{{flow_variable.<name>}}` (Section 7.2.1).
++18. **Follow the platform.** When this prompt and a platform-written unload from the target release disagree, the unload wins (Section 14 step 1).
++
++---
++
++## APPENDIX A. Compact Parameter Objects for Tested OOB Actions `[IMPORT_TESTED]`
++Read from the action input definitions on Brazil Patch 1 and used in the import tests. One line per input, in input order. These are the **compact** (flow-section) objects; make the snapshot-section shape with the rule in Section 7.0. The platform fills `hint`, `help` and `defaultDisplayValue` itself on activation.
++
++**Look Up Record** (`9d09f99587003300663ca1bb36cb0ba3`)
++
++```json
++{"children":[],"type_label":"Table Name","id":"d909f99587003300663ca1bb36cb0ba4","label":"Table","name":"table","type":"table_name","order":0,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":80,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","filter_table_source":"v_cluster_transaction"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"Conditions","id":"d509f99587003300663ca1bb36cb0ba9","label":"Conditions","name":"conditions","type":"conditions","order":1,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":4000,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":true,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"table","help":""}
++{"children":[],"type_label":"Field Name","id":"1d09f99587003300663ca1bb36cb0bad","label":"Order by","name":"sort_column","type":"field_name","order":2,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":80,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":true,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","fd_field_inline":"true"},"ref_qual":"","dependent_on":"table","help":""}
++{"children":[],"type_label":"Choice","id":"5d09f99587003300663ca1bb36cb0bb1","label":"Sort Type","name":"sort_type","type":"choice","order":3,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":32,"reference":"","reference_display":"","choiceOption":"3","table":"","columnName":"","defaultValue":"sort_asc","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","fd_display_label":"false","fd_field_inline":"true","fd_hide_inline_script_widget":"true","fd_hide_dotwalk_widget":"true"},"ref_qual":"","dependent_on":"","help":"","choices":[{"label":"a to z","value":"sort_asc","order":0},{"label":"z to a","value":"sort_desc","order":1}],"defaultChoices":[{"label":"a to z","value":"sort_asc","order":1},{"label":"z to a","value":"sort_desc","order":2}]}
++{"children":[],"type_label":"Choice","id":"1909f99587003300663ca1bb36cb0bb9","label":"If multiple records are found action","name":"if_multiple_records_are_found_action","type":"choice","order":4,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":40,"reference":"","reference_display":"","choiceOption":"3","table":"","columnName":"","defaultValue":"use_first_record","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"","help":"","choices":[{"label":"Return only the first record","value":"use_first_record","order":0},{"label":"Fail the step","value":"error","order":1}],"defaultChoices":[{"label":"Return only the first record","value":"use_first_record","order":1},{"label":"Fail the step","value":"error","order":2}]}
++{"children":[],"type_label":"True/False","id":"ceab42a673110010d70877186bf6a74f","label":"Don't fail on error","name":"__snc_dont_fail_on_error","type":"boolean","order":5,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":40,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","uiType":"boolean","uiTypeLabel":"True/False","uiUniqueId":"8e0281dc-8717-4fd6-9da5-a9b573dec4fe"},"ref_qual":"","dependent_on":"","help":""}
++```
++
++**Look Up Records** (`43400a1587003300663ca1bb36cb0b4b`)
++
++```json
++{"children":[],"type_label":"Table Name","id":"8f400a1587003300663ca1bb36cb0b4b","label":"Table","name":"table","type":"table_name","order":0,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":80,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","filter_table_source":"v_cluster_transaction"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"Conditions","id":"8f400a1587003300663ca1bb36cb0b50","label":"Conditions","name":"conditions","type":"conditions","order":1,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":4000,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":true,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"table","help":""}
++{"children":[],"type_label":"Field Name","id":"c7400a1587003300663ca1bb36cb0b55","label":"Order by","name":"sort_column","type":"field_name","order":2,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":80,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":true,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","fd_field_inline":"true"},"ref_qual":"","dependent_on":"table","help":""}
++{"children":[],"type_label":"Choice","id":"0f400a1587003300663ca1bb36cb0b59","label":"Sort Type","name":"sort_type","type":"choice","order":3,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":32,"reference":"","reference_display":"","choiceOption":"3","table":"","columnName":"","defaultValue":"sort_asc","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","fd_display_label":"false","fd_field_inline":"true","fd_hide_inline_script_widget":"true","fd_hide_dotwalk_widget":"true"},"ref_qual":"","dependent_on":"","help":"","choices":[{"label":"a to z","value":"sort_asc","order":0},{"label":"z to a","value":"sort_desc","order":1}],"defaultChoices":[{"label":"a to z","value":"sort_asc","order":1},{"label":"z to a","value":"sort_desc","order":2}]}
++{"children":[],"type_label":"Integer","id":"4f400a1587003300663ca1bb36cb0b61","label":"Max Results","name":"max_results","type":"integer","order":4,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":40,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"1000","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"","help":""}
++```
++
++**Create Record** (`2de05916c31332002841b63b12d3aee1`)
++
++```json
++{"children":[],"type_label":"Table Name","id":"61e05916c31332002841b63b12d3aee4","label":"Table","name":"table_name","type":"table_name","order":0,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":80,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"Template Value","id":"6de09916c31332002841b63b12d3ae1b","label":"Fields","name":"values","type":"template_value","order":1,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":16000000,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"table_name","help":""}
++```
++
++**Update Record** (`f9d01dd2c31332002841b63b12d3aea1`)
++
++```json
++{"children":[],"type_label":"Document ID","id":"4ed01916c31332002841b63b12d3aee1","label":"Record","name":"record","type":"document_id","order":10,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":40,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"table_name","help":""}
++{"children":[],"type_label":"Table Name","id":"b5d01916c31332002841b63b12d3aec9","label":"Table","name":"table_name","type":"table_name","order":50,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":80,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"Template Value","id":"02d01916c31332002841b63b12d3aeee","label":"Fields","name":"values","type":"template_value","order":100,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":16000000,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"table_name","help":""}
++```
++
++**Send Email** (`c1806bf4a70323008299b39f087901cb`)
++
++```json
++{"children":[],"type_label":"Document ID","id":"4d806bf4a70323008299b39f087901cd","label":"Target Record","name":"record","type":"document_id","order":0,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":32,"reference":"incident","reference_display":"Incident","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","clear_dependent_on":"true"},"ref_qual":"","dependent_on":"table_name","help":""}
++{"children":[],"type_label":"Table Name","id":"19806bf4a70323008299b39f087901d4","label":"Table","name":"table_name","type":"table_name","order":1,"extended":false,"mandatory":false,"readOnly":true,"hint":"","maxsize":80,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"is_scriptable":"false","element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"True/False","id":"066bb6b57303230082999cfd7bf6a7c3","label":"Include Watermark","name":"watermark_email","type":"boolean","order":2,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":40,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"true","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"String","id":"59806bf4a70323008299b39f087901da","label":"To","name":"ah_to","type":"string","order":3,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":8000,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","delimiter":"true"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"String","id":"d9806bf4a70323008299b39f087901e0","label":"CC","name":"ah_cc","type":"string","order":4,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":8000,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","delimiter":"true"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"String","id":"1d806bf4a70323008299b39f087901e6","label":"BCC","name":"ah_bcc","type":"string","order":5,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":8000,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","delimiter":"true"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"String","id":"5d806bf4a70323008299b39f087901ec","label":"Subject","name":"ah_subject","type":"string","order":6,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":8000,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"HTML","id":"ad806bf4a70323008299b39f087901f2","label":"Body","name":"ah_body","type":"html","order":7,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":65536,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","pwd2droppable":"true"},"ref_qual":"","dependent_on":"","help":""}
++```
++
++**Fire Event** (`80a30edeff30311077a95dac793bf19b`)
++
++```json
++{"children":[],"type_label":"Reference","id":"8ca30edeff30311077a95dac793bf19e","label":"Event","name":"event_name","type":"reference","order":1,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":32,"reference":"sysevent_register","reference_display":"Event Registration","choiceOption":"","table":"sysevent_register","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","uiType":"reference","uiTypeLabel":"Reference","uiUniqueId":"ee03ed7f-7a44-445b-bb43-c0599a022f12"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"Document ID","id":"c0a30edeff30311077a95dac793bf1a4","label":"Record","name":"record","type":"document_id","order":2,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":32,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":true,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","uiType":"document_id","uiTypeLabel":"Document ID","uiUniqueId":"f1ca5123-237c-49c8-84e8-8bb42498c2c6"},"ref_qual":"","dependent_on":"table","help":""}
++{"children":[],"type_label":"Table Name","id":"cca30edeff30311077a95dac793bf1a7","label":"Table","name":"table","type":"table_name","order":3,"extended":false,"mandatory":false,"readOnly":true,"hint":"","maxsize":80,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","uiType":"table_name","uiTypeLabel":"Table Name","uiUniqueId":"9244f688-b2ad-4864-bb08-71402ede2353"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"String","id":"d8a30edeff30311077a95dac793bf1ab","label":"Parameter 1","name":"parm1","type":"string","order":4,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":8000,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","uiType":"string","uiTypeLabel":"String","uiUniqueId":"6509002f-d68e-41f2-a198-223b1d6c4269"},"ref_qual":"","dependent_on":"","help":""}
++{"children":[],"type_label":"String","id":"d4a30edeff30311077a95dac793bf1af","label":"Parameter 2","name":"parm2","type":"string","order":5,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":8000,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper","uiType":"string","uiTypeLabel":"String","uiUniqueId":"f4643c77-40ed-4984-b7e5-35df74d7c681"},"ref_qual":"","dependent_on":"","help":""}
++```
++
++## APPENDIX B. Complete Trigger Blobs
++
++**Record Created** (`798916a0c31322002841b63b12d3ae7c`) `[IMPORT_TESTED]`. One line per entry, in this order.
++
++```json
++{"triggerInstanceSysId":"{{FLOW_SECTION_TRIGGER_INSTANCE_SYS_ID}}","label":"Table","internalType":"table_name","dependent":"","choiceList":[],"mandatory":true,"order":1,"name":"table","value":"{{TABLE_NAME}}","displayValue":"{{TABLE_LABEL}}","parameter":{"children":[],"id":"cfca92e0c31322002841b63b12d3ae00","label":"Table","name":"table","type":"table_name","order":1,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":80,"reference":"","choiceOption":"","table":"","columnName":"","defaultValue":"","defaultDisplayValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"filter_table_source":"RECORD_WATCHER_RESTRICTED"},"ref_qual":"","dependent_on":""},"displayField":"user","scriptActive":false,"fromTemplate":false}
++{"triggerInstanceSysId":"{{FLOW_SECTION_TRIGGER_INSTANCE_SYS_ID}}","label":"run_on_extended","internalType":"choice","dependent":"","choiceList":[{"fValue":"false","fLabel":"Run only on current table","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_798916a0c31322002841b63b12d3ae7c"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1},{"fValue":"true","fLabel":"Run on current and extended tables","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_798916a0c31322002841b63b12d3ae7c"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1}],"mandatory":false,"order":100,"name":"run_on_extended","value":"true","displayValue":"","parameter":{"children":[],"id":"11ffbef2072200103bf10705afd300c2","label":"run_on_extended","name":"run_on_extended","type":"choice","order":100,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":40,"reference":"","choices":[{"label":"Run only on current table","value":"false","order":1},{"label":"Run on current and extended tables","value":"true","order":2}],"defaultChoices":[{"label":"Run only on current table","value":"false","order":1},{"label":"Run on current and extended tables","value":"true","order":2}],"choiceOption":"3","table":"","columnName":"","defaultValue":"false","defaultDisplayValue":"Run only on current table","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"advanced":"true"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false,"fromTemplate":false}
++{"triggerInstanceSysId":"{{FLOW_SECTION_TRIGGER_INSTANCE_SYS_ID}}","label":"run_when_setting","internalType":"choice","dependent":"","choiceList":[{"fValue":"non_interactive","fLabel":"Only Run for Non-Interactive Session","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_798916a0c31322002841b63b12d3ae7c"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1},{"fValue":"interactive","fLabel":"Only Run for User Interactive Session","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_798916a0c31322002841b63b12d3ae7c"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1},{"fValue":"both","fLabel":"Run for Both Interactive and Non-Interactive Sessions","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_798916a0c31322002841b63b12d3ae7c"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1}],"mandatory":false,"order":100,"name":"run_when_setting","value":"both","displayValue":"","parameter":{"children":[],"id":"1e4859f3c7002300f4eba1425a9763f9","label":"run_when_setting","name":"run_when_setting","type":"choice","order":100,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":40,"reference":"","choices":[{"label":"Only Run for Non-Interactive Session","value":"non_interactive","order":1},{"label":"Only Run for User Interactive Session","value":"interactive","order":2},{"label":"Run for Both Interactive and Non-Interactive Sessions","value":"both","order":3}],"defaultChoices":[{"label":"Only Run for Non-Interactive Session","value":"non_interactive","order":1},{"label":"Only Run for User Interactive Session","value":"interactive","order":2},{"label":"Run for Both Interactive and Non-Interactive Sessions","value":"both","order":3}],"choiceOption":"3","table":"","columnName":"","defaultValue":"both","defaultDisplayValue":"Run for Both Interactive and Non-Interactive Sessions","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"advanced":"true"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false,"fromTemplate":false}
++{"triggerInstanceSysId":"{{FLOW_SECTION_TRIGGER_INSTANCE_SYS_ID}}","label":"run_flow_in","internalType":"choice","dependent":"","choiceList":[{"fValue":"background","fLabel":"Run flow in background (default)","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_798916a0c31322002841b63b12d3ae7c"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1},{"fValue":"foreground","fLabel":"Run flow in foreground","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_798916a0c31322002841b63b12d3ae7c"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1}],"mandatory":false,"order":100,"name":"run_flow_in","value":"any","displayValue":"","parameter":{"children":[],"id":"3f1b9e4e0f103300b599bca2ff767e21","label":"run_flow_in","name":"run_flow_in","type":"choice","order":100,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":40,"reference":"","choices":[{"label":"Run flow in background (default)","value":"background","order":1},{"label":"Run flow in foreground","value":"foreground","order":2}],"defaultChoices":[{"label":"Run flow in background (default)","value":"background","order":1},{"label":"Run flow in foreground","value":"foreground","order":2}],"choiceOption":"3","table":"","columnName":"","defaultValue":"any","defaultDisplayValue":"any","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"advanced":"true"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false,"fromTemplate":false}
++{"triggerInstanceSysId":"{{FLOW_SECTION_TRIGGER_INSTANCE_SYS_ID}}","label":"Condition","internalType":"conditions","dependent":"","choiceList":[],"mandatory":false,"order":100,"name":"condition","value":"{{ENCODED_QUERY}}","parameter":{"children":[],"id":"66aadea0c31322002841b63b12d3aebf","label":"Condition","name":"condition","type":"conditions","order":100,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":4000,"reference":"","choiceOption":"","table":"","columnName":"","defaultValue":"","defaultDisplayValue":"","use_dependent":true,"fShowReferenceFinder":false,"local":false,"attributes":{"wants_to_add_conditions":"true","modelDependent":"trigger_inputs"},"ref_qual":"","dependent_on":"table"},"displayField":"","scriptActive":false,"fromTemplate":false,"displayValue":"{{ENCODED_QUERY}}"}
++{"triggerInstanceSysId":"{{FLOW_SECTION_TRIGGER_INSTANCE_SYS_ID}}","label":"run_when_user_setting","internalType":"choice","dependent":"","choiceList":[{"fValue":"not_one_of","fLabel":"Do not run if triggered by the following users","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_798916a0c31322002841b63b12d3ae7c"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1},{"fValue":"one_of","fLabel":"Only Run if triggered by the following users","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_798916a0c31322002841b63b12d3ae7c"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1},{"fValue":"any","fLabel":"Run for any user","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_798916a0c31322002841b63b12d3ae7c"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1}],"mandatory":false,"order":100,"name":"run_when_user_setting","value":"any","displayValue":"","parameter":{"children":[],"id":"ed7a5537c7002300f4eba1425a976391","label":"run_when_user_setting","name":"run_when_user_setting","type":"choice","order":100,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":40,"reference":"","choices":[{"label":"Do not run if triggered by the following users","value":"not_one_of","order":1},{"label":"Only Run if triggered by the following users","value":"one_of","order":2},{"label":"Run for any user","value":"any","order":3}],"defaultChoices":[{"label":"Do not run if triggered by the following users","value":"not_one_of","order":1},{"label":"Only Run if triggered by the following users","value":"one_of","order":2},{"label":"Run for any user","value":"any","order":3}],"choiceOption":"3","table":"","columnName":"","defaultValue":"any","defaultDisplayValue":"Run for any user","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"advanced":"true"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false,"fromTemplate":false}
++{"triggerInstanceSysId":"{{FLOW_SECTION_TRIGGER_INSTANCE_SYS_ID}}","label":"run_when_user_list","internalType":"glide_list","dependent":"","choiceList":[],"mandatory":false,"order":100,"name":"run_when_user_list","value":"","displayValue":"","parameter":{"children":[],"id":"f89c5177c7002300f4eba1425a976385","label":"run_when_user_list","name":"run_when_user_list","type":"glide_list","order":100,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":4000,"reference":"sys_user","choiceOption":"","table":"","columnName":"","defaultValue":"","defaultDisplayValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"advanced":"true"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false,"fromTemplate":false}
++```
++
++**Daily** (`89142dc0c32222002841b63b12d3ae8a`) `[IMPORT_TESTED]`
++
++```json
++{"label":"Time","internalType":"glide_time","mandatory":true,"fromTemplate":false,"order":100,"valueSysId":"","name":"time","value":"1970-01-01 00:00:00","children":[],"parameter":{"children":[],"id":"3ad4edc0c32222002841b63b12d3aee5","label":"Time","name":"time","type":"glide_time","order":100,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":100,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false}
++```
++
++**Repeat** (`f63f0d94c32222002841b63b12d3aeed`) `[OBSERVED]`
++
++```json
++{"label":"Repeat","internalType":"glide_duration","mandatory":true,"fromTemplate":false,"order":100,"valueSysId":"","name":"repeat","value":"1970-01-01 00:15:00","children":[],"parameter":{"children":[],"id":"1c5f4d94c32222002841b63b12d3aeb3","label":"Repeat","name":"repeat","type":"glide_duration","order":100,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":100,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false}
++```
++
++**Service Catalog** (`c43a1011c36813002841b63b12d3ae15`) `[IMPORT_TESTED]`
++
++```json
++{"triggerInstanceSysId":"{{FLOW_SECTION_TRIGGER_INSTANCE_SYS_ID}}","label":"Run Flow In","internalType":"choice","choiceList":[{"fSequence":-1,"fValue":"","fLabel":"-- None --","fImage":"","fSelected":false,"fUsed":false,"fMissing":false},{"fSequence":-1,"fValue":"background","fLabel":"Run flow in background (default)","fImage":"","fParameters":{"name":"sys_flow_record_trigger","dependent_values":[""]},"fSelected":false,"fUsed":false,"fMissing":false},{"fSequence":-1,"fValue":"foreground","fLabel":"Run flow in foreground","fImage":"","fParameters":{"name":"sys_flow_record_trigger","dependent_values":[""]},"fSelected":false,"fUsed":false,"fMissing":false}],"mandatory":false,"fromTemplate":false,"order":100,"name":"run_flow_in","value":"background","displayValue":"Run flow in background (default)","parameter":{"children":[],"type_label":"Choice","id":"6090c72977203300f5bfcfcc78106159","label":"Run Flow In","name":"run_flow_in","type":"choice","order":100,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":40,"reference":"","reference_display":"","choices":[{"label":"Run flow in background (default)","value":"background","order":1},{"label":"Run flow in foreground","value":"foreground","order":2}],"defaultChoices":[{"label":"Run flow in background (default)","value":"background","order":1},{"label":"Run flow in foreground","value":"foreground","order":2}],"choiceOption":"3","table":"sys_flow_record_trigger","columnName":"run_flow_in","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"advanced":"true"},"ref_qual":"","dependent_on":""},"scriptActive":false}
++```

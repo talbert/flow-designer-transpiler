@@ -1,0 +1,43 @@
+{
+ "generated_utc": "2026-10-14 21:03:03",
+ "flow_name": "Transpiler Test 20261014",
+ "update_set_name": "Transpiler Test 20261014 (prompt 20261014)",
+ "sys_ids": {
+  "FLOW": "94948049ee30ea1044eef0c0111e0c42",
+  "SNAP": "988b30f9fec0652483af817990dd767f",
+  "VERSION": "9e1cacca085c713aaa166571c2647625",
+  "REC_TRIG": "401a82fb9916261fffc2e961a6adc0b2",
+  "PLAN": "8b86df21ad4e91e20b1376c91aa5010c",
+  "TRIG": "2619aacc0bf7cb3fc775cea8e163ae22",
+  "LUR1": "c9c6c8a59dd6c3519ab63795700a385d",
+  "LUR2": "024131a48ae29db7c056ff6c2c311a4f",
+  "IF": "fedc0104fd06fd47384f86b710d14052",
+  "END": "d9802d8500df6518723eca52f0b463c4",
+  "S_TRIG": "27050f4bbd85601b195df06e14b6255d",
+  "S_LUR1": "30ceefa0c06f125b43bcf8835398af88",
+  "S_LUR2": "510624cb21e6a33b090d26526b56dc5c",
+  "S_IF": "673b725065d85fabeace8056cd88bc52",
+  "S_END": "d0c28ef9175026d097ce7790a794f90c",
+  "BLK_IF": "6c741ba61d81fc1c277e4840bea89eff",
+  "BLK_END": "1cb63f2b287cdd69c1f8a4221c7e30a1",
+  "S_BLK_IF": "ff3776f83e6879188fd588433b2fa1d6",
+  "S_BLK_END": "56a5253f8fba67a08cd6e8e04c998f09",
+  "US_A": "b216dfa1f7add8dced4da4e33cfe0a21",
+  "US_B": "ac5a2c76a0e4dd1aefe7ecd96404ca48",
+  "UX_C": "ace7fac711a1d292c1f6fbd20eae3b6b",
+  "UX_D": "1e0e9eae60aaf6b59ac406cd25c6ff31"
+ },
+ "ui_ids": {
+  "LUR1": "e12e783b-b700-4a6b-9bae-d5bb96ccc800",
+  "LUR2": "e163ebe1-aa82-40a0-93b9-c801ca797dc4",
+  "IF": "c25cce4b-303b-4b3d-9312-ab9d7b9e94d5",
+  "END": "7106db4a-18f0-409c-97df-518495698831"
+ },
+ "payload_hash": -1122499234,
+ "sys_recorded_at": "1a13c39ce750000001",
+ "gaps": [
+  "7.4.1 lists 7 inputs but gives ids for only table/condition/run_on_extended and no full entry objects; used the 7 live Zurich entries (run_when_setting 1e4859f3\u2026, run_flow_in 3f1b9e4e\u2026, run_when_user_setting ed7a5537\u2026, run_when_user_list f89c5177\u2026).",
+  "7.3.3 gives ids/types but no parameter objects for Look Up Record; used live Zurich parameter objects, converted to the full shape per the 7.3 note.",
+  "Section 3.1 now says to emit sys_flow_record_trigger but gives only a field list, no XML template; built from the Zurich fixture fields."
+ ]
+}

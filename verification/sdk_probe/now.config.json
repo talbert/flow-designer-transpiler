@@ -1,0 +1,6 @@
+{
+    "scope": "x_906694_tt11",
+    "scopeId": "8f6baeba9ba94590969cbe31fc69e713",
+    "name": "TT11 SDK Probe",
+    "tsconfigPath": "./src/server/tsconfig.json"
+}

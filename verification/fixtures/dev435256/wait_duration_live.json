@@ -1,0 +1,322 @@
+{
+ "outputsToAssign": [],
+ "inputs": [
+  {
+   "name": "duration_type",
+   "value": "percentage_duration",
+   "displayValue": "Percentage duration",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Choice",
+    "id": "4973581473031300b61e66476bf6a785",
+    "label": "Duration Type",
+    "name": "duration_type",
+    "type": "choice",
+    "order": 100,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 40,
+    "reference": "",
+    "reference_display": "",
+    "choices": [
+     {
+      "label": "Explicit duration",
+      "value": "explicit_duration",
+      "order": 0
+     },
+     {
+      "label": "Relative duration",
+      "value": "relative_duration",
+      "order": 1
+     },
+     {
+      "label": "Percentage duration",
+      "value": "percentage_duration",
+      "order": 2
+     }
+    ],
+    "defaultChoices": [
+     {
+      "label": "Explicit duration",
+      "value": "explicit_duration",
+      "order": 1
+     },
+     {
+      "label": "Relative duration",
+      "value": "relative_duration",
+      "order": 2
+     },
+     {
+      "label": "Percentage duration",
+      "value": "percentage_duration",
+      "order": 3
+     }
+    ],
+    "choiceOption": "3",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "explicit_duration",
+    "defaultDisplayValue": "Explicit duration",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  },
+  {
+   "name": "percentage_timer_input_datetime",
+   "value": "{{Knowledge Management_1.knowledge.scheduled_publish_date}}",
+   "displayValue": "",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Date/Time",
+    "id": "bf1d6161b736230034c6ce69ee11a920",
+    "label": "Percentage timer input date time",
+    "name": "percentage_timer_input_datetime",
+    "type": "glide_date_time",
+    "order": 100,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 100,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+     "is_scriptable": "false"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  },
+  {
+   "name": "timer_percentage",
+   "value": "100",
+   "displayValue": "100",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Integer",
+    "id": "8033309c5376230034c6ddeeff7b12e1",
+    "label": "Percentage",
+    "name": "timer_percentage",
+    "type": "integer",
+    "order": 100,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 100,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+     "is_scriptable": "false"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  },
+  {
+   "name": "timer_duration",
+   "value": "",
+   "displayValue": "",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Duration",
+    "id": "ef145c1473031300b61e66476bf6a7be",
+    "label": "Duration",
+    "name": "timer_duration",
+    "type": "glide_duration",
+    "order": 200,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 40,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+     "is_scriptable": "false"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  },
+  {
+   "name": "timer_relative_duration_operator",
+   "value": "after",
+   "displayValue": "after",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Choice",
+    "id": "dca4105473031300b61e66476bf6a726",
+    "label": "Timer relative duration operator",
+    "name": "timer_relative_duration_operator",
+    "type": "choice",
+    "order": 300,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 40,
+    "reference": "",
+    "reference_display": "",
+    "choices": [
+     {
+      "label": "after",
+      "value": "after",
+      "order": 0
+     },
+     {
+      "label": "before",
+      "value": "before",
+      "order": 1
+     }
+    ],
+    "defaultChoices": [
+     {
+      "label": "after",
+      "value": "after",
+      "order": 1
+     },
+     {
+      "label": "before",
+      "value": "before",
+      "order": 2
+     }
+    ],
+    "choiceOption": "3",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "after",
+    "defaultDisplayValue": "after",
+    "use_dependent": true,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+     "dependency_value": "relative_duration",
+     "dependency_type": "mandatory"
+    },
+    "ref_qual": "",
+    "dependent_on": "duration_type"
+   },
+   "scriptActive": false
+  },
+  {
+   "name": "timer_relative_duration_datetime",
+   "value": "",
+   "displayValue": "",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Date/Time",
+    "id": "1f25d05473031300b61e66476bf6a773",
+    "label": "Timer relative date time",
+    "name": "timer_relative_duration_datetime",
+    "type": "glide_date_time",
+    "order": 400,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 40,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": true,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "is_scriptable": "false",
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+     "dependency_value": "relative_duration",
+     "dependency_type": "mandatory"
+    },
+    "ref_qual": "",
+    "dependent_on": "duration_type"
+   },
+   "scriptActive": false
+  },
+  {
+   "name": "timer_schedule",
+   "value": "",
+   "displayValue": "",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Reference",
+    "id": "fb55145473031300b61e66476bf6a762",
+    "label": "During the following schedule",
+    "name": "timer_schedule",
+    "type": "reference",
+    "order": 500,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 32,
+    "reference": "cmn_schedule",
+    "reference_display": "Schedule",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  }
+ ],
+ "variables": [],
+ "decisionTableInputs": [],
+ "dynamicInputs": [],
+ "workflowInputs": []
+}

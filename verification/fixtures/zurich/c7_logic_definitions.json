@@ -1,0 +1,51 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "sys_id": "098e1dc5c3e232002841b63b12d3ae33",
+   "name": "For Each"
+  },
+  {
+   "sys_id": "1f781bf3c32232002841b63b12d3aee6",
+   "name": "Else"
+  },
+  {
+   "sys_id": "4f787d1e0f9b0010ecf0cc52ff767ea0",
+   "name": "Set Flow Variables"
+  },
+  {
+   "sys_id": "5d31e5dedfe50300b61ecae83df26326",
+   "name": "Do the following in Parallel"
+  },
+  {
+   "sys_id": "666e5545c3e232002841b63b12d3ae99",
+   "name": "Else If"
+  },
+  {
+   "sys_id": "a1168de173311300b61e66476bf6a7d0",
+   "name": "Parallel Branch"
+  },
+  {
+   "sys_id": "af4e1945c3e232002841b63b12d3ae3e",
+   "name": "If"
+  },
+  {
+   "sys_id": "d176605ea76103004f27b0d2187901c7",
+   "name": "End"
+  },
+  {
+   "sys_id": "df4e1945c3e232002841b63b12d3ae3e",
+   "name": "Assign Subflow Outputs"
+  },
+  {
+   "sys_id": "eaeb040687210300e6c2c88fc0e3ec89",
+   "name": "Do the following until"
+  },
+  {
+   "sys_id": "fdb2541473031300b61e66476bf6a70e",
+   "name": "Wait for a duration of time"
+  }
+ ]
+}

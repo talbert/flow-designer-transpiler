@@ -1,0 +1,57 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "name": "ServiceNow IntegrationHub Action Step - XML Parser",
+   "active": "inactive",
+   "id": "com.glide.hub.action_step.xmlparser"
+  },
+  {
+   "name": "IntegrationHub Designer Core",
+   "active": "active",
+   "id": "com.glide.ihub.designer.core"
+  },
+  {
+   "name": "One API FlowDesigner/IntegrationHub execution environment",
+   "active": "active",
+   "id": "com.glide.oneapi.fdih"
+  },
+  {
+   "name": "Microsoft SCCM Spoke for IntegrationHub",
+   "active": "inactive",
+   "id": "com.sn.sccm.spoke"
+  },
+  {
+   "name": "Slack Webhooks Spoke for ServiceNow IntegrationHub",
+   "active": "inactive",
+   "id": "com.sn.slack.ah"
+  },
+  {
+   "name": "JSON Service request/response model",
+   "active": "active",
+   "id": "com.snc.application.json_service"
+  },
+  {
+   "name": "sn-integrationhub-designer",
+   "active": "active",
+   "id": "com.sn_integrationhub_designer"
+  },
+  {
+   "name": "ServiceNow IntegrationHub Action Step - JSON Parser",
+   "active": "inactive",
+   "id": "com.glide.hub.action_step.jsonparser"
+  },
+  {
+   "name": "ServiceNow IntegrationHub Action Step - JSON Builder",
+   "active": "inactive",
+   "id": "com.glide.hub.action_step.json_builder"
+  },
+  {
+   "name": "Import Sets REST IntegrationHub Support",
+   "active": "active",
+   "id": "com.glide.system_import_rest_integrationhub"
+  }
+ ]
+}

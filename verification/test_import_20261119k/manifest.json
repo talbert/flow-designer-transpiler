@@ -1,0 +1,39 @@
+{
+ "generated_utc": "2026-11-20 01:44:51",
+ "update_set": "Transpiler Test 20261119k",
+ "retrieved_set_sys_id": "17eb531772bcc6b100e9e61c6baa3068",
+ "app": "8d3077db83e41310d6401665eeaad336",
+ "scope": "x_906694_tt10",
+ "action": {
+  "name": "TT10 Scoped Action",
+  "id": "65c54c4549a93f1f1db21d6b5b330fb6",
+  "snap": "fa21e4731ebf34db927a84ebdc514255",
+  "cid": "5e7b2990-3c60-4ff2-ba1f-c35bc9d7f8cc",
+  "fd": "FDe997ff6f3f3c8a82239b33202377b97c"
+ },
+ "flows": [
+  {
+   "name": "TT10 Scoped Flow",
+   "id": "75a5b8bd1fcd4a81c0d270a521916399",
+   "snap": "a724f9c1f3ca86cb05ddb43796e085bc",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "44156537-94ea-4832-af41-f5f1a7a20243",
+     "id": "f17d283d4dfe4733647eb90bc1918ebf",
+     "sid": "f4c7e713a4641cc752749ffed6d01195",
+     "label": "TT10 Scoped Action"
+    },
+    {
+     "kind": "action",
+     "order": 2,
+     "ui": "9fd075ba-6f57-49c8-be60-8ca717012df0",
+     "id": "4de2360e3dd5c24354c44942828f0c95",
+     "sid": "d87b3631e8b198393b5c28b1e7f11634",
+     "label": "Update Record"
+    }
+   ]
+  }
+ ]
+}

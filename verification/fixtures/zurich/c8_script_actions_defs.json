@@ -1,0 +1,245 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "sys_id": "0079a430e584a210f8770ce9c0d302d2",
+   "access": "public",
+   "name": "Create m2m interaction_related_record",
+   "sys_scope": "e44100732ce74110f8771fb93f5c7ccd",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "015e1d36db0f9700dd14596e5e9619db",
+   "access": "public",
+   "name": "Look up Images - Deprecated",
+   "sys_scope": "dcb0e1e4db075300dd14596e5e9619ca",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "01e98a7453422010df5dddeeff7b1208",
+   "access": "public",
+   "name": "Execute Guidance Action Sub-automation plan",
+   "sys_scope": "fd76ed5a3b570010119c870044efc470",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "036d5773c37111100f24c87af040ddcd",
+   "access": "public",
+   "name": "Edit chat message",
+   "sys_scope": "53b1b0e79761011018b2fa98c253afcc",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "03862454eba63010506f7558b55228c8",
+   "access": "public",
+   "name": "Create and send unfurling card",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "038a5c26539a1110c271ddeeff7b12f5",
+   "access": "public",
+   "name": "Microsoft Process Receipt Result",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "06addc8577633300d4bdaeca781061f1",
+   "access": "public",
+   "name": "Publish Application With ID",
+   "sys_scope": "70fae9692b1c0200c5244f74b4da15d3",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "0788c89c77e330104b68b0fabe5a99a6",
+   "access": "public",
+   "name": "Search Images",
+   "sys_scope": "dcb0e1e4db075300dd14596e5e9619ca",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "08b9a4292fc00300e8f802d3c18c9548",
+   "access": "public",
+   "name": "Add VTB Member",
+   "sys_scope": "9353f56fb33332000abf86d256a8dce9",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "08ccc5a6a32012106cdec213d51e6164",
+   "access": "public",
+   "name": "Edit slack message",
+   "sys_scope": "53b1b0e79761011018b2fa98c253afcc",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "0bcd734859482210f877a8ba01addd19",
+   "access": "public",
+   "name": "Move Article to  Initial State",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "0c6538ec53711010ad77ddeeff7b121f",
+   "access": "public",
+   "name": "Virtual Agent - Default File Upload Inbound Transformer",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "0cd573c2b30003003a8a86d256a8dc2b",
+   "access": "public",
+   "name": "Reorder VTB Lane",
+   "sys_scope": "9353f56fb33332000abf86d256a8dce9",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "0fa8b9dedb0b5700dd14596e5e9619f4",
+   "access": "public",
+   "name": "Create an Exec Instance - Deprecated",
+   "sys_scope": "dcb0e1e4db075300dd14596e5e9619ca",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "10f50efb738873005ae12ea3c4f6a71f",
+   "access": "public",
+   "name": "Email Password",
+   "sys_scope": "61a9cb3ddb162300314873568c9619bf",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "110de03773531010ec95d11ee2f6a7ae",
+   "access": "public",
+   "name": "Update Business Process state",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "11cd30e7731020104cb09434c4f6a729",
+   "access": "public",
+   "name": "Starter Workspace Post Operation",
+   "sys_scope": "a7caf0e3731020104cb09434c4f6a741",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "13335de3734310108ef62d2b04f6a7e9",
+   "access": "public",
+   "name": "Cancel Change Tasks created from Flow",
+   "sys_scope": "7f1c13c0731103005e7d234ffff6a7da",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "1554117b534e51101c1addeeff7b124f",
+   "access": "public",
+   "name": "Get Users",
+   "sys_scope": "53b1b0e79761011018b2fa98c253afcc",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "18176c0d77633300d4bdaeca7810613c",
+   "access": "public",
+   "name": "Rollback Application With ID",
+   "sys_scope": "70fae9692b1c0200c5244f74b4da15d3",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "1a90ddb1ff8012102235ffffffffffc4",
+   "access": "public",
+   "name": "Retrieve Update Set With Update Set Source ID",
+   "sys_scope": "70fae9692b1c0200c5244f74b4da15d3",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "1c81ecb353b333004733ddeeff7b12b8",
+   "access": "public",
+   "name": "Get Instance Scan Results",
+   "sys_scope": "70fae9692b1c0200c5244f74b4da15d3",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "1d04b6b477433300d4bdaeca78106184",
+   "access": "public",
+   "name": "Apply Changes From Source Control With Scope",
+   "sys_scope": "70fae9692b1c0200c5244f74b4da15d3",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "1df72eef93041a107f243edeb189181b",
+   "access": "public",
+   "name": "Multi Record Associator Action",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "21a9aac077233110730e45cfbd5a9975",
+   "access": "package_private",
+   "name": "Check Record Access For User",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "2250604977633300d4bdaeca78106140",
+   "access": "public",
+   "name": "Install Application With Scope",
+   "sys_scope": "70fae9692b1c0200c5244f74b4da15d3",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "225b7f9b533d4110af71ddeeff7b1260",
+   "access": "public",
+   "name": "IAR Send SMS Reminder",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "228c420d7743011031e3b3c64b5a990e",
+   "access": "public",
+   "name": "Populate Trigger Table",
+   "sys_scope": "f53f19bac362fa22ca2e93692d32f18f",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "236f2bc3a301211009e9966446fcda08",
+   "access": "public",
+   "name": "Fetch Document Approval Sequence",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "2556742053b11010ad77ddeeff7b1239",
+   "access": "public",
+   "name": "Virtual Agent - Default Input DateTime Inbound Transformer",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "26a8f71cc377a1107db578f9d0013143",
+   "access": "package_private",
+   "name": "Change Management Integration Check",
+   "sys_scope": "bb67ed7253e83010b846ddeeff7b1204",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "26b34ffa43112110ebde5de5ffb8f222",
+   "access": "public",
+   "name": "Request a SharePoint Upload Session",
+   "sys_scope": "53b1b0e79761011018b2fa98c253afcc",
+   "ih_action": "true"
+  },
+  {
+   "sys_id": "2701e140533210105498ddeeff7b1226",
+   "access": "public",
+   "name": "default_contextual_action",
+   "sys_scope": "global",
+   "ih_action": "false"
+  },
+  {
+   "sys_id": "27fce0692fc00300e8f802d3c18c95ea",
+   "access": "public",
+   "name": "Move VTB Card",
+   "sys_scope": "9353f56fb33332000abf86d256a8dce9",
+   "ih_action": "false"
+  }
+ ]
+}

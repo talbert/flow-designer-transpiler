@@ -1,0 +1,68 @@
+{
+ "generated_utc": "2026-11-20 00:46:24",
+ "update_set": "Transpiler Test 20261119g",
+ "retrieved_set_sys_id": "d6c83a881276c8242bb3be4d0cdef6e8",
+ "action": {
+  "name": "TT6 Scratch Action",
+  "id": "227c68b2e33cd5585adbc2e8ee369105",
+  "snap": "04441a9fc74fe368a9408e6aa186cc13",
+  "cid": "192d66a8-62bd-4fae-9dd3-e1ed9d4948b5",
+  "fd": "FD6329ac23fad299d54cd1ad8cb98f0bc5"
+ },
+ "flows": [
+  {
+   "name": "TT6 Subflow",
+   "id": "1466fcb1892b7cbf91d9d4e1ea45a322",
+   "snap": "0e872f16a12831018cbab98bfb874e70",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "9d6a218e-641b-4c44-838f-79612706f733",
+     "id": "d31aefde7f5bea6291b8f0b85e7bcd25",
+     "sid": "390cf30d1b6ebb18293283e777b1f95b",
+     "label": "Look Up Record"
+    },
+    {
+     "kind": "logic",
+     "order": 2,
+     "ui": "cdd652dd-f22a-4b10-9f74-1848109b4772",
+     "id": "7828f07c4da7b241afc845c3c2bb3e88",
+     "sid": "e52c3c8969dc41a6cf71d258d7b8ffcc",
+     "label": "Assign Subflow Outputs"
+    }
+   ]
+  },
+  {
+   "name": "TT6 Runtime No Click",
+   "id": "0d68f4befff4333745e4bb72a16b1194",
+   "snap": "4f65eb8f802e8920c0b48dcfac749c96",
+   "steps": [
+    {
+     "kind": "subflow",
+     "order": 1,
+     "ui": "33f8a1ff-e416-4d36-bbbf-91d6f5de7a39",
+     "id": "624bdb926995fd04ec791b7f06bffa27",
+     "sid": "ca88259b4e9c23b77cfa72bedcfa194a",
+     "label": "TT6 Subflow"
+    },
+    {
+     "kind": "action",
+     "order": 2,
+     "ui": "898c535d-45c7-47ce-84c5-d0ebed269008",
+     "id": "0bf089502587f10e2f8c78a20725f6bb",
+     "sid": "7757af66931058532259f584a2eebccc",
+     "label": "TT6 Scratch Action"
+    },
+    {
+     "kind": "action",
+     "order": 3,
+     "ui": "4c08bbee-f9aa-4f86-a781-cff2c42de8ef",
+     "id": "7bfb1610c36f43704461ae891998aefa",
+     "sid": "229360058b6f72e3c87c259e1a78ff16",
+     "label": "Update Record"
+    }
+   ]
+  }
+ ]
+}

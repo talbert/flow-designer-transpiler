@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<record_update table="sys_hub_action_type_definition">
+  <sys_hub_action_type_definition action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>6808a80282a048d0899a7819b3f38e4b</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_type_definition_6808a80282a048d0899a7819b3f38e4b</sys_update_name>
+    <access>public</access>
+    <active>true</active>
+    <annotation/>
+    <category/>
+    <description>Transpiler comparison test. Reverses the input text with one Script step. Safe to delete.</description>
+    <label_cache>[{"name":"{{action.text}}","label":"action➛Text","type":"action","ref":"","reference_display":"","base_type":"string","parent_table_name":"","column_name":"","choices":null,"attributes":{}},{"name":"{{step[5e58e21c-02d3-41ae-97f3-976afbd88d7e].__step_status__}}","label":"step➛Reverse text➛Step Status","type":"step","ref":"","reference_display":"","base_type":"object","parent_table_name":"","column_name":"","choices":null,"attributes":{}},{"name":"{{step[5e58e21c-02d3-41ae-97f3-976afbd88d7e].reversed}}","label":"step➛Reverse text➛Reversed","type":"step","ref":"","reference_display":"Reversed","base_type":"string","parent_table_name":"","column_name":"reversed","choices":null,"attributes":{}}]</label_cache>
+    <name>TT13 Action</name>
+    <state>draft</state>
+    <sys_policy/>
+    <system_level>false</system_level>
+  </sys_hub_action_type_definition>
+  <sys_hub_step_instance action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>5e58e21c02d341ae97f3976afbd88d7e</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_step_instance_5e58e21c02d341ae97f3976afbd88d7e</sys_update_name>
+    <action>6808a80282a048d0899a7819b3f38e4b</action>
+    <active>true</active>
+    <cid>5e58e21c-02d3-41ae-97f3-976afbd88d7e</cid>
+    <error_handling_type>1</error_handling_type>
+    <label>Reverse text</label>
+    <order>1</order>
+    <step_type>106afb6647032200b4fad7527c9a71e7</step_type>
+  </sys_hub_step_instance>
+  <sys_variable_value action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>96aa4e948dd7429b8a0b0d0710e878c5</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_variable_value_96aa4e948dd7429b8a0b0d0710e878c5</sys_update_name>
+    <document>sys_hub_step_instance</document>
+    <document_key>5e58e21c02d341ae97f3976afbd88d7e</document_key>
+    <order>100</order>
+    <value>instance</value>
+    <variable>74315b04b3201300176b051a16a8dc2b</variable>
+  </sys_variable_value>
+  <sys_variable_value action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>b4364611530a47de96052f39a5cfae0f</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_variable_value_b4364611530a47de96052f39a5cfae0f</sys_update_name>
+    <document>sys_hub_step_instance</document>
+    <document_key>5e58e21c02d341ae97f3976afbd88d7e</document_key>
+    <order>100</order>
+    <value>(function execute(inputs, outputs) {
+    outputs.reversed = String(inputs.text || '').split('').reverse().join('');
+})(inputs, outputs);</value>
+    <variable>71aa7f6647032200b4fad7527c9a719b</variable>
+  </sys_variable_value>
+  <sys_element_mapping action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>e1ea8017c89c49d4ab8f9e97851fef42</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_element_mapping_e1ea8017c89c49d4ab8f9e97851fef42</sys_update_name>
+    <field>text</field>
+    <id>5e58e21c02d341ae97f3976afbd88d7e</id>
+    <table>var__m_sys_hub_step_ext_input_5e58e21c02d341ae97f3976afbd88d7e</table>
+    <value>{{action.text}}</value>
+  </sys_element_mapping>
+  <sys_element_mapping action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>d674fca76d7c4784a6aab3df35b7e416</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_element_mapping_d674fca76d7c4784a6aab3df35b7e416</sys_update_name>
+    <field>reversed</field>
+    <id>6808a80282a048d0899a7819b3f38e4b</id>
+    <table>var__m_sys_hub_action_output_6808a80282a048d0899a7819b3f38e4b</table>
+    <value>{{step[5e58e21c-02d3-41ae-97f3-976afbd88d7e].reversed}}</value>
+  </sys_element_mapping>
+  <sys_hub_step_ext_input action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>c289f710a414403db8ced590063bdd01</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_step_ext_input_c289f710a414403db8ced590063bdd01</sys_update_name>
+    <active>true</active>
+    <attributes>element_mapping_provider=com.glide.flow_design.action.data.FlowDesignVariableMapper,uiType=string,uiTypeLabel=String</attributes>
+    <default_value/>
+    <element>text</element>
+    <internal_type>string</internal_type>
+    <label>Text</label>
+    <model>5e58e21c02d341ae97f3976afbd88d7e</model>
+    <model_id>5e58e21c02d341ae97f3976afbd88d7e</model_id>
+    <model_table>sys_hub_step_instance</model_table>
+    <name>var__m_sys_hub_step_ext_input_5e58e21c02d341ae97f3976afbd88d7e</name>
+  </sys_hub_step_ext_input>
+  <sys_hub_step_ext_output action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>e620bfd3fecb4106958e826d52804ad3</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_step_ext_output_e620bfd3fecb4106958e826d52804ad3</sys_update_name>
+    <active>true</active>
+    <attributes>element_mapping_provider=com.glide.flow_design.action.data.FlowDesignVariableMapper,uiType=string,uiTypeLabel=String</attributes>
+    <element>reversed</element>
+    <internal_type>string</internal_type>
+    <label>Reversed</label>
+    <mandatory/>
+    <model>5e58e21c02d341ae97f3976afbd88d7e</model>
+    <model_id>5e58e21c02d341ae97f3976afbd88d7e</model_id>
+    <model_table>sys_hub_step_instance</model_table>
+    <name>var__m_sys_hub_step_ext_output_5e58e21c02d341ae97f3976afbd88d7e</name>
+  </sys_hub_step_ext_output>
+  <sys_hub_action_input action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>c9a42adb64e34b1c98752eaa6213ac04</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_input_c9a42adb64e34b1c98752eaa6213ac04</sys_update_name>
+    <active>true</active>
+    <attributes/>
+    <default_value/>
+    <element>text</element>
+    <hint/>
+    <internal_type>string</internal_type>
+    <label>Text</label>
+    <mandatory>false</mandatory>
+    <max_length>40</max_length>
+    <model>6808a80282a048d0899a7819b3f38e4b</model>
+    <model_id>6808a80282a048d0899a7819b3f38e4b</model_id>
+    <model_table>sys_hub_action_type_definition</model_table>
+    <name>var__m_sys_hub_action_input_6808a80282a048d0899a7819b3f38e4b</name>
+    <order>1</order>
+  </sys_hub_action_input>
+  <sys_documentation action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>6ea462d3ff7c4a678e8312b2456f57a4</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_documentation_var__m_sys_hub_action_input_6808a80282a048d0899a7819b3f38e4b_text_en</sys_update_name>
+    <element>text</element>
+    <hint/>
+    <label>Text</label>
+    <language>en</language>
+    <name>var__m_sys_hub_action_input_6808a80282a048d0899a7819b3f38e4b</name>
+    <plural>Texts</plural>
+  </sys_documentation>
+  <sys_documentation action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>e08b380aeca24b4687f3024fc203f7c2</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_documentation_var__m_sys_hub_action_output_6808a80282a048d0899a7819b3f38e4b_reversed_en</sys_update_name>
+    <element>reversed</element>
+    <hint/>
+    <label>Reversed</label>
+    <language>en</language>
+    <name>var__m_sys_hub_action_output_6808a80282a048d0899a7819b3f38e4b</name>
+    <plural>Reversed</plural>
+  </sys_documentation>
+  <sys_documentation action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>70273c526ecd4d6ba7a77c8388407b45</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_documentation_var__m_sys_hub_action_output_6808a80282a048d0899a7819b3f38e4b___action_status___en</sys_update_name>
+    <element>__action_status__</element>
+    <hint/>
+    <label>Action Status</label>
+    <language>en</language>
+    <name>var__m_sys_hub_action_output_6808a80282a048d0899a7819b3f38e4b</name>
+    <plural>Action Status</plural>
+  </sys_documentation>
+  <sys_documentation action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>a1fa692511c4405e918d9c0c1849bf7a</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_documentation_var__m_sys_hub_action_output_6808a80282a048d0899a7819b3f38e4b___dont_treat_as_error___en</sys_update_name>
+    <element>__dont_treat_as_error__</element>
+    <hint/>
+    <label>Don't Treat as Error</label>
+    <language>en</language>
+    <name>var__m_sys_hub_action_output_6808a80282a048d0899a7819b3f38e4b</name>
+    <plural>Don't Treat as Errors</plural>
+  </sys_documentation>
+  <sys_hub_action_output action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>bfce6f8d0510410d97188a1adbb5ddfd</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_output_bfce6f8d0510410d97188a1adbb5ddfd</sys_update_name>
+    <active>true</active>
+    <attributes>element_mapping_provider=com.glide.flow_design.action.data.FlowDesignVariableMapper,pwd2droppable=true,uiType=string,uiTypeLabel=String,uiUniqueId=6808a80282a048d0899a7819b3f38e4b-reversed</attributes>
+    <default_value/>
+    <element>reversed</element>
+    <hint/>
+    <internal_type>string</internal_type>
+    <label>Reversed</label>
+    <mandatory>false</mandatory>
+    <max_length>40</max_length>
+    <model>6808a80282a048d0899a7819b3f38e4b</model>
+    <model_id>6808a80282a048d0899a7819b3f38e4b</model_id>
+    <model_table>sys_hub_action_type_definition</model_table>
+    <name>var__m_sys_hub_action_output_6808a80282a048d0899a7819b3f38e4b</name>
+    <order>1</order>
+  </sys_hub_action_output>
+  <sys_hub_action_output action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>3d7350cf5fa84bfc9c47724ec8411d13</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_output_3d7350cf5fa84bfc9c47724ec8411d13</sys_update_name>
+    <active>true</active>
+    <attributes>element_mapping_provider=com.glide.flow_design.action.data.FlowDesignVariableMapper,action_error_output=true,uiType=object,uiTypeLabel=Object,uiUniqueId=6808a80282a048d0899a7819b3f38e4b-action-status,co_type_name=FDACTIONSTATUS</attributes>
+    <element>__action_status__</element>
+    <internal_type>string</internal_type>
+    <label>Action Status</label>
+    <mandatory>false</mandatory>
+    <max_length>65000</max_length>
+    <model>6808a80282a048d0899a7819b3f38e4b</model>
+    <model_id>6808a80282a048d0899a7819b3f38e4b</model_id>
+    <model_table>sys_hub_action_type_definition</model_table>
+    <name>var__m_sys_hub_action_output_6808a80282a048d0899a7819b3f38e4b</name>
+    <order>1</order>
+  </sys_hub_action_output>
+  <sys_hub_action_output action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>372e541f82f44b08a6f0fb16a9c29ca3</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_output_372e541f82f44b08a6f0fb16a9c29ca3</sys_update_name>
+    <active>true</active>
+    <attributes>element_mapping_provider=com.glide.flow_design.action.data.FlowDesignVariableMapper,action_error_output=true,uiType=boolean,uiTypeLabel=True/False,uiUniqueId=6808a80282a048d0899a7819b3f38e4b-action-error,visible_in_ui=false</attributes>
+    <default_value>true</default_value>
+    <element>__dont_treat_as_error__</element>
+    <internal_type>boolean</internal_type>
+    <label>Don't Treat as Error</label>
+    <mandatory>false</mandatory>
+    <max_length>40</max_length>
+    <model>6808a80282a048d0899a7819b3f38e4b</model>
+    <model_id>6808a80282a048d0899a7819b3f38e4b</model_id>
+    <model_table>sys_hub_action_type_definition</model_table>
+    <name>var__m_sys_hub_action_output_6808a80282a048d0899a7819b3f38e4b</name>
+    <order>2</order>
+  </sys_hub_action_output>
+</record_update>

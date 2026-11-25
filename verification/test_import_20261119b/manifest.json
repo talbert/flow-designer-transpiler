@@ -1,0 +1,149 @@
+{
+ "generated_utc": "2026-11-19 22:23:06",
+ "update_set": "Transpiler Test 20261119b",
+ "retrieved_set_sys_id": "79ebd5861b35dcc40d086afbf56f2fcc",
+ "flows": [
+  {
+   "name": "TT3b Subflow",
+   "id": "549b7014266502105aea10951bc67491",
+   "snap": "837ea6e1b416aa02f304ee12a141579b",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "337368e7-08e5-4c04-a138-48919129ff50",
+     "id": "0858e79fe035410d17580aafdb7d0b9f",
+     "sid": "4c6f45517bf5474f30f41e7d01baee87",
+     "label": "Look Up Record"
+    },
+    {
+     "kind": "logic",
+     "order": 2,
+     "ui": "8224faf9-e067-4ac7-989e-41a7fe46938a",
+     "id": "9310eefdb478ffed3b001a381de12375",
+     "sid": "63c333a56cc9771c0950ecf224714612",
+     "label": "Assign Subflow Outputs"
+    }
+   ]
+  },
+  {
+   "name": "TT3b Actions",
+   "id": "6237d9871e991ef1ebf39ab95c635ec9",
+   "snap": "41de25dfbd86a70bfcaf2a04f90a116b",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "6132a746-82ad-400a-bb5d-2653b028079a",
+     "id": "87fb79812ac3557bb8d791f8e6045e85",
+     "sid": "4b95f140ba89da8e3751b41c113c58d6",
+     "label": "Look Up Records"
+    },
+    {
+     "kind": "logic",
+     "order": 2,
+     "ui": "41176726-4295-42d9-b449-1e5c2aa74d97",
+     "id": "d1e2cc3ca1bd86bc5842fe4c3f7cadd0",
+     "sid": "e9c38c653b6ec0777488debd058ad5d3",
+     "label": "For Each"
+    },
+    {
+     "kind": "action",
+     "order": 3,
+     "ui": "621492b7-7d41-4ca4-afac-f0f4092afc02",
+     "id": "7ac737ad89282dfbe38e416b93c13f56",
+     "sid": "ae495f1a3ec44258db75874282c70439",
+     "label": "Create Record"
+    },
+    {
+     "kind": "logic",
+     "order": 4,
+     "ui": "8b281653-f204-4720-bc42-7384ba83cd35",
+     "id": "dd2942c8990dec6061d249c71b94b540",
+     "sid": "61e10d2767a33c842157fc85b40e4b40",
+     "label": "Set Flow Variables"
+    },
+    {
+     "kind": "logic",
+     "order": 5,
+     "ui": "da01d082-9076-4f56-9c2f-4a628ca0f222",
+     "id": "960502d37c530f5b02c223101ef4d59c",
+     "sid": "ee67f7c0f6d10454ada32a85325830f3",
+     "label": "If"
+    },
+    {
+     "kind": "action",
+     "order": 6,
+     "ui": "1cdd9f79-6b65-4511-9e85-a2c8f48e7d70",
+     "id": "94b64e51424a4cfa86e1041a32eca99d",
+     "sid": "8cf4edb52bae62036c625432993296e6",
+     "label": "Update Record"
+    },
+    {
+     "kind": "logic",
+     "order": 7,
+     "ui": "6087d52e-b2eb-45da-aba1-1b2f9765bd37",
+     "id": "71918f1b888602c8be7d4bd2eb9c8b1d",
+     "sid": "afa1cfb991a058f4fd00060d2e60f9b6",
+     "label": "Else If"
+    },
+    {
+     "kind": "action",
+     "order": 8,
+     "ui": "d580e1d1-5147-4628-85b2-64b09dbdcce3",
+     "id": "00b83bf2ab247e2ddbfaac8af95e4f6c",
+     "sid": "c888e3226c58766578c2a1baa817f95e",
+     "label": "Send Email"
+    },
+    {
+     "kind": "logic",
+     "order": 9,
+     "ui": "76c54fea-17d1-46c5-89fb-a3f491505c91",
+     "id": "79f13673c3c8808b86b2c6aa8de2e061",
+     "sid": "31db85c0d7a043dbce441bdbce59ec29",
+     "label": "Else"
+    },
+    {
+     "kind": "action",
+     "order": 10,
+     "ui": "3b72b22d-a895-4694-a461-962a0eddd85f",
+     "id": "0ea9608e6e9542429abb7c834ea7a37e",
+     "sid": "6ff263f5c7e425762fb0e4fa45fb0c1d",
+     "label": "Fire Event"
+    },
+    {
+     "kind": "subflow",
+     "order": 11,
+     "ui": "ba2ffb55-e5a3-45f7-9a4a-a6efa3a8a0f6",
+     "id": "c68545bc5376abe2f783bd2b06d96364",
+     "sid": "526a5268396a946dcdca1a165da84231",
+     "label": "TT3b Subflow"
+    },
+    {
+     "kind": "logic",
+     "order": 12,
+     "ui": "e9a3fb01-4447-4162-96ec-9703a9d367a5",
+     "id": "531c16f27aad707927928a38cf28df38",
+     "sid": "3c3ad89a043bd7ed4f8711574326782c",
+     "label": "End"
+    },
+    {
+     "kind": "logic",
+     "order": 13,
+     "ui": "8e6e7c66-bb63-4359-a424-1a799982d34f",
+     "id": "e7c027493eace4ebf2e495d4dfae6e0a",
+     "sid": "b82aab8f6a07bf4a6837b12d363b660d",
+     "label": "Do the following until"
+    },
+    {
+     "kind": "action",
+     "order": 14,
+     "ui": "9de3c054-c6ca-42d1-b1d9-ca2fccdd646b",
+     "id": "e19ed1fe6e8fe89dff62931637855ebf",
+     "sid": "a67817103991392e68fa2dfdbc1e1c67",
+     "label": "Look Up Record"
+    }
+   ]
+  }
+ ]
+}

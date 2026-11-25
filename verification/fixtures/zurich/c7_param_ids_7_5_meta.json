@@ -1,0 +1,32 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "sys_id": "19df9109c32632002841b63b12d3aed6",
+   "sys_name": "Items",
+   "sys_class_name": "sys_hub_flow_logic_input"
+  },
+  {
+   "sys_id": "9a5f5105c32632002841b63b12d3ae46",
+   "sys_name": "var__m_sys_hub_flow_logic_input_af4e1945c3e232002841b63b12d3ae3e",
+   "sys_class_name": "sys_hub_flow_logic_input"
+  },
+  {
+   "sys_id": "bda2cb0473031300612c273ffff6a750",
+   "sys_name": "var__m_sys_hub_flow_logic_input_eaeb040687210300e6c2c88fc0e3ec89",
+   "sys_class_name": "sys_hub_flow_logic_input"
+  },
+  {
+   "sys_id": "f0af19c1c32632002841b63b12d3aea2",
+   "sys_name": "Condition",
+   "sys_class_name": "sys_hub_flow_logic_input"
+  },
+  {
+   "sys_id": "f0af19c1c32632002841b63b12d3aea3",
+   "sys_name": "Condition",
+   "sys_class_name": "sys_hub_flow_logic_input"
+  }
+ ]
+}

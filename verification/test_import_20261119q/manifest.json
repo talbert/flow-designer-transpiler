@@ -1,0 +1,36 @@
+{
+ "generated_utc": "2026-11-20 04:58:06",
+ "update_set": "Transpiler Test 20261119q",
+ "retrieved_set_sys_id": "1524e44cb247eff8703d2a3691b7793f",
+ "action": {
+  "name": "TT18 JSON Parser Action",
+  "id": "1bda5984580923cf7ec1d779658a163b",
+  "step": "a3b5bf7152452e0f3897b1da02244569",
+  "cid": "a3b5bf71-5245-2e0f-3897-b1da02244569",
+  "fd": "FDd981661d43140c9f550fbfea834b396c"
+ },
+ "flows": [
+  {
+   "name": "TT18 Compact JSON Parser",
+   "id": "5b9a727d3ad1d5f848851cb02a65a904",
+   "snap": "",
+   "steps": []
+  }
+ ],
+ "sample": {
+  "ticket": {
+   "id": "T-18",
+   "site": {
+    "city": "Denver",
+    "zip": "80202"
+   }
+  },
+  "owner": "Koa",
+  "count": 3,
+  "urgent": true,
+  "flags": [
+   "red",
+   "blue"
+  ]
+ }
+}

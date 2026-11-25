@@ -1,0 +1,12 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "sys_id": "eaa643fcf3ab2610c7c18f6066968cd7",
+   "name": "Application Template - Scoped App IDE",
+   "version_record": "bab49814ff303210101affffffffff88"
+  }
+ ]
+}

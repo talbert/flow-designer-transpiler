@@ -1,0 +1,85 @@
+{
+ "sys_id": "02d83afc53482210da37ddeeff7b1266",
+ "decoded": [
+  {
+   "id": "61e05916c31332002841b63b12d3aee4",
+   "name": "table_name",
+   "value": "sc_task",
+   "displayValue": "Catalog Task",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "id": "61e05916c31332002841b63b12d3aee4",
+    "label": "Table",
+    "name": "table_name",
+    "type": "table_name",
+    "typeLabel": "Table Name",
+    "order": 0,
+    "extended": false,
+    "mandatory": true,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 80,
+    "reference": "",
+    "reference_display": "",
+    "fDataStructure": "",
+    "choices": [],
+    "defaultChoices": [],
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "sysClassName": "",
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  },
+  {
+   "id": "6de09916c31332002841b63b12d3ae1b",
+   "name": "values",
+   "value": "request_item={{Service Catalog_1.request_item.sys_id}}^assignment_group={\"display\":\"Field Services\",\"value\":\"74ad1ff3c611227d01d25feac2af603f\",\"sys_id\":\"74ad1ff3c611227d01d25feac2af603f\"}^description=Receive item^short_description=Awaiting delivery ",
+   "displayValue": "request_item={{Service Catalog_1.request_item.sys_id}}^assignment_group={\"display\":\"Field Services\",\"value\":\"74ad1ff3c611227d01d25feac2af603f\",\"sys_id\":\"74ad1ff3c611227d01d25feac2af603f\"}^description=Receive item^short_description=Awaiting delivery ",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "id": "6de09916c31332002841b63b12d3ae1b",
+    "label": "Fields",
+    "name": "values",
+    "type": "template_value",
+    "typeLabel": "Template Value",
+    "order": 1,
+    "extended": false,
+    "mandatory": true,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 16000000,
+    "reference": "",
+    "reference_display": "",
+    "fDataStructure": "",
+    "choices": [],
+    "defaultChoices": [],
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": true,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "sysClassName": "",
+    "ref_qual": "",
+    "dependent_on": "table_name"
+   },
+   "scriptActive": false
+  }
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "sys_id": "02f0b88cc3c632002841b63b12d3aeff",
+   "internal_name": "create_record",
+   "name": "Create Record"
+  },
+  {
+   "sys_id": "22f0b88cc3c632002841b63b12d3aeff",
+   "internal_name": "get_catalog_variables",
+   "name": "Get Catalog Variables"
+  },
+  {
+   "sys_id": "baf174c8c3c232002841b63b12d3aee4",
+   "internal_name": "update_record",
+   "name": "Update Record"
+  },
+  {
+   "sys_id": "f597c41073081300612c273ffff6a767",
+   "internal_name": "create_catalog_task",
+   "name": "Create Catalog Task"
+  }
+ ]
+}

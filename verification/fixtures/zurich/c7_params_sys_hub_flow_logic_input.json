@@ -1,0 +1,37 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "sys_id": "19df9109c32632002841b63b12d3aed6",
+   "model": "098e1dc5c3e232002841b63b12d3ae33",
+   "internal_type": "records",
+   "element": "items"
+  },
+  {
+   "sys_id": "9a5f5105c32632002841b63b12d3ae46",
+   "model": "af4e1945c3e232002841b63b12d3ae3e",
+   "internal_type": "string",
+   "element": "condition"
+  },
+  {
+   "sys_id": "bda2cb0473031300612c273ffff6a750",
+   "model": "eaeb040687210300e6c2c88fc0e3ec89",
+   "internal_type": "string",
+   "element": "condition_name"
+  },
+  {
+   "sys_id": "f0af19c1c32632002841b63b12d3aea2",
+   "model": "666e5545c3e232002841b63b12d3ae99",
+   "internal_type": "string",
+   "element": "condition_name"
+  },
+  {
+   "sys_id": "f0af19c1c32632002841b63b12d3aea3",
+   "model": "af4e1945c3e232002841b63b12d3ae3e",
+   "internal_type": "string",
+   "element": "condition_name"
+  }
+ ]
+}

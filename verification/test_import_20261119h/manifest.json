@@ -1,0 +1,156 @@
+{
+ "generated_utc": "2026-11-20 01:33:37",
+ "update_set": "Transpiler Test 20261119h",
+ "retrieved_set_sys_id": "cdff95b40b28bb2a99c1303a68cc2d1f",
+ "schedule_pacific": "Thursday 2026-11-19 17:45",
+ "flows": [
+  {
+   "name": "TT7 Parallel Wait Try",
+   "id": "4d159652da3a1d6c5543757d26428973",
+   "snap": "389a594bad32425171acbdf6cd1d6141",
+   "steps": [
+    {
+     "kind": "logic",
+     "order": 1,
+     "ui": "6a6d5344-b8f6-4d57-9206-1dad85c9e094",
+     "id": "6c4d6697b307189ee2ff304c129f4819",
+     "sid": "f12def2faef8d15942edb78ad2abb95c",
+     "label": "Do the following in Parallel"
+    },
+    {
+     "kind": "logic",
+     "order": 2,
+     "ui": "c60a1f32-955d-435f-a0a2-0d610f775d27",
+     "id": "ff2f380a4c36c834e7bc49926dac45cb",
+     "sid": "1c04a2e9032f88c46939e0680df8c432",
+     "label": "Parallel Branch"
+    },
+    {
+     "kind": "action",
+     "order": "2\u279b3",
+     "ui": "87310d2e-49e0-47d2-b2fd-bddb49901534",
+     "id": "d7c399c901ce034c117f8f8ea58c6519",
+     "sid": "33144a0473f8943a3e390495f0e03188",
+     "label": "Create Record"
+    },
+    {
+     "kind": "logic",
+     "order": 4,
+     "ui": "539db1d5-37d5-4428-863a-6c94bc669e6a",
+     "id": "158ec9ad6c752bb03429edb887af8143",
+     "sid": "ace0fa46146e7e583daaedc187067a3b",
+     "label": "Parallel Branch"
+    },
+    {
+     "kind": "action",
+     "order": "4\u279b5",
+     "ui": "a10bf06f-5e9f-489a-9524-2c80eeae748b",
+     "id": "cb7e5934abdb8b37f1bdbe9b34b13ec7",
+     "sid": "c36f14a7c7acba8ea6ad5ca507a1b38f",
+     "label": "Create Record"
+    },
+    {
+     "kind": "logic",
+     "order": 6,
+     "ui": "01efea97-0e62-4106-9288-9923ac0a3ad8",
+     "id": "df4ab209fb460a0a689872452037c648",
+     "sid": "aed376fa73c7010d73ec6481a3cf3080",
+     "label": "Wait for a duration of time"
+    },
+    {
+     "kind": "logic",
+     "order": 7,
+     "ui": "7318e706-d6b7-40da-b580-053dd6b01464",
+     "id": "88f8fd3ebe226b6ca03742bf348bc6b2",
+     "sid": "1c872b352d60a06bd3f8278133af8b3a",
+     "label": "Try"
+    },
+    {
+     "kind": "action",
+     "order": 8,
+     "ui": "bc98b6af-bfc4-4a29-aa80-b785bbfed774",
+     "id": "7b6cf68868a0400c9691db625c310c92",
+     "sid": "4da52e481933c11cf59391d042beb6e6",
+     "label": "Look Up Record"
+    },
+    {
+     "kind": "action",
+     "order": 9,
+     "ui": "e2b5c3fa-c8a1-4870-98e3-c810d0ffbd9a",
+     "id": "11c50919bd8fdc2a15aea4fca5b7b720",
+     "sid": "99b72613f8ae75218706677a8fe35228",
+     "label": "Update Record"
+    },
+    {
+     "kind": "logic",
+     "order": 10,
+     "ui": "c793b8c8-6b9f-44fb-8f8c-74382248028d",
+     "id": "8c5de5abf9dfc77457f70443639fe4b9",
+     "sid": "d12b73cdceba70dabc9713826dd292e3",
+     "label": "Catch"
+    },
+    {
+     "kind": "action",
+     "order": 11,
+     "ui": "d4d98b0b-bb1d-4b2a-bb96-12a88acdc4f1",
+     "id": "c66bfa70d0001b20bdf2043010ec57f0",
+     "sid": "c53fc2ef9a3551d836da4c105ba87cfa",
+     "label": "Update Record"
+    },
+    {
+     "kind": "action",
+     "order": 12,
+     "ui": "d97ae526-1e15-4891-a74a-11dd3f69125e",
+     "id": "eead13e212e5ff32c3f22a943a53d741",
+     "sid": "d62f1b5f27b906859bca9816fd604990",
+     "label": "Update Record"
+    }
+   ]
+  },
+  {
+   "name": "TT7 Daily tonight",
+   "id": "0c2aa3a4ad22909d704722a674f34872",
+   "snap": "08aa31ffdde276e7e887e0b44249a012",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "acb0be62-e42f-46e6-8181-9f206a421958",
+     "id": "2b9381c3d29646c1391f3412ea7b5948",
+     "sid": "d7d61b4e4f0c581e7af2a6305c30f280",
+     "label": "Look Up Record"
+    }
+   ]
+  },
+  {
+   "name": "TT7 Weekly tonight",
+   "id": "9225f3e2cc65d69ebebb8a246b69adb7",
+   "snap": "ca8c788476656ae62eb35a827d818c72",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "37422916-ef33-463b-83ac-cbef69abe385",
+     "id": "5f7ddcc71f5667f9aae722e310ee3fb9",
+     "sid": "f222f82c7ded2cb64d4d7fc5895ed41b",
+     "label": "Look Up Record"
+    }
+   ]
+  },
+  {
+   "name": "TT7 Monthly tonight",
+   "id": "846d61404c720f8044c6ba88928b23ec",
+   "snap": "192acbb3e01f0fc54c2ba261be2feaa2",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "564cc652-1aa7-4f29-adab-e616e552ea35",
+     "id": "ec0a99bb1f372f495a42c68f5398dee4",
+     "sid": "7ed143cb7435458eb910f642faebc276",
+     "label": "Look Up Record"
+    }
+   ]
+  }
+ ]
+}

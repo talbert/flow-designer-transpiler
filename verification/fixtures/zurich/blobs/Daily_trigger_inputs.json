@@ -1,0 +1,45 @@
+{
+ "sys_id": "63b5f1acff3c32104aebffffffffff1f",
+ "decoded": [
+  {
+   "label": "Time",
+   "internalType": "glide_time",
+   "mandatory": true,
+   "fromTemplate": false,
+   "order": 100,
+   "valueSysId": "",
+   "name": "time",
+   "value": "1970-01-01 00:00:00",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "id": "3ad4edc0c32222002841b63b12d3aee5",
+    "label": "Time",
+    "name": "time",
+    "type": "glide_time",
+    "order": 100,
+    "extended": false,
+    "mandatory": true,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 100,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "displayField": "",
+   "scriptActive": false
+  }
+ ]
+}

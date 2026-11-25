@@ -1,0 +1,295 @@
+--- ../flow_designer_prompt20261119.md	2026-11-19 15:42:05
++++ ../flow_designer_prompt20261119b.md	2026-11-19 18:00:15
+@@ -8,6 +8,8 @@
+ 
+ **Canonical alternative:** `[DOCUMENTED]` The ServiceNow Fluent SDK (`@servicenow/sdk` 4.8.1+) has a Flow, Subflow and Action API (`now-sdk explain flow-api`, `subflow-api`, `custom-action-api`, `trigger-api`) that compiles flows into these same `sys_hub_*` records. For new flows inside a Fluent app, prefer the SDK. Use this prompt when the deliverable must be update-set XML.
+ 
++`[SDK_SOURCE]` The SDK's flow plugin agrees with this prompt on the points that matter: `sys_hub_flow.version` `2`; only the `_v2` instance tables; base64-gzip blobs; trigger pills as `{{<Trigger name>_1.…}}`; `{{flow_variable.x}}`, `{{subflow.x}}`, `{{action.x}}`, `{{step[<cid>].x}}`; `label_cache` entries with `usedInstances`; and it does not write record, timer or catalog trigger records or plans. It differs in one way that does **not** carry over to update sets: it writes short blob entries and draft records, then calls a server endpoint (`api/now/wfa_fluent/activate_flows`) to publish them. That endpoint also publishes and activates flows, subflows and actions imported from an update set (Section 13), but it was only tested here on payloads with full blob entries, so the full entries in Section 7.0 stay mandatory.
++
+ **Evidence tags:** The following tags mark the provenance of technical claims throughout this prompt. When debugging import failures, check `[OBSERVED]` and `[REVERSE_ENGINEERED]` claims first -- these are most likely to diverge on a different release or instance configuration.
+ 
+ - `[DOCUMENTED]` -- ServiceNow documentation states this.
+@@ -15,23 +17,27 @@
+ - `[PLATFORM_EXPORT]` -- Matches a flow unload that the platform itself wrote (read from `sys_update_version` on Brazil Patch 1). This is the strongest evidence in this prompt: when it disagrees with any other claim, follow it.
+ - `[REVERSE_ENGINEERED]` -- Inferred from exported artifacts, decoded blobs, or structural analysis.
+ - `[IMPORT_TESTED]` -- XML generated from this rule was imported, opened in Workflow Studio and activated on Brazil Patch 1 (2026-11-19), and the platform's re-export was compared with what was sent.
++- `[RUNTIME_TESTED]` -- A flow generated from this rule was activated and then actually ran on Brazil Patch 1 (2026-11-19): a real record or schedule fired it, the execution finished `COMPLETE`, and the records it wrote were read back and matched (Appendix C).
++- `[SDK_SOURCE]` -- Read in the source of the ServiceNow Fluent SDK's flow plugin (`@servicenow/sdk` 4.14, bundled `@servicenow/fluent-flow` 1.1.9). It shows what ServiceNow's own generator writes; it was not import-tested here.
+ - `[TARGET_VERIFY]` -- Must be checked on the target instance before trusting.
+ 
+ ---
+ 
+ ## 0. IMPORT-TESTED RULES `[IMPORT_TESTED]`
+ 
+-These rules come from seven generated flows, one generated subflow and two generated custom actions that were imported, opened and activated or published on Brazil Patch 1. **Where any later section disagrees with this section, this section wins.**
++These rules come from seventeen generated flows, two generated subflows and three generated custom actions that were imported on Brazil Patch 1. Apart from the deliberate failures listed below, each one opened in Workflow Studio and was activated or published. Seven of the flows, one subflow and one custom action then ran for real (Appendix C). **Where any later section disagrees with this section, this section wins.**
+ 
+ **What was tested and passed:** record-created trigger, daily trigger, Service Catalog trigger; Look Up Record, Look Up Records, Create Record, Update Record, Send Email, Fire Event; If, Else If, Else, End Flow, For Each, Do the following until, Set Flow Variables, Assign Subflow Outputs; a flow variable; a subflow with one input and one output; a flow calling that subflow; data pills from the trigger, from steps, from a For Each item, from a flow variable and from a subflow input; a custom action with four inputs, one Script step and one output (Section 10.0).
+ 
++**What then ran and gave the right result** `[RUNTIME_TESTED]`: record triggers Created, Updated (with a `CHANGESTO` condition) and Created or Updated; schedule triggers Run Once and Repeat (Weekly and Monthly were activated and their timer records checked, but their run times had not come yet); every action and logic type in the list above; Send Notification; Ask For Approval, approved and rejected; End Flow stopping a run; a flow variable built up inside a For Each; a subflow call with an input and an output; and **a custom action written from a spec** (two inputs, a Script step, two outputs), called from a flow, whose outputs were used by a later step. The flows ran on the snapshot that was imported: after activation `master_snapshot` and `latest_snapshot` were still the generated snapshot's sys_id. **The snapshot section is what runs, so its blobs must be as complete and correct as the flow section's.**
++
+ **What failed, and what it proves:**
+ 
+ 1. **`version` must be `2`.** With `1` the flow commits but opens empty.
+ 2. **Blobs need their full structure.** Two flows with reduced blob entries (only `name` + `value`; or `id`, `name`, `value`, `displayValue` and a 4-key `parameter`) committed cleanly but Workflow Studio showed **"Corrupted flow. This flow can't be opened."** Every blob entry must carry the complete entry shape and a complete `parameter` object (Section 7.0).
+ 3. **A `delete_multiple` for a table that does not exist** logs an error at commit. Use only the tables in Section 2.1.
+ 4. **`label_cache` is not rebuilt by activation.** With `[]`, a pill in a condition renders blank. With entries (Section 7.10), it renders with its label.
+-5. **One failed record write silently drops the rest of the payload.** A custom action was imported whose `sys_complex_object` had a `name` already used on the instance. Preview showed no problems and the commit reported success, but the update set log had `Write for … was unsuccessful, subsequent records in the file will skip loading`, and every record after the failed one was missing (two outputs, all labels, the plan and the whole snapshot). **After every commit, read the update set log** (`sys_update_set_log` for the local update set) and treat any `unsuccessful` or `Error` line as a failed import.
++5. **One failed record write silently drops the rest of the payload.** A custom action was imported whose `sys_complex_object` had a `name` already used on the instance. Preview showed no problems and the commit reported success, but the update set log had `Write for … was unsuccessful, subsequent records in the file will skip loading`, and every record after the failed one was missing (two outputs, all labels, the plan and the whole snapshot). **After every commit, read the update set log** (`sys_update_set_log` for the local update set) and treat any `unsuccessful` or `Error` line as a failed import. Correct XML does not remove the need for this check: the failure seen here came from the state of the target (a name that was already taken), not from the encoding. A unique-key clash, a missing plugin table, a mandatory field or a business rule on the target can each reject one record of a well-formed payload, and the commit still reports success. Three later imports of correct payloads had clean logs.
+ 
+ **What to emit and what to leave to the platform:**
+ 
+@@ -42,8 +48,9 @@
+ | Action, subflow and logic instances with full blobs | `sys_flow_trigger_plan`, `sys_flow_subflow_plan` |
+ | Flow inputs, outputs, variables and their `sys_documentation` | `sys_hub_flow_version` |
+ | `label_cache` entries for every pill used | The two automatic flow inputs of a record or catalog trigger (`current`, `table_name`) |
++| A custom action's definition **and** snapshot, published shape (Section 10.0.2) | `sys_hub_action_plan` (the platform compiles it during the commit) |
+ 
+-Activation built every item in the right column from the trigger blob: the record trigger (table, condition, run options), the timer trigger (`timer_type` 11 and the time, converted from the activating user's time zone to UTC), and the catalog trigger.
++Activation built every item in the right column from the trigger blob: the record trigger (table, condition, run options, and `on_insert`/`on_update` from the trigger type), the timer trigger (the time or date-time converted from the activating user's time zone to UTC; `timer_type` 0 Run Once, 1 Repeat, 3 Weekly, 4 Monthly, 11 Daily), and the catalog trigger. The trigger plan's binding follows the blob too: `trigger_strategy` `once` gave `OncePerRecord`, `every` gave `Every`, and schedules gave `RunAlways`.
+ 
+ **Rules for ids inside blobs:**
+ 
+@@ -51,6 +58,8 @@
+ - **Blobs in the snapshot section still point at flow-section ids**: `triggerInstanceSysId`, `flowLogicInstanceSysId`, flow variable ids and subflow output ids are the flow-section values in both sections.
+ - A logic row and its snapshot mirror carry the **same** `block` value.
+ - `sys_hub_sub_flow_instance_v2.subflow` is the sys_id of the called subflow's **master snapshot** (`sys_hub_flow_snapshot`), not of its `sys_hub_flow` record. Each `subflow_inputs` entry `id` and `parameter.id` is the sys_id of that snapshot's `sys_hub_flow_input` row.
++- `[RUNTIME_TESTED]` A step that calls a **custom action** sets `action_type` and `compiled_snapshot` to the action's **master snapshot** sys_id (`sys_hub_action_type_snapshot`) and `action_type_parent` to its `sys_hub_action_type_definition` sys_id. Each `values` entry `id` and `parameter.id` is the sys_id of that snapshot's `sys_hub_action_input` row. (In a sample of 400 live rows, 351 have `compiled_snapshot` equal to `action_type`.)
++- Because of these two rules, an update set that carries a flow together with the subflow or custom action it calls must generate their snapshots with known sys_ids, and should list them first: actions, then subflows, then flows.
+ 
+ **The platform normalizes on activation.** It renumbers `order` to 1, 2, 3…, rewrites `block` ids, fills `hint`/`help`/`defaultDisplayValue` and choice lists in parameters, and reorders `label_cache`. None of these need to be exact in generated XML.
+ 
+@@ -1105,7 +1114,12 @@
+ | `{{subflow.<input_name>}}` | Subflow input reference (used inside subflows) | `{{subflow.record_sys_id}}` |
+ | `{{flow_variable.<variable_name>}}` | Flow variable | `{{flow_variable.counter}}` |
+ | `{{<for_each_ui_id>.item.<field>}}` | Current item in a For Each iteration | `{{ccc12345-abcd-4xxx-yxxx-xxxxxxxxxxxx.item.sys_id}}` |
++| `{{<subflow call ui_id>.<output element>}}` | Output of a called subflow | `{{9de83812-….found}}` |
++| `{{<custom action ui_id>.<output element>}}` | Output of a called custom action (element names are lower case) | `{{5cbe57ea-….result}}` |
++| `{{static.<sys_id>}}` | A fixed record picked in an approval rule | `{{static.<user or group sys_id>}}` |
+ 
++`[RUNTIME_TESTED]` All of the forms in this table resolved to the right values in a real run, including several pills mixed with text in one `template_value` (`work_notes=var [{{flow_variable.note}}] subflow [{{<ui_id>.found}}]`), a journal field as the target, and a reference field set from a record pill's sys_id (`incident={{Created_1.current.sys_id}}`; live flows also use the record pill itself, `deployment_request={{<ui_id>.record}}`).
++
+ `[IMPORT_TESTED]` **Trigger pills start with the trigger instance's `name` plus `_1`**: `Created_1`, `Updated_1`, `Created or Updated_1`, `Service Catalog_1`. In live flows this form appears 245 times and `{{trigger.…}}` 5 times; use the name form. **Flow variables are `{{flow_variable.<name>}}`** (109 live uses); `{{flow_var.…}}` does not occur. A For Each item is `{{<for each ui_id>.item}}` or `{{<for each ui_id>.item.<field>}}`. In every example below, read `{{trigger.current…}}` as `{{<trigger name>_1.current…}}`.
+ 
+ **Pill usage in encoded query conditions:**
+@@ -1440,7 +1454,7 @@
+ | `table_name` | `818dd9f10f11101051218e8ebc767e32` | `table_name` | false | 2 | Table of record |
+ | `notification` | `418dd9f10f11101051218e8ebc767e38` | `reference` | true | 3 | Notification record sys_id (references `sysevent_email_action`) |
+ 
+-**Template:** Same array structure. The `notification` value is typically a static sys_id referencing a notification record on the target instance. Include in `CONFIGURATION_NOTES` that this sys_id must be verified on the target.
++**Template:** `[RUNTIME_TESTED]` Three entries in the standard entry shape, parameter objects derived from the input definitions (Section 7.0): `record` (`{{Created_1.current}}`), `table_name` (value `incident`, displayValue `Incident`), `notification` (value = the `sysevent_email_action` sys_id, displayValue = its name). The action has no outputs. The tested notification had `generation_type` `triggered` (the kind built for Flow Designer) and its table matched `table_name`; choose a notification of that kind. The run produced the email record with the notification's own subject and recipients. Include in `CONFIGURATION_NOTES` that the notification sys_id must be verified on the target.
+ 
+ #### 7.3.7 Fire Event (`80a30edeff30311077a95dac793bf19b`)
+ 
+@@ -1470,8 +1484,22 @@
+ | `approval_conditions` | `45f2e9920b10030085c083eb37673aee` | `approval_rules` | true | 4 | Approval rules (who needs to approve) |
+ | `due_date` | `c5f2e9920b10030085c083eb37673af9` | `schedule_date_time` | false | 5 | Approval due date |
+ 
+-**Template:** Same array structure. The `approval_conditions` field uses a specialized `approval_rules` type -- for complex approval rules, use Strategy A (Section 7.8) and configure in Flow Designer.
++**Template:** `[RUNTIME_TESTED]` Seven entries in the standard entry shape. Tested values: `record` = `{{Created_1.current}}`, `table` = `incident` / `Incident`, `approval_conditions` = the rule string below, every other input empty. The single output is `approval_state` (`{{<ui_id>.approval_state}}`), a choice whose values include `approved` and `rejected`; an If on `{{<ui_id>.approval_state}}=approved` took the right branch in both cases. The flow waits (`WAITING`) until the approval is answered.
+ 
++**Approval rule strings** (`approval_conditions`, value and displayValue are the same string):
++
++| Rule | String |
++|---|---|
++| Anyone in a user list approves or rejects `[RUNTIME_TESTED]` | `ApprovesAnyU[{{static.<user sys_id>}}]OrRejectsAnyU[{{static.<user sys_id>}}]` |
++| Same, short form `[OBSERVED]` | `ApprovesRejectsAnyU[<users>]` |
++| A group `[OBSERVED]` | `ApprovesAnyG[{{static.<group sys_id>}}]OrRejectsAnyG[{{static.<group sys_id>}}]` |
++| Users and groups together `[OBSERVED]` | `ApprovesRejectsAnyU[<users>]G[<groups>]` |
++| Everyone must approve `[OBSERVED]` | `ApprovesAllU[<users>]G[<groups>]OrRejectsAnyU[<users>]G[<groups>]` |
++| A percentage `[OBSERVED]` | `Approves100%U[<users>]G[<groups>]` |
++| Group members, plus manager option `[OBSERVED]` | `ApprovesRejectsAnyG[<group>]\|AnyM` |
++
++Inside the brackets, a fixed record is `{{static.<sys_id>}}` and a dynamic one is any pill (`{{Created_1.current.approver}}`, `{{subflow.approver}}`); separate several with commas. For anything outside these patterns use Strategy A (Section 7.8). `due_date` is empty or a JSON string such as `{"action":"none","date_type":"actual","date":"{}","duration":1,"duration_type":"days","schedule":"","schedule_label":""}` `[OBSERVED]`.
++
+ ### 7.4 Trigger Instance `trigger_inputs` `[OBSERVED]` — JSON Array Format
+ 
+ Trigger input blobs (`sys_hub_trigger_instance_v2.trigger_inputs`) are also **JSON arrays**, but entries have a slightly different shape than action instance entries. Key differences: trigger entries include `label`, `internalType`, `order`, and optionally `choiceList` at the top level, and may include `displayField`, `triggerInstanceSysId`, `fromTemplate`, `dependent`, and `children`. `[OBSERVED]` `valueSysId` is present on scheduled-trigger entries and absent on record-trigger entries; treat it as optional.
+@@ -1538,8 +1566,22 @@
+ - `table`: `1dda12e0c31322002841b63b12d3aea8`
+ - `condition`: `bb9adea0c31322002841b63b12d3ae67`
+ - `run_on_extended`: `6cd14b76072200103bf10705afd30093`
+-- `trigger_strategy`: `c19523d8c31932002841b63b12d3aea1` `[OBSERVED]` (14 of 14 Updated triggers on Brazil Patch 1 carry it; choices `once`, `unique_changes`, `always` = "Only if not currently running", `every`). Record Create triggers do not have it.
++- `trigger_strategy`: `c19523d8c31932002841b63b12d3aea1` `[OBSERVED]` (order 101; 14 of 14 Updated triggers on Brazil Patch 1 carry it; choices `once`, `unique_changes`, `always` = "Only if not currently running", `every`). Record Create triggers do not have it.
++- `run_flow_in`: `4ecd76460f103300b599bca2ff767e0d`
++- `run_when_user_list`: `3f8d5577c7002300f4eba1425a9763e6`
++- `run_when_setting`: `48395df3c7002300f4eba1425a976372`
++- `run_when_user_setting`: `cf9bd937c7002300f4eba1425a976356`
+ 
++`[RUNTIME_TESTED]` A Record Updated trigger built as the Record Created blob in Appendix B, with these eight parameter ids, the update definition's `var__m_` name in every `choiceList`, `extended_operators` added to the condition's attributes, and a `trigger_strategy` entry (below), rendered as "Incident Updated where (… and Urgency changes to 1)" and activated. With `trigger_strategy` `every` and the condition `short_descriptionSTARTSWITH…^urgencyCHANGESTO1` it did not run when the record was created, did not run on an update of another field, and ran once when urgency changed to 1. Trigger pills are `{{Updated_1.current…}}`.
++
++**`trigger_strategy` entry** (same entry shape as the others; `<DEF>` is the trigger definition sys_id, `<ID>` and `<ORDER>` are `c19523d8…`/101 for Updated and `2b9def50…`/200 for Created or Updated):
++
++```json
++{"triggerInstanceSysId":"{{FLOW_SECTION_TRIGGER_INSTANCE_SYS_ID}}","label":"Run Trigger","internalType":"choice","dependent":"","choiceList":[{"fValue":"once","fLabel":"Once","fImage":"","fParameters":{"name":"var__m_sys_hub_trigger_input_<DEF>"},"fSelected":false,"fUsed":false,"fMissing":false,"fSequence":-1},{"fValue":"unique_changes","fLabel":"For each unique change", …},{"fValue":"always","fLabel":"Only if not currently running", …},{"fValue":"every","fLabel":"For every update", …}],"mandatory":false,"order":<ORDER>,"name":"trigger_strategy","value":"once","displayValue":"","parameter":{"children":[],"id":"<ID>","label":"Run Trigger","name":"trigger_strategy","type":"choice","order":<ORDER>,"extended":false,"mandatory":false,"readOnly":false,"hint":"Run Trigger every time the condition matches, or only the first time.","maxsize":40,"reference":"","choices":[{"label":"Once","value":"once","order":1},{"label":"For each unique change","value":"unique_changes","order":2},{"label":"Only if not currently running","value":"always","order":3},{"label":"For every update","value":"every","order":4}],"defaultChoices":[ …same four… ],"choiceOption":"3","table":"","columnName":"","defaultValue":"once","defaultDisplayValue":"Once","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false,"fromTemplate":false}
++```
++
++Write all four `choiceList` items in full; they are shortened here only for space.
++
+ Note: the Update trigger's `condition` parameter includes additional attributes for change-tracking operators: `"extended_operators": "VALCHANGES;CHANGESFROM;CHANGESTO"`. This enables conditions like `stateCHANGESTO7` or `priorityVALCHANGES`.
+ 
+ The `choiceList` `fParameters.name` references use `var__m_sys_hub_trigger_input_bb695e60c31322002841b63b12d3aea5` (the update trigger definition sys_id).
+@@ -1561,6 +1603,8 @@
+ 
+ The `choiceList` `fParameters.name` references use `var__m_sys_hub_trigger_input_a45d9180c32222002841b63b12d3aea7`.
+ 
++`[RUNTIME_TESTED]` Built the same way as Record Updated, with `trigger_strategy` `once`: it ran once when the record was created and did not run again when the record was updated. Trigger pills are `{{Created or Updated_1.current…}}` (the space is part of the name).
++
+ `[IMPORT_TESTED]` **Record trigger entries:** each entry also carries `"fromTemplate": false`, `"triggerInstanceSysId": "<flow-section trigger instance sys_id>"` (the same value in the snapshot copy), and each `choiceList` item carries `"fSequence": -1`. Appendix B has the complete seven-entry Record Created blob that passed the import test; Record Updated and Record Created or Updated use the same entry shape with the parameter ids in 7.4.2 and 7.4.3 plus the `trigger_strategy` entry.
+ 
+ #### 7.4.4 Scheduled/Timer Triggers
+@@ -1568,8 +1612,12 @@
+ `[IMPORT_TESTED]` Emit only the trigger instance and its one-entry `trigger_inputs` blob. Activation builds `sys_flow_timer_trigger` from it (Section 3.13).
+ 
+ - **Daily** (definition `89142dc0c32222002841b63b12d3ae8a`, `trigger_type` `daily`, name `Daily`): one entry `time`. Tested: a blob with `"value": "1970-01-01 03:15:00"` rendered as "Daily at 03:15:00" and activated. Full entry in Appendix B.
+-- **Repeat** (definition `f63f0d94c32222002841b63b12d3aeed`, `trigger_type` `repeat`, name `Repeat`): one entry `repeat`, value like `1970-01-01 00:15:00` for 15 minutes. `[OBSERVED]` Full entry in Appendix B; not import-tested.
+-- **Weekly, Monthly, Run Once:** no live example exists on a baseline instance. `[TARGET_VERIFY]` Build the entries from the trigger definition's `sys_hub_trigger_input` rows in the Daily entry shape, and say so in `CONFIGURATION_NOTES`.
++- **Repeat** (definition `f63f0d94c32222002841b63b12d3aeed`, `trigger_type` `repeat`, name `Repeat`): one entry `repeat`, value like `1970-01-01 00:15:00` for 15 minutes. `[RUNTIME_TESTED]` With `1970-01-01 00:02:00` it rendered as "Repeat every 0 day(s) 00 hour(s) 02 minute(s) 00 second(s)" and first ran two minutes after activation. Full entry in Appendix B.
++- **Weekly** (definition `cf352104c32222002841b63b12d3ae1f`, `trigger_type` `weekly`, name `Weekly`): two entries, `day_of_week` then `time`. `day_of_week` value is `"1"` (Monday) to `"7"` (Sunday) and **needs `displayValue` set to the day name**; without it the trigger reads "Weekly on 2 at …" instead of "Weekly on Tuesday at …" (the schedule itself is still right). `[IMPORT_TESTED]`
++- **Monthly** (definition `2ca52504c32222002841b63b12d3ae4a`, `trigger_type` `monthly`, name `Monthly`): two entries, `day_of_month` (value `"1"` to `"31"`) then `time`. Rendered as "Monthly on the 15th at 03:25:00". `[IMPORT_TESTED]`
++- **Run Once** (definition `0a76e504c32222002841b63b12d3aeac`, `trigger_type` `run_once`, name `Run Once`): one entry `run_in`, value `YYYY-MM-DD HH:MM:SS`. Rendered as "Run Once at 17:00:00 on 2026-11-19". `[RUNTIME_TESTED]`
++- **Times are in the time zone of the user who activates the flow.** `time` `03:20:00` became `11:20:00` UTC on the timer record, and `run_in` `2026-11-19 17:00:00` became `2026-11-20 01:00:00` UTC, for a Pacific-time user. Say in `CONFIGURATION_NOTES` which time zone the generated values assume.
++- Entries for all three are in Appendix B. They use the Daily entry shape with parameter ids taken from the trigger definition's `sys_hub_trigger_input` rows (query by `model_id`, not `model`).
+ 
+ #### 7.4.5 Service Catalog Trigger (`c43a1011c36813002841b63b12d3ae15`)
+ 
+@@ -2029,7 +2077,7 @@
+ 
+ ## 10. CUSTOM ACTION DEFINITION STRUCTURE
+ 
+-> **Import-tested in one form.** A custom action built in the exact shape of Section 10.0, with every sys_id, the step `cid` and the complex-object name regenerated, was imported on Brazil Patch 1 and opened in Action Designer as Published with its inputs, Script step, pill mappings and outputs intact. The older skeleton in 10.0.1 was not tested. Drop `sys_customer_update` and `sys_replace_on_upgrade` as in Section 3.1.
++> **Import-tested and runtime-tested.** Two custom actions passed: a re-identified copy of the platform's export (Section 10.0), and **an action written from a spec** with its own inputs, script and outputs (Section 10.0.2). The second opened in Action Designer as Published with every mapping in place, was called from a flow, and returned the right outputs in three runs. The older skeleton in 10.0.1 was not tested. Drop `sys_customer_update` and `sys_replace_on_upgrade` as in Section 3.1.
+ 
+ ### 10.0 Platform Export of a Published Custom Action `[PLATFORM_EXPORT]`
+ 
+@@ -2094,8 +2142,7 @@
+ INSERT_OR_UPDATE sys_choice
+ INSERT_OR_UPDATE sys_documentation   (x3)
+ DELETE sys_choice  query: name=var__m_sys_hub_action_output_{{ACTION}}
+-DELETE sys_hub_action_plan  query: action_id={{ACTION}}^sys_idNOT IN{{ID}}
+-INSERT_OR_UPDATE sys_hub_action_plan
++DELETE sys_hub_action_plan  query: action_id={{ACTION}}        (the export adds ^sys_idNOT IN{{ID}} and an INSERT of the plan; do not copy that, see 10.0.2)
+ ```
+ 
+ **`sys_hub_action_type_definition` fields:** access, acls, action_status, action_template, active, annotation, attributes, authored_on_release_version, callable_by_client_api, category, copied_from, copied_from_name, description, flow_priority, ih_action, internal_name, label_cache, master_snapshot, master_snapshot_digest, name, natlang, outputs, outputs, pre_compiled, state, sys_class_name, sys_created_by, sys_created_on, sys_domain, sys_domain_path, sys_id, sys_mod_count, sys_name, sys_overrides, sys_package, sys_policy, sys_scope, sys_update_name, sys_updated_by, sys_updated_on, system_level, type
+@@ -2136,7 +2183,24 @@
+ **Final UPDATE fields:** sys_id, latest_snapshot, compiler_build
+ 
+ The complete export is kept beside this prompt as `verification/fixtures/dev435256/platform_unload_action_0_current.xml`; the draft-state export (before publish, no snapshot) is `platform_unload_action_3_previous.xml`.
++
++### 10.0.2 Writing a New Action from a Spec `[RUNTIME_TESTED]`
++
++Follow the 10.0 operation order and field lists, and set every content field from the spec. Rules proven by the test:
+ 
++1. **Emit the published shape:** the definition (`state` `published`, `active` `true`, `master_snapshot` = the snapshot's sys_id), the full definition section, the snapshot (`sys_hub_action_type_snapshot`, `master` `true`, `parent_action` = the definition) with the full section repeated under the snapshot's ids, and the final `UPDATE` setting `latest_snapshot`. The snapshot id must be known because flows point at it (Section 0).
++2. **Do not emit `sys_hub_action_plan`.** It is a pointer to compiled chunks that do not travel in an update set. Emit only `DELETE sys_hub_action_plan query: action_id={{ACTION}}`. The platform created the plan by itself during the commit (created by `system`, seven seconds after the import), and the action ran.
++3. **Ids:** every record gets its own sys_id in each section. The step's `cid` (a UUID) is the same in both sections; the step's sys_id is not. Tables named after the step (`var__m_sys_hub_step_ext_input_<STEP>`, `…_ext_output_<STEP>`) use that section's step sys_id. `sys_complex_object` is written once, in the definition section, with a fresh `FD` + 32 hex name.
++4. **Inputs and outputs** (`sys_hub_action_input`, `sys_hub_action_output`, `sys_hub_step_ext_input`, `sys_hub_step_ext_output`): `element` in lower case, `label`, `internal_type`, `max_length` (string 8000, integer 40, reference 32, boolean 40), `mandatory`, `order` from 0, `model` and `model_id` = the owner (action, snapshot or step), `model_table` = `sys_hub_action_type_definition`, `sys_hub_action_type_snapshot` or `sys_hub_step_instance`, `name` = `var__m_<table>_<owner sys_id>`, and `attributes` = `element_mapping_provider=com.glide.flow_design.action.data.FlowDesignVariableMapper,uiType=<type>,uiTypeLabel=<Type label>,uiUniqueId=<new uuid>`.
++5. **The two system outputs are always present:** `__dont_treat_as_error__` (boolean, `read_only` true, `default_value` `true`, attributes `action_error_output=true,element_mapping_provider=…,uiType=boolean,visible_in_ui=false`) and `__action_status__` (string, `max_length` 65000, `read_only` true, attributes `action_error_output=true,co_type_name=<FD name>,element_mapping_provider=…,uiType=object`). Each has a `sys_variable_value` row on the action (`0`, and the status JSON holding the complex-object schema) and an empty `sys_element_mapping` row.
++6. **Script step:** `sys_hub_step_instance` (`step_type` Script `106afb6647032200b4fad7527c9a71e7`, `order` 1, `error_handling_type` 1, `label`, `cid`); two `sys_variable_value` rows with `document` `sys_hub_step_instance` and `document_key` = the step: variable `71aa7f6647032200b4fad7527c9a719b` (Script, order 600) = the script text, and variable `f5e56d79b3101300176b051a16a8dce4` (MID Application, order 400) = `35aa573fd7802200bdbaee5b5e610375`. The script reads `inputs.<step input element>` and writes `outputs.<step output element>`.
++7. **Mappings** (`sys_element_mapping`, `id` = the owner): step input ← action input is `table` `var__m_sys_hub_step_ext_input_<STEP>`, `field` = the step input, `value` `{{action.<action input element>}}`; action output ← step output is `table` `var__m_sys_hub_action_output_<ACTION>`, `field` = the action output, `value` `{{step[<cid>].<step output element>}}`. Also two empty rows on the step for `application` and `script` with `table` `var__m_sys_flow_step_definition_input_106afb6647032200b4fad7527c9a71e7`.
++8. **Labels:** one `sys_documentation` row per action input, action output (including the two system ones) and step output.
++9. **`label_cache` on the definition and the snapshot:** one entry per `{{action.x}}` pill used and per `{{step[…].x}}` pill used, in the form `{"name":"{{action.text}}","label":"action➛Text","type":"action","ref":"","reference_display":"","base_type":"string","parent_table_name":"","column_name":"","choices":null,"attributes":{}}` and `{"name":"{{step[<cid>].result}}","label":"step➛Script step➛result","type":"step", …}`.
++10. **Calling it from a flow:** see the id rule in Section 0. Build each `values` entry's `parameter` object from the snapshot's input row by the table in Section 7.0, with `attributes` as an object (`uiType`, `uiTypeLabel`, `element_mapping_provider`, `uiUniqueId`). Outputs are `{{<step ui_id>.<output element>}}`; give each a `label_cache` entry labelled `<N> - <Action name>➛<Output label>`.
++
++The generator used for the test is `verification/tools/actgen.py`; the action it produced is in `verification/test_import_20261119e/`.
++
+ ### 10.0.1 Older Skeleton (superseded where it differs from 10.0)
+ 
+ For converting Script Includes or complex reusable logic into custom Actions:
+@@ -2466,8 +2530,9 @@
+    - Map data pills between steps
+    - Set trigger conditions/filters (if not a record-create or record-update trigger)
+    - Configure field values for custom action inputs
+-5. **Publish the flow** -- this is **critical and mandatory**. Publishing regenerates the runtime snapshot from the authored state, aligned with the target environment's action type versions, spoke versions, and plugin state. The imported snapshot is a minimum viable shell (Section 3.9); the flow is not production-ready until republished.
+-6. **Activate the flow** — mandatory. The flow imports inactive (Section 3.1). Activation creates the record trigger and the trigger plan; Flow Designer writes version records itself (Section 3.12).
++5. **Publish each subflow first** (open it, choose Edit subflow, then Publish). This builds the subflow plan. A generated custom action needs no click: it arrives published and the platform compiles its plan during the commit.
++6. **Activate each flow** — mandatory (open it, choose Edit flow, then Activate). The flow imports inactive (Section 3.1). Activation creates the trigger record and the trigger plan; Flow Designer writes version records itself (Section 3.12). `[RUNTIME_TESTED]` Activation alone was enough for the flows to run, and they ran on the imported snapshot, so review the flow before activating: what is in the XML is what executes.
++   - **Without the click** `[RUNTIME_TESTED]`: `POST /api/now/wfa_fluent/activate_flows?sysparm_transaction_scope=global` with the body `{"flows":[{"sys_id":"<subflow sys_id>","active":"","state":""},{"sys_id":"<flow sys_id>","active":"","state":""}],"actions":[{"sys_id":"<action definition sys_id>","active":"","state":""}]}` replaced steps 5 and 6 on Brazil Patch 1. One call answered `Published successfully` for a generated custom action, a subflow and a record-triggered flow, each with the same `masterSnapshotId` that was imported; the flow then ran on a new record and used the subflow's and the action's outputs, and Workflow Studio was never opened. A scheduled flow activated the same way got its timer record and trigger plan. This is the endpoint the Fluent SDK calls after an install. It is not documented and an instance without it answers 400 "does not represent any resource"; fall back to the click. Schedule times were still read in the calling user's time zone.
+ 7. **Test the flow** using Flow Designer's test mode before enabling in production.
+    - **Important: Record-triggered flows do not fire from Update Set commits.** This is officially documented platform behavior. If you test by committing a *different* update set that creates or modifies records, the flow will **not** trigger on those records. You must create/update a record through normal means (form submission, API, scripted GlideRecord with `setWorkflow(true)`, etc.) to validate trigger behavior.
+ 8. **Diff-validate the imported flow** (recommended for complex flows). After import and republish, export the flow back out as an Update Set XML from the target instance. Diff the exported XML against the generated XML to identify:
+@@ -2479,7 +2544,7 @@
+ 
+ ### Caveats:
+ 
+-- **Scheduled triggers** use `sys_flow_timer_trigger` records (Section 3.13). The timer trigger record itself is fully serializable in XML, and the associated `sys_hub_trigger_instance_v2` uses the schedule-type `trigger_definition` from Section 5.1 (see Section 3.13 and Section 7.4.4). After import, verify the schedule configuration (especially timezone — `time` is stored in UTC) and republish the flow.
++- **Scheduled triggers:** activation builds the `sys_flow_timer_trigger` record from the trigger blob (Sections 3.13 and 7.4.4). The times in the blob are read in the time zone of the user who activates the flow and stored in UTC. After activation, check the schedule shown on the trigger.
+ - **OOB action sys_ids** may differ between instances/releases. If import fails with "Could not find record" errors for action types, look up the correct sys_ids on your target instance by navigating to `sys_hub_action_type_definition.list`.
+ - **Application Repository** is ServiceNow's recommended transport for Flow Designer content in production pipelines, though in practice most shops still use update sets. This transpiler uses the normal update-set XML transport format but synthesizes records instead of letting a source instance capture them -- that is the precise risk. The platform's capture/validation pass is bypassed, which is why republishing and testing on the target are mandatory.
+ - **Cross-scope complex objects** are the most common "silent failure" in Flow Designer migration. If your flow uses custom actions that parse JSON/XML, verify that the `sys_complex_object` records are included and scoped correctly (see Section 11.2). If "Changed Fields" appears empty in the action after import, recreate the complex object manually on the target.
+@@ -2521,7 +2586,7 @@
+ 9. **The `<name>` tag** in the outer `sys_update_xml` must match the pattern `sys_hub_flow_{{FLOW_SYS_ID}}` (or `sys_hub_action_type_definition_{{SYS_ID}}` for actions).
+ 10. **Set `<table>` correctly** in the outer `sys_update_xml` — use `sys_hub_flow` for flows, `sys_hub_action_type_definition` for actions.
+ 11. **Do not emit `sys_customer_update` or `sys_replace_on_upgrade`** on any record (Section 3.1).
+-12. **Do not emit `sys_hub_flow_version`, `sys_flow_record_trigger`, `sys_flow_timer_trigger`, `sys_flow_catalog_trigger` or plan records**, and leave `version_record` empty (Sections 3.1, 3.10, 3.12). The platform builds them on activation or when the flow is opened.
++12. **Do not emit `sys_hub_flow_version`, `sys_flow_record_trigger`, `sys_flow_timer_trigger`, `sys_flow_catalog_trigger` or plan records (including `sys_hub_action_plan`)**, and leave `version_record` empty (Sections 3.1, 3.10, 3.12). The platform builds them on activation or when the flow is opened.
+ 13. **Include `sys_complex_object`** records when custom actions parse JSON/XML — and scope them to the action's scope (Section 10.1, Section 11.2).
+ 14. **Set `parent_ui_id` correctly on all nested steps.** Every action instance, subflow instance, and logic block inside a logic block must have `parent_ui_id` set to the enclosing block's `ui_id`. Top-level items have empty `parent_ui_id`.
+ 15. **Validate your output** — walk through the XML as if you were the import engine, checking each item in this list:
+@@ -2543,6 +2608,9 @@
+ 16. **Generate `label_cache`** with one entry per pill (Section 7.10).
+ 17. **Use the live pill forms:** `{{<trigger name>_1.current…}}` and `{{flow_variable.<name>}}` (Section 7.2.1).
+ 18. **Follow the platform.** When this prompt and a platform-written unload from the target release disagree, the unload wins (Section 14 step 1).
++19. **Point at snapshots.** A subflow call and a custom action call reference the callee's master snapshot, and their blob ids are that snapshot's input ids (Section 0). Emit callees before callers.
++20. **Treat the snapshot section as the program.** The imported snapshot is what runs after activation (Section 0), so never fill it with a reduced copy of the flow section.
++21. **State the time zone** assumed for any schedule time (Section 7.4.4).
+ 
+ ---
+ 
+@@ -2628,7 +2696,7 @@
+ {"label":"Time","internalType":"glide_time","mandatory":true,"fromTemplate":false,"order":100,"valueSysId":"","name":"time","value":"1970-01-01 00:00:00","children":[],"parameter":{"children":[],"id":"3ad4edc0c32222002841b63b12d3aee5","label":"Time","name":"time","type":"glide_time","order":100,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":100,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false}
+ ```
+ 
+-**Repeat** (`f63f0d94c32222002841b63b12d3aeed`) `[OBSERVED]`
++**Repeat** (`f63f0d94c32222002841b63b12d3aeed`) `[RUNTIME_TESTED]`
+ 
+ ```json
+ {"label":"Repeat","internalType":"glide_duration","mandatory":true,"fromTemplate":false,"order":100,"valueSysId":"","name":"repeat","value":"1970-01-01 00:15:00","children":[],"parameter":{"children":[],"id":"1c5f4d94c32222002841b63b12d3aeb3","label":"Repeat","name":"repeat","type":"glide_duration","order":100,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":100,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false}
+@@ -2638,4 +2706,46 @@
+ 
+ ```json
+ {"triggerInstanceSysId":"{{FLOW_SECTION_TRIGGER_INSTANCE_SYS_ID}}","label":"Run Flow In","internalType":"choice","choiceList":[{"fSequence":-1,"fValue":"","fLabel":"-- None --","fImage":"","fSelected":false,"fUsed":false,"fMissing":false},{"fSequence":-1,"fValue":"background","fLabel":"Run flow in background (default)","fImage":"","fParameters":{"name":"sys_flow_record_trigger","dependent_values":[""]},"fSelected":false,"fUsed":false,"fMissing":false},{"fSequence":-1,"fValue":"foreground","fLabel":"Run flow in foreground","fImage":"","fParameters":{"name":"sys_flow_record_trigger","dependent_values":[""]},"fSelected":false,"fUsed":false,"fMissing":false}],"mandatory":false,"fromTemplate":false,"order":100,"name":"run_flow_in","value":"background","displayValue":"Run flow in background (default)","parameter":{"children":[],"type_label":"Choice","id":"6090c72977203300f5bfcfcc78106159","label":"Run Flow In","name":"run_flow_in","type":"choice","order":100,"extended":false,"mandatory":false,"readOnly":false,"hint":"","maxsize":40,"reference":"","reference_display":"","choices":[{"label":"Run flow in background (default)","value":"background","order":1},{"label":"Run flow in foreground","value":"foreground","order":2}],"defaultChoices":[{"label":"Run flow in background (default)","value":"background","order":1},{"label":"Run flow in foreground","value":"foreground","order":2}],"choiceOption":"3","table":"sys_flow_record_trigger","columnName":"run_flow_in","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"advanced":"true"},"ref_qual":"","dependent_on":""},"scriptActive":false}
++```
++
++**Weekly** (`cf352104c32222002841b63b12d3ae1f`) `[IMPORT_TESTED]`. Two entries; `day_of_week` is `1` (Monday) to `7` (Sunday) with the day name as `displayValue`.
++
++```json
++{"label":"Day of Week","internalType":"day_of_week","mandatory":true,"fromTemplate":false,"order":10,"valueSysId":"","name":"day_of_week","value":"2","displayValue":"Tuesday","children":[],"parameter":{"children":[],"id":"c685a104c32222002841b63b12d3aed3","label":"Day of Week","name":"day_of_week","type":"day_of_week","order":10,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":40,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false}
++{"label":"Time","internalType":"glide_time","mandatory":true,"fromTemplate":false,"order":100,"valueSysId":"","name":"time","value":"1970-01-01 03:20:00","children":[],"parameter":{"children":[],"id":"a745a104c32222002841b63b12d3ae18","label":"Time","name":"time","type":"glide_time","order":100,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":100,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false}
++```
++
++**Monthly** (`2ca52504c32222002841b63b12d3ae4a`) `[IMPORT_TESTED]`
++
++```json
++{"label":"Day of Month","internalType":"integer","mandatory":true,"fromTemplate":false,"order":10,"valueSysId":"","name":"day_of_month","value":"15","children":[],"parameter":{"children":[],"id":"ab36a504c32222002841b63b12d3ae8a","label":"Day of Month","name":"day_of_month","type":"integer","order":10,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":40,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"integer_type":"day_of_month","element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false}
++{"label":"Time","internalType":"glide_time","mandatory":true,"fromTemplate":false,"order":100,"valueSysId":"","name":"time","value":"1970-01-01 03:25:00","children":[],"parameter":{"children":[],"id":"b5d52504c32222002841b63b12d3aeaa","label":"Time","name":"time","type":"glide_time","order":100,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":100,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false}
+ ```
++
++**Run Once** (`0a76e504c32222002841b63b12d3aeac`) `[RUNTIME_TESTED]`
++
++```json
++{"label":"Run in","internalType":"glide_date_time","mandatory":true,"fromTemplate":false,"order":100,"valueSysId":"","name":"run_in","value":"2026-11-19 17:00:00","children":[],"parameter":{"children":[],"id":"92afcd94c32222002841b63b12d3aee8","label":"Run in","name":"run_in","type":"glide_date_time","order":100,"extended":false,"mandatory":true,"readOnly":false,"hint":"","maxsize":100,"reference":"","reference_display":"","choiceOption":"","table":"","columnName":"","defaultValue":"","use_dependent":false,"fShowReferenceFinder":false,"local":false,"attributes":{"element_mapping_provider":"com.glide.flow_design.action.data.FlowDesignVariableMapper"},"ref_qual":"","dependent_on":""},"displayField":"","scriptActive":false}
++```
++
++---
++
++## APPENDIX C. Runtime Evidence `[RUNTIME_TESTED]`
++
++Brazil Patch 1, 2026-11-19. Every flow below was generated by the rules in this prompt, imported as an update set, activated in Workflow Studio, and then fired by a real record or schedule. Each execution finished `COMPLETE` with no error in the flow log. The generated XML and the platform's re-exports are in `verification/test_import_20261119e/` and `verification/test_import_20261119f/`.
++
++| What ran | How it was fired | What was read back |
++|---|---|---|
++| If / Else If / Else on a trigger field | Three incidents with urgency 1, 2 and 3 | Each incident's description named its own branch and number |
++| Look Up Record, Set Flow Variables, Look Up Records, For Each, Create Record | Same three incidents | The variable grew inside the loop (`start admin +abel.tuter +itil`); two incident tasks per incident, linked through a record pill |
++| Subflow call with an input and an output | Same | The caller's display name came back (`Abel Tuter`, `System Administrator`) |
++| Custom action written from a spec | Same | `START ADMIN +ABEL.TUTER +ITIL & START ADMIN +ABEL.TUTER +ITIL`, length `61` |
++| Update Record to a journal field, Fire Event, Send Email, Do the following until | Same | Work note with five pills resolved; event with both parameters; email record with pill subject |
++| Record Updated trigger, `CHANGESTO`, strategy `every` | Create, update another field, then set urgency to 1 | One execution, on the third write only |
++| Record Created or Updated trigger, strategy `once` | Create, then update | One execution |
++| Ask For Approval, If on the result, End Flow | Two incidents; one approval approved, one rejected | Flow waited, then took the matching branch; End Flow stopped the approved run before the last step; the rejected run reached it |
++| Send Notification | One incident | Email record with the notification's own subject |
++| Repeat trigger, 2 minutes | Schedule | First execution two minutes after activation |
++| Run Once trigger | Schedule | Execution created at 01:00:00 UTC, the exact time set (5:00 PM Pacific), `COMPLETE` |
++| Action, subflow and flow activated only through `api/now/wfa_fluent/activate_flows` | One incident | Description `TT6 subflow [Abel Tuter] action [retuT lebA]` |
++

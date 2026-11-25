@@ -1,0 +1,27 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "trigger_definition": "f63f0d94c32222002841b63b12d3aeed",
+   "trigger_type": "repeat",
+   "flow": "05f341698333121014c5f26b022bc057"
+  },
+  {
+   "trigger_definition": "89142dc0c32222002841b63b12d3ae8a",
+   "trigger_type": "daily",
+   "flow": "a7b82d60fff832104aebffffffffff23"
+  },
+  {
+   "trigger_definition": "f63f0d94c32222002841b63b12d3aeed",
+   "trigger_type": "repeat",
+   "flow": "192385e58333121014c5f26b022bc05c"
+  },
+  {
+   "trigger_definition": "89142dc0c32222002841b63b12d3ae8a",
+   "trigger_type": "daily",
+   "flow": "816ad220ffb072104aebffffffffff5f"
+  }
+ ]
+}

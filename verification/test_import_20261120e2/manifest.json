@@ -1,0 +1,43 @@
+{
+ "generated_utc": "2026-11-20 16:29:20",
+ "update_set": "Transpiler Test 20261120e2",
+ "retrieved_set_sys_id": "eba0706f3a9b5c8fe765f49a211cc94d",
+ "flows": [
+  {
+   "name": "TT21E5 Submit Catalog Item JSON",
+   "id": "147b56769da95aa5ecf6e051751b6ef2",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT21E6 Record Producer JSON",
+   "id": "66d293a5ecc6e353c3d01dcb70c38e65",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT21B2 Email Actions",
+   "id": "7267f301e660fe9f75af81e0658504ac",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT21C2 CI Support Group",
+   "id": "f83c024a28c9f36406f0c3bbc21c367b",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT21D2 Change Helpers",
+   "id": "e4b764fe627d0cf438c4015730ae0947",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT21A2 Copy Attachment",
+   "id": "34da2a07225105ed500dbcff816a5690",
+   "snap": "",
+   "steps": []
+  }
+ ]
+}

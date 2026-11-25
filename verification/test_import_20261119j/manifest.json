@@ -1,0 +1,40 @@
+{
+ "generated_utc": "2026-11-20 01:42:16",
+ "update_set": "Transpiler Test 20261119j",
+ "retrieved_set_sys_id": "da42c2036b8bb5e1344dbad1380ff64b",
+ "catalog_item": "439fef5b83e41310d6401665eeaad379",
+ "variable": "9f9fef5b83e41310d6401665eeaad3b3",
+ "flows": [
+  {
+   "name": "TT9 Runtime Catalog",
+   "id": "d5bb84c890048fb143c2379b71c85f4b",
+   "snap": "cb501274ef5c6f470af606266d8041b3",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "181b4099-e937-491d-a916-5b4749b24104",
+     "id": "35c0b86411cef70f484c545774ed8689",
+     "sid": "87f7e46d4f713e5cb061beae3b1217b5",
+     "label": "Get Catalog Variables"
+    },
+    {
+     "kind": "action",
+     "order": 2,
+     "ui": "3a4c5118-87ca-4330-8e56-337aacee182a",
+     "id": "cfc649b76b913e80a6cd06668c2c38b9",
+     "sid": "d7b4fe3c5eacecfd9fcaf900a7ba08ef",
+     "label": "Create Catalog Task"
+    },
+    {
+     "kind": "action",
+     "order": 3,
+     "ui": "625196a5-dce4-4c26-9a16-903243787418",
+     "id": "f2925eeae7d1bbf771c1ad7a6826271e",
+     "sid": "fa758efa87c8efcca7d8462815c73384",
+     "label": "Update Record"
+    }
+   ]
+  }
+ ]
+}

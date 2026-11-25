@@ -1,0 +1,51 @@
+{
+ "sys_id": "03f4cd7d7f2312103cbe73ed6c8665df",
+ "decoded": {
+  "outputsToAssign": [],
+  "inputs": [
+   {
+    "name": "items",
+    "value": "{{c74090c1-9d86-42c3-ab15-16c9a36c0e59.Array_Of_Strings}}",
+    "displayValue": "{{c74090c1-9d86-42c3-ab15-16c9a36c0e59.Array_Of_Strings}}",
+    "children": [],
+    "parameter": {
+     "children": [],
+     "id": "19df9109c32632002841b63b12d3aed6",
+     "label": "Items",
+     "name": "items",
+     "type": "records",
+     "typeLabel": "Records",
+     "order": 20,
+     "extended": false,
+     "mandatory": true,
+     "readOnly": false,
+     "hint": "",
+     "maxsize": 100,
+     "reference": "",
+     "reference_display": "",
+     "fDataStructure": "",
+     "choices": [],
+     "defaultChoices": [],
+     "choiceOption": "",
+     "table": "",
+     "columnName": "",
+     "defaultValue": "",
+     "use_dependent": false,
+     "fShowReferenceFinder": false,
+     "local": false,
+     "attributes": {
+      "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+     },
+     "sysClassName": "",
+     "ref_qual": "",
+     "dependent_on": ""
+    },
+    "scriptActive": false
+   }
+  ],
+  "variables": [],
+  "decisionTableInputs": [],
+  "dynamicInputs": [],
+  "workflowInputs": []
+ }
+}

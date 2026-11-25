@@ -1,0 +1,25 @@
+{
+ "generated_utc": "2026-11-20 16:06:35",
+ "update_set": "Transpiler Test 20261120c",
+ "retrieved_set_sys_id": "92e4471ecc459cd8bf5623bbfb34fe77",
+ "flows": [
+  {
+   "name": "TT23A Inbound Email",
+   "id": "4bb1c2b209c4b39f52761081ac19dcb1",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT23B SLA Task",
+   "id": "6959c3d0e2f6b77027d940211dbf0c33",
+   "snap": "",
+   "steps": []
+  },
+  {
+   "name": "TT23C Recurrence",
+   "id": "4cc5744ffbbdd83e5e88224d2eca3f3e",
+   "snap": "",
+   "steps": []
+  }
+ ]
+}

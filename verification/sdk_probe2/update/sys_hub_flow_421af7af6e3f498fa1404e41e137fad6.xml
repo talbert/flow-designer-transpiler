@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<record_update table="sys_hub_flow">
+  <sys_hub_flow action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>421af7af6e3f498fa1404e41e137fad6</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_flow_421af7af6e3f498fa1404e41e137fad6</sys_update_name>
+    <access>public</access>
+    <active>false</active>
+    <allow_high_security_roles>false</allow_high_security_roles>
+    <annotation/>
+    <category/>
+    <description>Transpiler comparison test. Service Catalog trigger with a catalog variable. Safe to delete.</description>
+    <flow_priority>MEDIUM</flow_priority>
+    <generation_source>fluent</generation_source>
+    <label_cache>[{"name":"Service Catalog_1.request_item","label":"Trigger - Service Catalog➛Request Item","type":"reference","base_type":"reference","usedInstances":{"24ec0b2a-b65e-483c-a8fb-20ccf9b422f0":["requested_item"],"e25aea9a-e69a-4232-a7e5-f11a63fd4832":["ah_requested_item"],"29bfbe1a-395b-4c0c-873e-fefffcdf632e":["record"]},"attributes":{}},{"name":"24ec0b2a-b65e-483c-a8fb-20ccf9b422f0.tt9_note","label":"24ec0b2a-b65e-483c-a8fb-20ccf9b422f0➛tt9_note","type":"string","base_type":"string","usedInstances":{"e25aea9a-e69a-4232-a7e5-f11a63fd4832":["ah_short_description"],"29bfbe1a-395b-4c0c-873e-fefffcdf632e":["values"]},"attributes":{}}]</label_cache>
+    <name>TT13 Compact Catalog</name>
+    <run_as>user</run_as>
+    <run_with_roles/>
+    <show_draft_actions>false</show_draft_actions>
+    <status>draft</status>
+    <sys_policy/>
+    <type>flow</type>
+    <version>2</version>
+  </sys_hub_flow>
+  <sys_hub_trigger_instance_v2 action="delete_multiple" query="flow=421af7af6e3f498fa1404e41e137fad6^sys_idNOT INdaa1661f03b9417499bbd81cf74b7783"/>
+  <sys_hub_trigger_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>daa1661f03b9417499bbd81cf74b7783</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_trigger_instance_v2_daa1661f03b9417499bbd81cf74b7783</sys_update_name>
+    <category/>
+    <comment/>
+    <flow>421af7af6e3f498fa1404e41e137fad6</flow>
+    <name>Service Catalog</name>
+    <trigger_definition>c43a1011c36813002841b63b12d3ae15</trigger_definition>
+    <trigger_inputs>H4sIAAAAAAAAE61SsWrDMBD9FaOpBQ/pmq1LwZAuTZslhHCRTo6ofDLSOa0J/veecEiT4HZpN927p/ce3FsfFUdX1xgrSgykcdmnyqi5UqXysEMvz5eOCuvDR1GRoI4YI4F/7VuUpd4Hp1Fwgy2SQeLx84gvXJJ5fVR2Bb7LfKBetnZxq+2okFWhg8h/cqZUDdQ4itkletSMEsyCTyjIW7qcnl1KjuoTMJQXhjvQ73UMHZmffL8ZxZ1BC53n+38MYEPE3wNcM/5guylVA2SAQ+zPpBANRjV/mM1KRdBk6djRNptvXb7o4eo0xqXWQ7+aAp8c+lM5ko6u5UfN7oBnK7133kQkOblEaSGKHWdzqdlNXSaTTDcOWDq66xhTFgJzyD3NMThKxGEYNl9md5MFxwIAAA==</trigger_inputs>
+    <trigger_outputs/>
+    <trigger_type>service_catalog</trigger_type>
+  </sys_hub_trigger_instance_v2>
+  <sys_hub_action_instance_v2 action="delete_multiple" query="flow=421af7af6e3f498fa1404e41e137fad6^sys_idNOT IN24ec0b2ab65e483ca8fb20ccf9b422f0,e25aea9ae69a4232a7e5f11a63fd4832,29bfbe1a395b4c0c873efefffcdf632e"/>
+  <sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>24ec0b2ab65e483ca8fb20ccf9b422f0</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_instance_v2_24ec0b2ab65e483ca8fb20ccf9b422f0</sys_update_name>
+    <action_type>330ba3abc31013002841b63b12d3aee8</action_type>
+    <action_type_parent>330ba3abc31013002841b63b12d3aee8</action_type_parent>
+    <active>true</active>
+    <comment/>
+    <display_text/>
+    <flow>421af7af6e3f498fa1404e41e137fad6</flow>
+    <generation_source/>
+    <order>1</order>
+    <parent_ui_id/>
+    <sys_class_name>sys_hub_action_instance_v2</sys_class_name>
+    <ui_id>24ec0b2a-b65e-483c-a8fb-20ccf9b422f0</ui_id>
+    <updation_source/>
+    <values>H4sIAAAAAAAAE52R0UrEMBBFf0XyXGRLutX2TfYThH1ZJEzTGw1m25hMK0vpv5vKKuqClH2euWfOTQ6T6OgIUQtNTK5/ViMFS41DFJkYyQ3LrDKVgdk29xJFLvNNWxabvCy3AFErG1lbxlH1nm3fqQ7vKdra6B2d9tcTog7W84NmOyaCIReRCU8h6TKCqCfBJ7+woxviSzPoV7CY5+y7UcDbgMho1QL/UWeaHhFGq3GzO5fOb8/Ln6vzfFlgVWa1coBBQKfxSzhh0kmG+vqLP96F/O8R76pL6xWJq5yfPgCfWF5ROAIAAA==</values>
+  </sys_hub_action_instance_v2>
+  <sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>e25aea9ae69a4232a7e5f11a63fd4832</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_instance_v2_e25aea9ae69a4232a7e5f11a63fd4832</sys_update_name>
+    <action_type>af51fd0e73141300612c273ffff6a785</action_type>
+    <action_type_parent>af51fd0e73141300612c273ffff6a785</action_type_parent>
+    <active>true</active>
+    <comment/>
+    <display_text/>
+    <flow>421af7af6e3f498fa1404e41e137fad6</flow>
+    <generation_source/>
+    <order>2</order>
+    <parent_ui_id/>
+    <sys_class_name>sys_hub_action_instance_v2</sys_class_name>
+    <ui_id>e25aea9a-e69a-4232-a7e5-f11a63fd4832</ui_id>
+    <updation_source/>
+    <values>H4sIAAAAAAAAE62PQW7CMBBFrxJ5naBg0grYVT1CUTcIWWNnAlaNndpDKmT57iW0UtKwyaJLf8/892YfmYUzsi2Dk/gCTSxnHZjLLWnABMxZrUNr4Pr+JwzK65ZeFOluCFvwtypCz7aR0bXtW6VzBsGylPIxKZycJ1HjT492dsCy3W65ygjCR55ZR5jtY+QVqlJyKOTzExbVeqUKWDey4KVSzUZWnDflgmgj+oWUDmyq/U+ls88O5LU9Tq8mkAbF/T2cG5TovR6Vh4/Z2BFggvb4ecFAWAtNeB7hY3xD32mF2SsQGHcUy8Xv8H00pUezWTuzpT026NGq3vnwDX2tqEeQAgAA</values>
+  </sys_hub_action_instance_v2>
+  <sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>29bfbe1a395b4c0c873efefffcdf632e</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_instance_v2_29bfbe1a395b4c0c873efefffcdf632e</sys_update_name>
+    <action_type>f9d01dd2c31332002841b63b12d3aea1</action_type>
+    <action_type_parent>f9d01dd2c31332002841b63b12d3aea1</action_type_parent>
+    <active>true</active>
+    <comment/>
+    <display_text/>
+    <flow>421af7af6e3f498fa1404e41e137fad6</flow>
+    <generation_source/>
+    <order>3</order>
+    <parent_ui_id/>
+    <sys_class_name>sys_hub_action_instance_v2</sys_class_name>
+    <ui_id>29bfbe1a-395b-4c0c-873e-fefffcdf632e</ui_id>
+    <updation_source/>
+    <values>H4sIAAAAAAAAE7WR0UrDMBSGXyXkuh1dV2UbeCHiA4jDm6HhND2RQNrU5LQyQt7drAWZzoveeJlz+P/vS3IMvIMW+Z4T1AbFdMj4CGY4D70UDj+EJmzTtNG+N3B6+XPppdM93UvSY1oqMB4z3oNLhYSO7wOnU/8LFGP2zXcorWsu2CE8oxu1RPYABMa+i/Uq8Qb0NDFjvFZalFls2lg5tNilaPNDdTL0F6oNzp3adneHw3rD5ExnythP5qDLWGcJ2TGEskJZ1CXk9e0N5tV2I3PYqjovCynVrq7KUhUrop04B2J8fXt8ur7mv/OWfya2SYxQzE+RCr4AUpqGnVICAAA=</values>
+  </sys_hub_action_instance_v2>
+  <sys_hub_alias_mapping action="delete_multiple" query="source_id=24ec0b2ab65e483ca8fb20ccf9b422f0"/>
+  <sys_hub_alias_mapping action="delete_multiple" query="source_id=e25aea9ae69a4232a7e5f11a63fd4832"/>
+  <sys_hub_alias_mapping action="delete_multiple" query="source_id=29bfbe1a395b4c0c873efefffcdf632e"/>
+</record_update>

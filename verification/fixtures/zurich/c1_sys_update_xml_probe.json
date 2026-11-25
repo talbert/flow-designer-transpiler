@@ -1,0 +1,17 @@
+{
+ "ok": true,
+ "hasMore": true,
+ "nextOffset": 2,
+ "records": [
+  {
+   "sys_id": "418f171653178b10bc30d7f0a0490e60",
+   "payload": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><record_update table=\"sys_kmf_module_key_policy\"><sys_kmf_module_key_policy action=\"INSERT_OR_UPDATE\"><crypto_module display_value=\"glide_usage_analytics_token_signing\">bc26a5427f130210cf428c711d866559</crypto_module><key_type display_value=\"Private Signature Generation Key\">eacabf24c7003300af4d43c6f0976341</key_type><last_enforced>2026-09-15 18:39:14</last_enforced><result>reject</result><sys_class_name>sys_kmf_module_key_policy</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2026-09-15 18:39:14</sys_created_on><sys_id>018f171653178b10bc30d7f0a0490e5c</sys_id><sys_mod_count>0</sys_mod_count><sys_name/><sys_package display_value=\"Global\" source=\"global\">global</sys_package><sys_policy/><sys_scope display_value=\"Global\">global</sys_scope><sys_update_name>sys_kmf_module_key_policy_018f171653178b10bc30d7f0a0490e5c</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2026-09-15 18:39:14</sys_updated_on></sys_kmf_module_key_policy></record_update>",
+   "name": "sys_kmf_module_key_policy_018f171653178b10bc30d7f0a0490e5c"
+  },
+  {
+   "sys_id": "c98fd31653178b10bc30d7f0a0490ee8",
+   "payload": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><record_update table=\"sys_kmf_crypto_caller_policy\"><sys_kmf_crypto_caller_policy action=\"INSERT_OR_UPDATE\"><active>true</active><approval_type/><check_script_hash>false</check_script_hash><crypto_module display_value=\"glide_usage_analytics_token_signing\">bc26a5427f130210cf428c711d866559</crypto_module><crypto_spec/><granular_operation/><identity_group_alias/><impersonation>false</impersonation><instance_recipient/><owner>2ddbe7fe64030210f40b54ffe5d2504b</owner><policy_name>AutoGen-scope-global-global.glide_usage_analytics_token_signing</policy_name><result>allow</result><script_hash/><script_table/><signature_data/><specify_purpose>false</specify_purpose><sys_class_name>sys_kmf_crypto_caller_policy</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2024-07-11 08:43:56</sys_created_on><sys_id>f7b5028e7f530210cf428c711d866595</sys_id><sys_mod_count>4</sys_mod_count><sys_name/><sys_package display_value=\"User Experience Analytics\" source=\"com.glide.appsee\">f5be198ca56103108bb220b7a4d21254</sys_package><sys_policy/><sys_scope display_value=\"Global\">global</sys_scope><sys_update_name>sys_kmf_crypto_caller_policy_f7b5028e7f530210cf428c711d866595</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2026-09-15 18:39:14</sys_updated_on><target_role/><target_scope display_value=\"Global\">global</target_scope><target_script/><type>7</type><used>false</used></sys_kmf_crypto_caller_policy></record_update>",
+   "name": "sys_kmf_crypto_caller_policy_f7b5028e7f530210cf428c711d866595"
+  }
+ ]
+}

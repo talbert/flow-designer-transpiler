@@ -1,0 +1,498 @@
+--- flow_designer_prompt20260212.md	2026-07-01 17:02:58
++++ flow_designer_prompt20261014.md	2026-10-14 14:19:50
+@@ -4,12 +4,14 @@
+ 
+ You output XML that can be saved as a `.xml` file and imported directly into a ServiceNow instance via **Retrieved Update Sets** (`System Update Sets > Retrieved Update Sets > Import Update Set from XML`).
+ 
+-**Target release family:** Before generation, identify the target release family. If the user does not specify one, assume **Yokohama** and explicitly mark that assumption in `CONFIGURATION_NOTES`. Other release families (Xanadu, Zurich, etc.) require re-verifying action type IDs, trigger definition IDs, logic definition IDs, parameter IDs, blob schemas, and snapshot child structure against the target instance.
++**Target release family:** Before generation, identify the target release family. If the user does not specify one, assume **Australia** and explicitly mark that assumption in `CONFIGURATION_NOTES`. The sys_ids and parameter IDs in Sections 5 and 7 are verified on Zurich (Patch 10) and Australia (Patch 2). Older families (Yokohama, Xanadu, Washington DC) and newer ones require re-verifying action type IDs, trigger definition IDs, logic definition IDs, parameter IDs, blob schemas, and snapshot child structure against the target instance.
+ 
+-**Evidence tags:** The following tags mark the provenance of technical claims throughout this prompt. When debugging import failures, check `[OBSERVED_YOKOHAMA]` and `[REVERSE_ENGINEERED]` claims first -- these are most likely to diverge on a different release or instance configuration.
++**Canonical alternative:** `[DOCUMENTED]` The ServiceNow Fluent SDK (`@servicenow/sdk` 4.8.1+) has a Flow, Subflow and Action API (`now-sdk explain flow-api`, `subflow-api`, `custom-action-api`, `trigger-api`) that compiles flows into these same `sys_hub_*` records. For new flows inside a Fluent app, prefer the SDK. Use this prompt when the deliverable must be update-set XML.
+ 
++**Evidence tags:** The following tags mark the provenance of technical claims throughout this prompt. When debugging import failures, check `[OBSERVED]` and `[REVERSE_ENGINEERED]` claims first -- these are most likely to diverge on a different release or instance configuration.
++
+ - `[DOCUMENTED]` -- ServiceNow documentation states this.
+-- `[OBSERVED_YOKOHAMA]` -- Verified from exported Yokohama instance XML.
++- `[OBSERVED]` -- Verified against live instances: Zurich Patch 10 (2026-10-14) and Australia Patch 2 (2026-07-01). Originally extracted from Yokohama exports.
+ - `[REVERSE_ENGINEERED]` -- Inferred from exported artifacts, decoded blobs, or structural analysis.
+ - `[TARGET_VERIFY]` -- Must be checked on the target instance before trusting.
+ 
+@@ -31,7 +33,7 @@
+ <deleted/>
+ <description>{{DESCRIPTION_OF_CHANGE}}</description>
+ <inserted/>
+-<n>{{UPDATE_SET_NAME}}</n>
++<name>{{UPDATE_SET_NAME}}</name>
+ <origin_sys_id/>
+ <parent display_value=""/>
+ <release_date/>
+@@ -55,7 +57,7 @@
+ </unload>
+ ```
+ 
+-**Note on `<n>` tags:** Throughout ServiceNow XML serialization, `<n>` is the serialized form of the `name` field. This applies to `sys_remote_update_set`, `sys_update_xml`, `sys_hub_flow`, and many other tables. It is not a typo or abbreviation — it is how the platform exports the `name` column.
++**Note on the `name` column:** ServiceNow XML unloads serialize the `name` column as `<name>` (verified against raw `sys_remote_update_set`/`sys_update_xml`/`sysauto_script` unloads). If you ever see `<n>` in pasted "reference" XML, it is a copy/rendering artifact of `<name>` — do not reproduce it. `<sys_name>` and `<target_name>` are distinct columns and are never abbreviated.
+ 
+ Each `<sys_update_xml>` block wraps one Customer Update record:
+ 
+@@ -65,7 +67,7 @@
+ <application display_value="Global">global</application>
+ <category>retrieved</category>
+ <comments/>
+-<n>sys_hub_flow_{{FLOW_SYS_ID}}</n>
++<name>sys_hub_flow_{{FLOW_SYS_ID}}</name>
+ <payload><![CDATA[{{INNER_PAYLOAD_XML}}]]></payload>
+ <payload_hash>{{INTEGER_HASH}}</payload_hash>
+ <remote_update_set display_value="{{UPDATE_SET_NAME}}">{{GUID_B}}</remote_update_set>
+@@ -88,12 +90,12 @@
+ </sys_update_xml>
+ ```
+ 
+-For custom Actions, use `type` = `Action`, `<table>sys_hub_action_type_definition</table>`, and `<n>sys_hub_action_type_definition_{{SYS_ID}}</n>`.
++For custom Actions, use `type` = `Action`, `<table>sys_hub_action_type_definition</table>`, and `<name>sys_hub_action_type_definition_{{SYS_ID}}</name>`.
+ 
+ **Important fields in `sys_update_xml`:**
+ 
+ - **`<table>`** — Must contain the primary table name: `sys_hub_flow` for flows, `sys_hub_action_type_definition` for actions. The platform uses this during preview/commit for routing and conflict detection. Do not leave it empty.
+-- `[DOCUMENTED]` **`<payload_hash>`** -- A signed 32-bit integer hash of the payload content, used during Update Set preview for collision/conflict detection. Compute using Java's `String.hashCode()` algorithm over **UTF-16 code units** of the CDATA payload string, signed 32-bit:
++- `[TARGET_VERIFY]` **`<payload_hash>`** -- A signed 32-bit integer used during Update Set preview for collision/conflict detection. **The exact algorithm is not reproducible offline:** Java `String.hashCode()` over the CDATA payload (and CRC32, Adler32, UTF-8/UTF-16 byte variants, prolog-stripped, whitespace-normalized) reproduced **0 of 28** real values from an exported update set. Do **not** rely on a self-computed hash for correctness. A wrong hash does not block import — it only degrades preview collision detection — so emit a best-effort value (or `0`) and let the platform recompute on capture/republish. The pseudocode below is the closest known approximation, **not** a verified match:
+ 
+   ```
+   hash = 0
+@@ -106,7 +108,7 @@
+   In Python (correct for BMP characters, which covers virtually all XML content): `from functools import reduce; hash_val = reduce(lambda h, c: ((h * 31 + ord(c)) & 0xFFFFFFFF), payload_str, 0); hash_val = hash_val - 0x100000000 if hash_val >= 0x80000000 else hash_val`
+ 
+   Note: Python iterates over Unicode code points, which differs from Java's UTF-16 code units for non-BMP characters (U+10000+). For typical XML payloads (ASCII, Latin, CJK BMP), the results are identical. An incorrect hash won't prevent import but degrades preview collision detection.
+-- `[REVERSE_ENGINEERED]` **`<sys_recorded_at>`** — A hex-encoded glide_date_time value (16-character hex string representing a monotonically increasing counter). Generate a plausible value by converting the current epoch milliseconds to hex and appending a 2-digit sequence suffix. Example: epoch `1707700000000` → hex `18d9f5fbc00` → padded to `018d9f5fbc000001`. Do not use decimal values.
++- `[REVERSE_ENGINEERED]` **`<sys_recorded_at>`** — An 18-hex-character monotonic value structured as `(epochMillis << 28) | counter`: the current era's epoch-millis occupies the leading ~11 hex digits and a 28-bit counter (7 hex digits, e.g. `0000001`) occupies the low bits. Generate by taking current epoch milliseconds, shifting left 28 bits, OR-ing a small counter, and formatting as lowercase hex. Example: epoch `1781197617344` → `0x19eb7a6b8c0` << 28 | 1 → `19eb7a6b8c00000001`. Do not use decimal values, a 16-char length, or a 2-digit suffix. (A wrong value does not block import; it only affects audit ordering.)
+ 
+ ---
+ 
+@@ -129,6 +131,8 @@
+   <!-- 3. TRIGGER (catalog, record, scheduled) -->
+   <!-- catalog example: -->
+   <sys_flow_catalog_trigger action="INSERT_OR_UPDATE">...</sys_flow_catalog_trigger>
++  <!-- record-triggered example (see Section 3.1 remote_trigger_id note): -->
++  <!-- <sys_flow_record_trigger action="INSERT_OR_UPDATE">...</sys_flow_record_trigger> -->
+   <!-- scheduled/timer example (see Section 3.13): -->
+   <!-- <sys_flow_timer_trigger action="INSERT_OR_UPDATE">...</sys_flow_timer_trigger> -->
+ 
+@@ -271,7 +275,7 @@
+   <label_cache>[]</label_cache>
+   <master_snapshot>{{SNAPSHOT_SYS_ID}}</master_snapshot>
+   <master_snapshot_digest/>
+-  <n>{{FLOW_DISPLAY_NAME}}</n>
++  <name>{{FLOW_DISPLAY_NAME}}</name>
+   <natlang/>
+   <outputs/>
+   <pre_compiled>false</pre_compiled>
+@@ -306,17 +310,17 @@
+ 
+ **Note on `sys_customer_update`:** Set to `true` for all records generated by this prompt. This marks them as customer customizations, which protects them from being overwritten during ServiceNow family upgrades. Setting `false` marks a record as out-of-box platform content -- the platform may overwrite it during upgrades. Only use `false` if you are intentionally creating records that should be treated as platform-managed (rare for customer-generated flows).
+ 
+-**Note on `remote_trigger_id`:** `[OBSERVED_YOKOHAMA]` This field references the specialized trigger record, NOT the `sys_hub_trigger_instance_v2`:
++**Note on `remote_trigger_id`:** `[OBSERVED]` This field references the specialized trigger record, NOT the `sys_hub_trigger_instance_v2`:
+ 
+ | Trigger type | `remote_trigger_id` value |
+ |---|---|
+-| Record-triggered (Created, Updated, Created or Updated) | **Empty** |
++| Record-triggered (Created, Updated, Created or Updated) | sys_id of the `sys_flow_record_trigger` record (holds `table`, `condition`, `on_insert`/`on_update`/`on_delete`, `run_flow_in`, `run_on_extended`, `run_when_setting`, `run_when_user_setting`, `run_when_user_list`, `active`) |
+ | Service Catalog | sys_id of the `sys_flow_catalog_trigger` record (Section 3.11) |
+ | Scheduled/Timer | sys_id of the `sys_flow_timer_trigger` record (Section 3.13) |
+ 
+-For record-triggered flows, leave this field empty.
++For record-triggered flows, either emit a `sys_flow_record_trigger` record and point `remote_trigger_id` at it, or leave the field empty and rely on the mandatory republish (Section 13) to create the trigger record. All 23 record-triggered OOTB flows on Zurich Patch 10 have it populated.
+ 
+-**Note on `label_cache`:** `[OBSERVED_YOKOHAMA]` A JSON array of data pill metadata objects used by Flow Designer's UI to render pill labels. Format: `[{"name":"<ui_id>.<output>","label":"<Step N - Action Name>/<Output Label>","type":"<type>","base_type":"<base_type>","attributes":{...}}, ...]`. Every published flow has this populated (typically 1-30 KB). **Set to `[]` (empty JSON array) in generated XML.** Republishing the flow on the target instance (which is already mandatory per Section 3.9) regenerates `label_cache` from the current flow structure. An empty array will not prevent import or commit; it only means the Flow Designer canvas won't show pill labels until the flow is republished.
++**Note on `label_cache`:** `[OBSERVED]` A JSON array of data pill metadata objects used by Flow Designer's UI to render pill labels. Format: `[{"name":"<ui_id>.<output>","label":"<Step N - Action Name>/<Output Label>","type":"<type>","base_type":"<base_type>","attributes":{...}}, ...]`. Every published flow has this populated (typically 1-30 KB). **Set to `[]` (empty JSON array) in generated XML.** Republishing the flow on the target instance (which is already mandatory per Section 3.9) regenerates `label_cache` from the current flow structure. An empty array will not prevent import or commit; it only means the Flow Designer canvas won't show pill labels until the flow is republished.
+ 
+ ### 3.2 `sys_hub_trigger_instance_v2` (Trigger)
+ 
+@@ -325,7 +329,7 @@
+   <comment/>
+   <display_text/>
+   <flow display_value="{{FLOW_NAME}}">{{FLOW_SYS_ID}}</flow>
+-  <n>{{TRIGGER_DISPLAY_NAME}}</n>
++  <name>{{TRIGGER_DISPLAY_NAME}}</name>
+   <published_version/>
+   <remote_sys_id/>
+   <sys_created_by>{{CREATOR}}</sys_created_by>
+@@ -342,7 +346,7 @@
+ </sys_hub_trigger_instance_v2>
+ ```
+ 
+-**Important:** The `trigger_inputs` field contains a **base64-encoded gzip** blob that encodes the trigger's configuration (table name, conditions, filter). For record-create and record-update triggers, generate this blob using the templates in Section 7.4. For other trigger types (scheduled, service catalog), use Strategy A (Section 7.8).
++**Important:** The `trigger_inputs` field contains a **base64-encoded gzip** blob that encodes the trigger's configuration (table name, conditions, filter). For record-create and record-update triggers, generate this blob using the templates in Section 7.4. For scheduled triggers see Section 7.4.4. For service catalog and other trigger types, use Strategy A (Section 7.8).
+ 
+ ### 3.3 `sys_hub_action_instance_v2` (Action Step — v2)
+ 
+@@ -458,7 +462,7 @@
+ 
+ - **`parent_ui_id`** — The `ui_id` of the enclosing logic block. Empty for top-level logic blocks. For an If nested inside a For Each, this would be the For Each's `ui_id`. Action steps (`sys_hub_action_instance_v2`) and subflow instances also have a `parent_ui_id` field that works the same way -- set it to the `ui_id` of the enclosing logic block, or leave empty for top-level steps.
+ 
+-- **`block`** — A reference to the containing scope block (a sys_id, not a ui_id). Each logic block creates a new scope. The platform generates these scope identifiers internally. When generating XML, use a fresh GUID for each logic block's `block` value. Top-level blocks reference a flow-level scope GUID; nested blocks reference the scope created by their parent.
++- **`block`** `[OBSERVED]` — A reference field (`internal_type=reference`, `reference=sys_hub_flow_block`) holding a compiler-generated scope id. In real published flows these ids do **not** resolve to any `sys_hub_flow_block` row (the platform tolerates them as opaque/dangling) and each logic instance carries its own distinct value — there is no observed parent/child scope-sharing. **Do not attempt to create `sys_hub_flow_block` records and do not model parent-scope inheritance.** Emit a fresh unique 32-char GUID per logic instance; because republishing on the target regenerates the scope/block structure (mandatory, Section 13), the imported value is not authoritative. Nesting is expressed entirely through `parent_ui_id`, not `block`.
+ 
+ - **`order`** — Globally sequential across the entire flow. Steps at order 1 execute first, order 10 next, etc. **Order numbers do NOT restart inside nested blocks.** A flow with an If at order 1, a nested Create Record at order 3, and a top-level Update Record at order 10 uses orders 1, 3, 10 -- not 1, 1, 2. Leave gaps between order values (e.g., 1, 5, 10, 15) to allow for future insertions. Logic blocks like If/Else If/Else/End that form a group share a common ordering region but each has its own order value.
+ 
+@@ -513,7 +517,7 @@
+   <model display_value="{{FLOW_NAME}}">{{FLOW_SYS_ID}}</model>
+   <model_id>{{FLOW_SYS_ID}}</model_id>
+   <model_table>sys_hub_flow</model_table>
+-  <n>var__m_sys_hub_flow_input_{{FLOW_SYS_ID}}</n>
++  <name>var__m_sys_hub_flow_input_{{FLOW_SYS_ID}}</name>
+   <next_element/>
+   <order>100</order>
+   <primary>false</primary>
+@@ -644,11 +648,9 @@
+ 
+ Fields **added** in snapshot (not in `sys_hub_flow`):
+ - `<master>true</master>` -- whether this is the active/master snapshot
+-- `<name>` -- flow display name (replaces `<n>` used in `sys_hub_flow`)
+ - `<parent_flow>` -- reference back to the owning flow's sys_id
+ 
+ Fields **dropped** from snapshot (present in `sys_hub_flow` but not snapshot):
+-- `<n>` -- replaced by `<name>`
+ - `<master_snapshot>` / `<master_snapshot_digest>` -- snapshots don't reference other snapshots
+ - `<display_name_after_preview>`
+ - `<generation_source>`
+@@ -715,16 +717,16 @@
+ 
+ ### 3.12 `sys_hub_flow_version` (Zurich+ Versioning)
+ 
+-Zurich and later releases introduced flow versioning via `sys_hub_flow_version`. A known defect (PRB1921408, addressed in Zurich Patch 5) caused preview failures when the flow payload referenced a version record that wasn't captured:
++Zurich introduced flow versioning via `sys_hub_flow_version` and the `sys_hub_flow.version_record` field. A known defect (PRB1921408) caused preview failures when the flow payload referenced a version record that wasn't captured. ServiceNow's community note says it was fixed in Zurich Patch 5. `[OBSERVED]` On Zurich Patch 10 and Australia, `version_record` is a plain string field and `sys_hub_flow_version` is typically empty, so the dangling reference can no longer fail preview:
+ 
+ > "Could not find a record in sys_hub_flow_version … referenced in this update."
+ 
+-**Always include a version record.** The risk calculus is asymmetric: including a version record on a pre-Zurich instance costs nothing (unrecognized records in the payload are ignored during import), while omitting it on a Zurich+ instance causes a hard preview failure. When in doubt, include it. However, on unpatched Zurich instances (pre-Patch 5), even including the record may not fully resolve the defect — advise users to apply Patch 5 if issues persist.
++**Always include a version record.** The risk calculus is asymmetric: including a version record on a pre-Zurich instance costs nothing (unrecognized records in the payload are ignored during import), while omitting it on a Zurich+ instance causes a hard preview failure. When in doubt, include it. On Zurich instances below Patch 5 the error can still occur; patch the instance, or capture the `sys_hub_flow_version` record from the source instance. On Zurich Patch 5+ and Australia the record is harmless but no longer required.
+ 
+ ```xml
+ <sys_hub_flow_version action="INSERT_OR_UPDATE">
+   <flow display_value="{{FLOW_NAME}}">{{FLOW_SYS_ID}}</flow>
+-  <n>1.0.0</n>
++  <name>1.0.0</name>
+   <published_on>{{TIMESTAMP}}</published_on>
+   <state>published</state>
+   <sys_class_name>sys_hub_flow_version</sys_class_name>
+@@ -742,7 +744,7 @@
+ Then reference it from the primary `sys_hub_flow` record:
+ 
+ ```xml
+-<version_record display_value="1.0.0">{{VERSION_SYS_ID}}</version_record>
++<version_record>{{VERSION_SYS_ID}}</version_record>
+ ```
+ 
+ If preview still fails with a version record error on unpatched Zurich instances, capture the missing version record from the **source** instance (where it exists) and import it to the target using metadata/application file techniques.
+@@ -756,7 +758,7 @@
+   <active>true</active>
+   <day_of_month>{{DAY_1_TO_31_OR_DEFAULT}}</day_of_month>
+   <day_of_week>{{DAY_OF_WEEK_OR_EMPTY}}</day_of_week>
+-  <n/>
++  <name/>
+   <published_version/>
+   <run_period>{{GLIDE_DURATION_OR_EMPTY}}</run_period>
+   <run_start>{{GLIDE_DATE_TIME}}</run_start>
+@@ -782,7 +784,7 @@
+ </sys_flow_timer_trigger>
+ ```
+ 
+-**`timer_type` choice values:** `[OBSERVED_YOKOHAMA]`
++**`timer_type` choice values:** `[OBSERVED]`
+ 
+ | Value | Label | Description | Required fields |
+ |---|---|---|---|
+@@ -791,6 +793,8 @@
+ | `3` | Day In Week | Fires weekly on `day_of_week` at `time` | `day_of_week`, `time` |
+ | `4` | Day In Month | Fires monthly on `day_of_month` at `time` | `day_of_month`, `time` |
+ | `11` | Daily | Fires every day at `time` | `time` |
++| `recurrence` | Recurrence | Advanced recurrence (pairs with the Recurrence trigger definition `7b3308f67fd21210a652b9277c8665f0`) | see target instance |
++| `recurrence_query` | Recurrence Query | Recurrence driven by a query | see target instance |
+ 
+ **Field format notes:**
+ 
+@@ -800,7 +804,7 @@
+ - **`day_of_month`** — Integer, `1` through `31`. Default is `1`. Only meaningful when `timer_type=4`.
+ - **`run_start`** — `glide_date_time`. For `timer_type=0` (Run Once), this is when the flow fires. For `timer_type=1` (Repeat), this is the first firing. For other types, this typically records when the trigger was created/activated.
+ 
+-**Relationship to the flow:** This record is referenced by the flow's `<remote_trigger_id>` field, the same pattern used by `sys_flow_catalog_trigger` (Section 3.11). The `sys_hub_trigger_instance_v2` for a scheduled flow references a timer trigger definition — however, **there is no OOB trigger definition for scheduled triggers listed in Section 5.1**. The trigger instance's `trigger_definition` and `trigger_type` for scheduled flows must be verified on the target instance by navigating to `sys_hub_trigger_definition_list.do` and filtering for scheduled/timer entries. Include this in `CONFIGURATION_NOTES`.
++**Relationship to the flow:** This record is referenced by the flow's `<remote_trigger_id>` field, the same pattern used by `sys_flow_catalog_trigger` (Section 3.11). The `sys_hub_trigger_instance_v2` for a scheduled flow references the matching schedule-type trigger definition listed in Section 5.1 (Daily, Weekly, Monthly, Repeat, Run Once, Recurrence), with `trigger_type` set to that row's key (e.g. `daily`, `repeat`). Its `trigger_inputs` blob is covered in Section 7.4.4.
+ 
+ **Important:** The `time` field in `sys_flow_timer_trigger` is stored in **UTC**. The Flow Designer UI converts it to the user's timezone for display. When generating XML, always use UTC values and note the timezone assumption in `CONFIGURATION_NOTES` so the importer can verify the intended schedule.
+ 
+@@ -815,7 +819,7 @@
+   <hint/>
+   <label>{{DISPLAY_LABEL}}</label>
+   <language>en</language>
+-  <n>{{DOC_NAME_PREFIX}}</n>
++  <name>{{DOC_NAME_PREFIX}}</name>
+   <plural/>
+   <sys_class_name>sys_documentation</sys_class_name>
+   <sys_created_by>{{CREATOR}}</sys_created_by>
+@@ -829,9 +833,9 @@
+ </sys_documentation>
+ ```
+ 
+-`[OBSERVED_YOKOHAMA]` **Naming conventions for the `<n>` field:**
++`[OBSERVED]` **Naming conventions for the `<name>` field:**
+ 
+-| Record type | `<n>` value |
++| Record type | `<name>` value |
+ |---|---|
+ | Flow input | `var__m_sys_hub_flow_input_{{FLOW_SYS_ID}}` |
+ | Flow output | `var__m_sys_hub_flow_output_{{FLOW_SYS_ID}}` |
+@@ -852,7 +856,7 @@
+ ```xml
+ <sys_flow_cat_variable_model action="INSERT_OR_UPDATE">
+   <id>{{FLOW_SYS_ID}}</id>
+-  <n>{{MODEL_DISPLAY_NAME}}</n>
++  <name>{{MODEL_DISPLAY_NAME}}</name>
+   <sys_class_name>sys_flow_cat_variable_model</sys_class_name>
+   <sys_created_by>{{CREATOR}}</sys_created_by>
+   <sys_created_on>{{TIMESTAMP}}</sys_created_on>
+@@ -906,15 +910,15 @@
+ 
+ ## 5. KNOWN OOB SYS_IDS
+ 
+-> **⚠ CRITICAL: ALWAYS VERIFY BEFORE USE.** The sys_ids below are **examples only**, extracted from a Yokohama release instance. OOB sys_ids are *usually* stable across releases but **can differ** between instances, especially after upgrades, plugin activations, or heavy customization. **If any sys_id is wrong, the import will produce "Could not find a record" preview errors** that are opaque to debug.
++> **⚠ CRITICAL: ALWAYS VERIFY BEFORE USE.** The sys_ids below were verified on Zurich (Patch 10) and Australia (Patch 2) instances (first extracted from Yokohama). OOB sys_ids are *usually* stable across releases but **can differ** between instances, especially after upgrades, plugin activations, or heavy customization. **If any sys_id is wrong, the import will produce "Could not find a record" preview errors** that are opaque to debug.
+ >
+ > **Before using this prompt's output on a target instance, verify key sys_ids:**
+-> 1. Navigate to `sys_hub_action_type_definition.list` and filter by `Name` to confirm action type sys_ids
++> 1. Navigate to `sys_hub_action_type_base.list` (for `action_type`) and `sys_hub_action_type_definition.list` (for `action_type_parent`) and filter by `Name` to confirm action type sys_ids
+ > 2. Navigate to `sys_hub_trigger_definition.list` to confirm trigger definition sys_ids
+-> 3. Navigate to `sys_hub_logic_definition.list` to confirm logic definition sys_ids
++> 3. Navigate to `sys_hub_flow_logic_definition.list` to confirm logic definition sys_ids
+ > 4. If any differ, substitute the correct values from your target instance
+ 
+-### 5.1 Trigger Definitions `[OBSERVED_YOKOHAMA]` `[TARGET_VERIFY]`
++### 5.1 Trigger Definitions `[OBSERVED]` `[TARGET_VERIFY]`
+ 
+ | Display Name | sys_id | trigger_type key |
+ |---|---|---|
+@@ -922,29 +926,35 @@
+ | Created | `798916a0c31322002841b63b12d3ae7c` | `record_create` |
+ | Updated | `bb695e60c31322002841b63b12d3aea5` | `record_update` |
+ | Created or Updated | `a45d9180c32222002841b63b12d3aea7` | `record_create_or_update` |
+-
+-**Note:** The scheduled/timer trigger definition sys_id is not listed here. Scheduled flows use `sys_flow_timer_trigger` (Section 3.13) rather than the record/catalog trigger pattern, and the corresponding `sys_hub_trigger_definition` entry must be looked up on your target instance via `sys_hub_trigger_definition_list.do`. See Section 3.13 for details.
++| Daily (scheduled) | `89142dc0c32222002841b63b12d3ae8a` | `daily` |
++| Weekly (scheduled) | `cf352104c32222002841b63b12d3ae1f` | `weekly` |
++| Monthly (scheduled) | `2ca52504c32222002841b63b12d3ae4a` | `monthly` |
++| Repeat (scheduled) | `f63f0d94c32222002841b63b12d3aeed` | `repeat` |
++| Run Once (scheduled) | `0a76e504c32222002841b63b12d3aeac` | `run_once` |
++| Recurrence (scheduled) | `7b3308f67fd21210a652b9277c8665f0` | `recurrence` |
+ 
+-### 5.2 Action Types (OOB Actions) `[OBSERVED_YOKOHAMA]` `[TARGET_VERIFY]`
++**Note:** `[OBSERVED]` Scheduled flows still create a `sys_hub_trigger_instance_v2` whose `trigger_definition` is the matching schedule-type row above (e.g. Daily `89142dc0…`, Repeat `f63f0d94…`). The schedule itself lives in the `sys_flow_timer_trigger` record (Section 3.13), and `trigger_inputs` carries a small mirror blob (Section 7.4.4). Verify these sys_ids on the target if preview reports a missing trigger definition.
+ 
++### 5.2 Action Types (OOB Actions) `[OBSERVED]` `[TARGET_VERIFY]`
++
+ Each OOB action has **two sys_ids**: the `action_type` (compiled/current) and the `action_type_parent` (base definition). Both must be referenced.
+ 
+ | Display Name | action_type | action_type_parent |
+ |---|---|---|
+ | Create Record | `2de05916c31332002841b63b12d3aee1` | `02f0b88cc3c632002841b63b12d3aeff` |
+ | Update Record | `f9d01dd2c31332002841b63b12d3aea1` | `baf174c8c3c232002841b63b12d3aee4` |
+-| Look Up Record | `9d09f99587003300663ca1bb36cb0ba3` | (use same) |
+-| Look Up Records | `43400a1587003300663ca1bb36cb0b4b` | (use same) |
++| Look Up Record | `9d09f99587003300663ca1bb36cb0ba3` | `b93f42810b30030085c083eb37673a63` |
++| Look Up Records | `43400a1587003300663ca1bb36cb0b4b` | `d1c56ec50b30030085c083eb37673a50` |
+ | Get Catalog Variables | `330ba3abc31013002841b63b12d3aee8` | `22f0b88cc3c632002841b63b12d3aeff` |
+ | Create Catalog Task | `af51fd0e73141300612c273ffff6a785` | `f597c41073081300612c273ffff6a767` |
+-| Send Email | `c1806bf4a70323008299b39f087901cb` | (use same) |
+-| Send Notification | `0d8dd9f10f11101051218e8ebc767e27` | (use same) |
+-| Ask For Approval | `f8f2e9920b10030085c083eb37673abd` | (use same) |
+-| Fire Event | `80a30edeff30311077a95dac793bf19b` | (use same) |
++| Send Email | `c1806bf4a70323008299b39f087901cb` | `98c181d20b100300d97d8bf637673ab5` |
++| Send Notification | `0d8dd9f10f11101051218e8ebc767e27` | `7eda5d710f11101051218e8ebc767ec1` |
++| Ask For Approval | `f8f2e9920b10030085c083eb37673abd` | `bae0a1120b10030085c083eb37673a92` |
++| Fire Event | `80a30edeff30311077a95dac793bf19b` | `15e10e5eff30311077a95dac793bf11e` |
+ 
+-**Note:** Where only one ID is listed for `action_type_parent`, use the same value for both `action_type` and `action_type_parent`. See the verification warning above before using any of these sys_ids.
++**Note:** `action_type` references `sys_hub_action_type_base` (compiled) and `action_type_parent` references `sys_hub_action_type_definition` (definition). They are never the same sys_id. Some older live rows leave `action_type_parent` empty. See the verification warning above before using any of these sys_ids.
+ 
+-### 5.3 Logic Definitions `[OBSERVED_YOKOHAMA]` `[TARGET_VERIFY]`
++### 5.3 Logic Definitions `[OBSERVED]` `[TARGET_VERIFY]`
+ 
+ | Display Name | sys_id |
+ |---|---|
+@@ -960,19 +970,21 @@
+ | Parallel Branch | `a1168de173311300b61e66476bf6a7d0` |
+ | Assign Subflow Outputs | `df4e1945c3e232002841b63b12d3ae3e` |
+ 
+-### 5.4 Step Types (inside Custom Actions) `[OBSERVED_YOKOHAMA]` `[TARGET_VERIFY]`
++### 5.4 Step Types (inside Custom Actions) `[OBSERVED]` `[TARGET_VERIFY]`
+ 
+ | Display Name | sys_id |
+ |---|---|
+ | Script | `106afb6647032200b4fad7527c9a71e7` |
+ | REST | `07a762fb47222200b4fad7527c9a7129` |
+-| JSON Parser | `502328c387523300f917e55936cb0bf0` |
++| JSON Parser | `502328c387523300f917e55936cb0bf0` `[TARGET_VERIFY]` — needs plugin `com.glide.hub.action_step.jsonparser` (inactive on a baseline Zurich PDI; not verified) |
+ 
++Step types reference `sys_flow_step_definition`.
++
+ ---
+ 
+ ## 6. V1 vs V2 TABLES
+ 
+-ServiceNow has two generations of flow child tables. Modern instances (Yokohama+) use V2. If the user specifies or you detect an older release, use V1.
++ServiceNow has two generations of flow child tables. Flow Engine V2 (the `_v2` tables) was introduced in the **Washington DC** release; all current releases (Washington DC, Xanadu, Yokohama, Zurich, Australia) create flows on V2. V1 is legacy. If the user specifies or you detect a pre–Washington DC release, use V1.
+ 
+ | V1 Table | V2 Table |
+ |---|---|
+@@ -1040,7 +1052,7 @@
+ ]
+ ```
+ 
+-The `parameter` object is **boilerplate** copied from the action type definition. It is identical across all instances of the same action type. The only user-specific fields per entry are `value`, `displayValue`, and `scriptActive`.
++The `parameter` object is **boilerplate** copied from the action type definition. Its exact key set varies with the Flow Designer version that last saved the step (see Section 7.3 note), but its content does not depend on the flow. The only user-specific fields per entry are `value`, `displayValue`, and `scriptActive`.
+ 
+ **Optional field: `actionInstanceSysId`.** Some blobs include this field at the entry level. It is **optional and can be omitted**. When present, it does not reliably reference the parent `sys_hub_action_instance_v2.sys_id` -- it appears to be a vestigial copy artifact. Safe to exclude from generated blobs.
+ 
+@@ -1101,9 +1113,9 @@
+ 
+ **Note:** Unlike conditions, `template_value` fields use simple `field=value` assignments, not query operators like `ISNOTEMPTY`, `CONTAINS`, etc. Each segment sets a field value on the target record.
+ 
+-### 7.3 OOB Action Type Parameter Templates `[OBSERVED_YOKOHAMA]`
++### 7.3 OOB Action Type Parameter Templates `[OBSERVED]`
+ 
+-The following parameter IDs and boilerplate structures are **stable across instances** (verified against Yokohama release). The `parameter` block is constant per action type; only `value` and `displayValue` change per instance.
++The following parameter IDs are **stable across releases**: all 39 action-input, 14 trigger-input and 5 logic-input IDs in Sections 7.3–7.5 resolve with matching element names on Zurich Patch 10. The `parameter` block is **not** byte-identical across saved instances. Live data shows a full shape (`typeLabel`, `choices`, `defaultChoices`, `fDataStructure`, `sysClassName`) and a short shape (`type_label`, without those four). The templates below use the full shape, which is observed live. Only `value` and `displayValue` need to change per instance.
+ 
+ > **⚠ VERIFY:** These parameter IDs are derived from the action type definition's input records. They are stable across instances running the same release family but could theoretically differ after major upgrades. Verify by checking `sys_hub_action_input.list?sysparm_query=model=<action_type_sys_id>` on your target instance if import produces unexpected behavior.
+ 
+@@ -1433,9 +1445,9 @@
+ 
+ **Template:** Same array structure. The `approval_conditions` field uses a specialized `approval_rules` type -- for complex approval rules, use Strategy A (Section 7.8) and configure in Flow Designer.
+ 
+-### 7.4 Trigger Instance `trigger_inputs` `[OBSERVED_YOKOHAMA]` — JSON Array Format
++### 7.4 Trigger Instance `trigger_inputs` `[OBSERVED]` — JSON Array Format
+ 
+-Trigger input blobs (`sys_hub_trigger_instance_v2.trigger_inputs`) are also **JSON arrays**, but entries have a slightly different shape than action instance entries. Key differences: trigger entries include `label`, `internalType`, `order`, and optionally `choiceList` at the top level, and may include `displayField`, `triggerInstanceSysId`, and `fromTemplate`.
++Trigger input blobs (`sys_hub_trigger_instance_v2.trigger_inputs`) are also **JSON arrays**, but entries have a slightly different shape than action instance entries. Key differences: trigger entries include `label`, `internalType`, `order`, and optionally `choiceList` at the top level, and may include `displayField`, `triggerInstanceSysId`, `fromTemplate`, `dependent`, and `children`. `[OBSERVED]` `valueSysId` is present on scheduled-trigger entries and absent on record-trigger entries; treat it as optional.
+ 
+ **Entry structure:**
+ 
+@@ -1523,9 +1535,9 @@
+ 
+ #### 7.4.4 Scheduled/Timer Triggers
+ 
+-Scheduled triggers (`sys_flow_timer_trigger`, Section 3.13) do **not** use `trigger_inputs` blobs. The `trigger_inputs` field on their `sys_hub_trigger_instance_v2` record is empty. All schedule configuration lives in the `sys_flow_timer_trigger` record itself (`timer_type`, `time`, `day_of_week`, `day_of_month`, `run_start`, `run_period`).
++Scheduled triggers keep their schedule in the `sys_flow_timer_trigger` record (Section 3.13), **and** their `sys_hub_trigger_instance_v2.trigger_inputs` carries a blob mirroring it. `[OBSERVED]` On Zurich, all 4 sampled daily/repeat instances were non-empty. Daily has one entry `time` (`glide_time`, parameter id `3ad4edc0c32222002841b63b12d3aee5`, value like `1970-01-01 06:00:00`). Repeat has one entry `repeat` (`glide_duration`, parameter id `1c5f4d94c32222002841b63b12d3aeb3`, value like `1970-01-01 00:15:00`). Weekly, monthly and run-once were not observed (no OOTB instances).
+ 
+-When generating a scheduled-triggered flow, leave `trigger_inputs` empty on the trigger instance and generate the `sys_flow_timer_trigger` record per Section 3.13.
++When generating a scheduled-triggered flow, generate the `sys_flow_timer_trigger` record per Section 3.13. For Daily and Repeat, also emit the matching one-entry `trigger_inputs` blob using the entry shape in Section 7.4 and the parameter ids above. For other schedule types, leave `trigger_inputs` empty and rely on republish, noting it in `CONFIGURATION_NOTES`.
+ 
+ ### 7.5 Flow Logic `values` `[REVERSE_ENGINEERED]` — JSON Object Format
+ 
+@@ -1838,7 +1850,7 @@
+ | Record Create `trigger_inputs` | Yes | Section 7.4.1 |
+ | Record Update `trigger_inputs` | Yes | Section 7.4.2 |
+ | Record Create or Update `trigger_inputs` | Yes | Section 7.4.3 |
+-| Scheduled `trigger_inputs` | N/A | No blob -- config in `sys_flow_timer_trigger` (Section 7.4.4) |
++| Scheduled `trigger_inputs` | Partial | Daily/Repeat one-entry blobs observed; others rely on republish (Section 7.4.4) |
+ | If / Else If `values` | Yes | Section 7.5.1, 7.5.2 |
+ | For Each `values` | Yes | Section 7.5.5 |
+ | Do Until `values` | Yes | Section 7.5.6 |
+@@ -1870,7 +1882,7 @@
+ 
+ ### 7.9 Legacy Reference: V1 Tables with Explicit Mappings (Strategy B)
+ 
+-V1 tables (`sys_hub_action_instance`, etc.) represent all mappings via explicit `sys_variable_value` and `sys_element_mapping` records instead of blobs. This approach is **no longer recommended** given the blob generation capability above, but is documented here for reference when working with pre-Yokohama instances that use V1 natively.
++V1 tables (`sys_hub_action_instance`, etc.) represent all mappings via explicit `sys_variable_value` and `sys_element_mapping` records instead of blobs. This approach is **no longer recommended** given the blob generation capability above, but is documented here for reference when working with pre–Washington DC instances that use V1 natively.
+ 
+ **⚠ See the risk note in Section 6 regarding V1 compatibility on V2 instances.**
+ 
+@@ -1925,7 +1937,7 @@
+ - `ui_id` fields are standard UUID v4 format: `xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx` (where `y` is one of `8`, `9`, `a`, `b`)
+ - Generate unique GUIDs for every record — never reuse
+ - The `remote_sys_id` and `update_guid` in the outer wrapper are also 32-character hex GUIDs
+-- `payload_hash` — see Section 1 for correct computation guidance. Do not use arbitrary values.
++- `payload_hash` — see Section 1. The platform's algorithm is not reproducible offline; emit a best-effort value.
+ - `sys_recorded_at` — see Section 1 for correct hex timestamp format. Do not use decimal values.
+ 
+ ---
+@@ -1969,11 +1981,11 @@
+     <copied_from/>
+     <copied_from_name/>
+     <description>{{DESCRIPTION}}</description>
+-    <ih_action>true</ih_action>
++    <ih_action>false</ih_action><!-- true only if the action contains an IntegrationHub step (REST, spoke) -->
+     <internal_name>{{snake_case_name}}</internal_name>
+     <label_cache>{{JSON_LABEL_CACHE}}</label_cache>
+     <master_snapshot>{{ACTION_SNAPSHOT_SYS_ID}}</master_snapshot>
+-    <n>{{ACTION_DISPLAY_NAME}}</n>
++    <name>{{ACTION_DISPLAY_NAME}}</name>
+     <natlang/>
+     <outputs/>
+     <pre_compiled>false</pre_compiled>
+@@ -2001,6 +2013,7 @@
+   <!-- Action outputs (sys_hub_action_output) -->
+   <sys_hub_action_output action="delete_multiple" query="model={{ACTION_SYS_ID}}^sys_idNOT IN{{OUTPUT_IDS}}"/>
+   <sys_hub_action_output action="INSERT_OR_UPDATE">...</sys_hub_action_output>
++  <!-- Recommended (24 of 34 OOTB Script-step actions on Zurich have both): the system outputs `__action_status__` (attributes include `co_type_name=FDACTIONSTATUS,uiType=object`) and `__dont_treat_as_error__` (attributes include `action_error_output=true,visible_in_ui=false`). Republishing adds them if omitted. -->
+ 
+   <!-- Step instances within the action -->
+   <sys_hub_step_instance action="delete_multiple" query="action={{ACTION_SYS_ID}}^sys_idNOT IN{{STEP_IDS}}"/>
+@@ -2088,7 +2101,7 @@
+ ```xml
+ <sys_complex_object action="INSERT_OR_UPDATE">
+   <label/>
+-  <n>FD{{SYS_ID_WITHOUT_DASHES}}</n>
++  <name>FD{{SYS_ID_WITHOUT_DASHES}}</name>
+   <namespace>FlowDesigner</namespace>
+   <scope_name>global</scope_name>
+   <serialized_content>{{JSON_SCHEMA_DEFINITION}}</serialized_content>
+@@ -2268,7 +2281,7 @@
+ ### After Importing the Update Set:
+ 
+ 1. **Preview the update set** in `System Update Sets > Retrieved Update Sets`. Resolve any preview errors.
+-   - If you see "Could not find a record in sys_hub_flow_version": the version record is missing — see Section 3.12. On unpatched Zurich instances, apply Patch 5 or capture the version record from the source instance.
++   - If you see "Could not find a record in sys_hub_flow_version": the version record is missing — see Section 3.12 (PRB1921408, fixed in Zurich Patch 5 and Australia). On Zurich below Patch 5, patch the instance or capture the `sys_hub_flow_version` record from the source instance.
+    - If you see "Could not find record" for action types: the OOB sys_ids may differ on your instance — see Section 5.
+ 2. **Commit the update set.**
+ 3. **Open the flow in Flow Designer** (`Process Automation > Flow Designer`).
+@@ -2289,7 +2302,7 @@
+ 
+ ### Caveats:
+ 
+-- **Scheduled triggers** use `sys_flow_timer_trigger` records (Section 3.13). The timer trigger record itself is fully serializable in XML, but the associated `sys_hub_trigger_instance_v2` still requires a `trigger_definition` sys_id that must be verified on the target instance (see Section 3.13 and Section 5.1). After import, verify the schedule configuration (especially timezone — `time` is stored in UTC) and republish the flow.
++- **Scheduled triggers** use `sys_flow_timer_trigger` records (Section 3.13). The timer trigger record itself is fully serializable in XML, and the associated `sys_hub_trigger_instance_v2` uses the schedule-type `trigger_definition` from Section 5.1 (see Section 3.13 and Section 7.4.4). After import, verify the schedule configuration (especially timezone — `time` is stored in UTC) and republish the flow.
+ - **OOB action sys_ids** may differ between instances/releases. If import fails with "Could not find record" errors for action types, look up the correct sys_ids on your target instance by navigating to `sys_hub_action_type_definition.list`.
+ - **Application Repository** is ServiceNow's recommended transport for Flow Designer content in production pipelines, though in practice most shops still use update sets. This transpiler uses the normal update-set XML transport format but synthesizes records instead of letting a source instance capture them -- that is the precise risk. The platform's capture/validation pass is bypassed, which is why republishing and testing on the target are mandatory.
+ - **Cross-scope complex objects** are the most common "silent failure" in Flow Designer migration. If your flow uses custom actions that parse JSON/XML, verify that the `sys_complex_object` records are included and scoped correctly (see Section 11.2). If "Changed Fields" appears empty in the action after import, recreate the complex object manually on the target.
+@@ -2300,7 +2313,7 @@
+ 
+ When the user provides JavaScript source records:
+ 
+-1. **Confirm the target release family** -- ask the user for their target instance's release (Yokohama, Xanadu, Zurich, etc.). If the user does not specify, assume Yokohama and explicitly mark that assumption in `CONFIGURATION_NOTES`. All sys_ids, parameter IDs, and blob structures in this prompt are verified against Yokohama; other releases require target-instance verification of Section 5 and Section 7 values.
++1. **Confirm the target release family** -- ask the user for their target instance's release (Australia, Zurich, etc.). If the user does not specify, assume Australia and explicitly mark that assumption in `CONFIGURATION_NOTES`. Section 5 and Section 7 sys_ids and parameter IDs are verified on Zurich Patch 10 and Australia Patch 2; other releases require target-instance verification of those values.
+ 2. **Analyze the source** — identify the trigger (what initiates execution), the core logic (queries, creates, updates, conditions, loops), and the outputs.
+ 3. **Design the flow** — map JS operations to Flow Designer equivalents per Section 12. List out the steps in order.
+ 4. **Assess conversion suitability** — include a **Conversion Suitability** assessment in your design presentation:
+@@ -2326,10 +2339,10 @@
+ 6. **Keep step ordering globally sequential** — the `<order>` field determines execution sequence across the entire flow. Order numbers do NOT restart inside nested blocks. Leave gaps (e.g., 1, 5, 10, 15) for future insertions. See Section 3.5 for the full nesting model.
+ 7. **Match ui_id between flow and snapshot** sections for the same logical step.
+ 8. **Include documentation records** (`sys_documentation`) for each flow input, output, and variable per Section 3.14. Use the `var__m_sys_hub_flow_{input|output|variable}_{{FLOW_SYS_ID}}` naming convention.
+-9. **The `<n>` tag** in the outer `sys_update_xml` must match the pattern `sys_hub_flow_{{FLOW_SYS_ID}}` (or `sys_hub_action_type_definition_{{SYS_ID}}` for actions).
++9. **The `<name>` tag** in the outer `sys_update_xml` must match the pattern `sys_hub_flow_{{FLOW_SYS_ID}}` (or `sys_hub_action_type_definition_{{SYS_ID}}` for actions).
+ 10. **Set `<table>` correctly** in the outer `sys_update_xml` — use `sys_hub_flow` for flows, `sys_hub_action_type_definition` for actions.
+ 11. **Set `sys_customer_update` to `true`** on all primary records to ensure upgrade protection.
+-12. **Always include `sys_hub_flow_version`** (Section 3.12). The risk is asymmetric: costs nothing on pre-Zurich, prevents hard failure on Zurich+.
++12. **Always include `sys_hub_flow_version`** (Section 3.12). The risk is asymmetric: costs nothing where it isn't needed, prevents a hard preview failure on Zurich below Patch 5.
+ 13. **Include `sys_complex_object`** records when custom actions parse JSON/XML — and scope them to the action's scope (Section 10.1, Section 11.2).
+ 14. **Set `parent_ui_id` correctly on all nested steps.** Every action instance, subflow instance, and logic block inside a logic block must have `parent_ui_id` set to the enclosing block's `ui_id`. Top-level items have empty `parent_ui_id`.
+ 15. **Validate your output** — walk through the XML as if you were the import engine, checking each item in this list:
+@@ -2341,7 +2354,7 @@
+     - Every `ui_id` is mirrored between flow and snapshot sections for the same logical step
+     - Every `delete_multiple` query uses the correct parent sys_id (flow or snapshot)
+     - Every `sys_id` is unique across the entire XML -- no duplicates
+-    - `<n>` in `sys_update_xml` matches `sys_hub_flow_{{FLOW_SYS_ID}}`
++    - `<name>` in `sys_update_xml` matches `sys_hub_flow_{{FLOW_SYS_ID}}`
+     - `<table>` in `sys_update_xml` is set correctly
+     - All data pill references use valid `ui_id` values from steps that precede them in execution order
+     - `CONFIGURATION_NOTES` documents any steps using Strategy A placeholders

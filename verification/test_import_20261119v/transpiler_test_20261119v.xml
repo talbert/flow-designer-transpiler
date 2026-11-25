@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unload unload_date="2026-11-20 06:48:53">
+<sys_remote_update_set action="INSERT_OR_UPDATE">
+<application display_value="Global">global</application>
+<application_name>Global</application_name>
+<application_scope>global</application_scope>
+<application_version/>
+<collisions/>
+<commit_date/>
+<deleted/>
+<description>Transpiler prompt test 20b on dev435256: Create or Update Record with coalesce_fields. Safe to delete.</description>
+<inserted/>
+<name>Transpiler Test 20261119v</name>
+<origin_sys_id/>
+<parent display_value=""/>
+<release_date/>
+<remote_base_update_set display_value=""/>
+<remote_parent_id/>
+<remote_sys_id>83532ef72e36786a6ed11d9b278bceeb</remote_sys_id>
+<state>loaded</state>
+<summary/>
+<sys_class_name>sys_remote_update_set</sys_class_name>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2026-11-20 06:48:53</sys_created_on>
+<sys_id>e228b53ee0695c680f674ffb2005e81e</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2026-11-20 06:48:53</sys_updated_on>
+<update_set display_value=""/>
+<update_source display_value=""/>
+<updated/>
+</sys_remote_update_set>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>retrieved</category>
+<comments/>
+<name>sys_hub_flow_74b5121a00a0fd559b5d4d5e59d1ea8a</name>
+<payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_hub_flow"><sys_hub_flow action="INSERT_OR_UPDATE" apply_defaults="true"><sys_id>74b5121a00a0fd559b5d4d5e59d1ea8a</sys_id><sys_scope display_value="Global">global</sys_scope><sys_update_name>sys_hub_flow_74b5121a00a0fd559b5d4d5e59d1ea8a</sys_update_name><access>public</access><active>false</active><allow_high_security_roles>false</allow_high_security_roles><description>Transpiler test 20b. Create or Update Record with coalesce_fields, for incidents whose short description starts with TT20BRUN. Safe to delete.</description><flow_priority>MEDIUM</flow_priority><generation_source>fluent</generation_source><label_cache>[{"name":"Created_1.current.number","label":"Trigger - Record Created➛incident Record➛number","type":"string","base_type":"string","usedInstances":{"98970c45-6b21-c026-6082-465e7fd68a62":["fields"]},"attributes":{}},{"name":"Created_1.current","label":"Trigger - Record Created➛incident Record","type":"reference","base_type":"reference","usedInstances":{"e4049a61-2a1d-2345-e7bb-36189f035bf8":["record"]},"attributes":{}},{"name":"98970c45-6b21-c026-6082-465e7fd68a62.status","label":"98970c45-6b21-c026-6082-465e7fd68a62➛status","type":"string","base_type":"string","usedInstances":{"e4049a61-2a1d-2345-e7bb-36189f035bf8":["values"]},"attributes":{}},{"name":"98970c45-6b21-c026-6082-465e7fd68a62.record.last_name","label":"98970c45-6b21-c026-6082-465e7fd68a62➛record➛last_name","type":"string","base_type":"string","usedInstances":{"e4049a61-2a1d-2345-e7bb-36189f035bf8":["values"]},"attributes":{}}]</label_cache><name>TT20b Create or Update</name><run_as>system</run_as><show_draft_actions>false</show_draft_actions><status>draft</status><type>flow</type><version>2</version></sys_hub_flow><sys_hub_trigger_instance_v2 action="delete_multiple" query="flow=74b5121a00a0fd559b5d4d5e59d1ea8a^sys_idNOT INa98eb8329be96a91daa0cf94e6519c64" /><sys_hub_trigger_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true"><sys_id>a98eb8329be96a91daa0cf94e6519c64</sys_id><sys_scope display_value="Global">global</sys_scope><sys_update_name>sys_hub_trigger_instance_v2_a98eb8329be96a91daa0cf94e6519c64</sys_update_name><flow>74b5121a00a0fd559b5d4d5e59d1ea8a</flow><name>Created</name><trigger_definition>798916a0c31322002841b63b12d3ae7c</trigger_definition><trigger_inputs>H4sIAAAAAAAC/8VXUU/bMBD+K1aeNolJbI97gzG0SgwkWsYDQpEbX1prrl3Zl0KE+t93Nk2apGlJUcKeUO7C3efv+865PrxEaOVsBnakHXKdwDh3IxF9Z1F0wiLFp6D8w4RPFfiI1AhWczXJl+AT6BOx5ouQFbAELUBjUSCZG5nAlXQ+8vBIkQXXgqOxOQXQZkAhYwVYevx6ekpPoVZR2ddYcZWFiNSJDMV9J+mWiud/DuQuJajyJC6xcolnCcqVfz/lykHAJ5WwoAt0S26pPQY4RE3rIXcANlhar09YR1pvM81uNPv5jJ42wUIB18bzK5EdOH6J0pIUz69/I72qNjSaJZmlQyMjLRgUzbFsno4WfAZF/XQMChIEUeEtvXP159/SOalnRShQsAUSYm1IVF6FUzLaA4Cm14oX281mMx0bHRdc1GxXgm96rpnoz3BbtQ8A7OAijmTDaYb05MtzsfJeFKU31kd69X4Omo2BmDb+L6JnvC+3Tg3Odz2SGsvOKcNGvgcPfAbfXhv9pRrbwBrGwJq4l9tmdZg33sYF1j2wBkHVDRHVtGw4SMcP2hO5KHZb96yaDmgOWiM+9Jw18XUagb5HLVXmiVTrbbq4zluGyzeRmuYpZ4mhNs84iFGnPPk7sybTYj+G7Tvsk4CUZwo/D/MxMhbeAtN4539MiYdCd059QGo87oxJW3boYanA3OffPkfjh9FC4ub22hmMIunesYweViSp9i31cHNjMRbwyitlx5Oz28n4fjT5NZl8Oz2/vbtuE+q4f+tRwRo/rUdrJ7qh4BPX6GI0MRcirhStrJwLI0BdVBXYyEteWWboonVVIVptaht15iCuyuervmdVCZ++vveU9puUPrT+FiXkdpBby2iITbrnMy9TtiGG1r9pznAOhEjRCFLBgGmotchLtwvswjBKMfuh0N65iHgIrdvIRufm8NbDH7KLNCG+bfRBFv/QJExEyyjNFP3+jtUm2+vdW+ehaFHq1CbSkQqFWrXTd9OsfujDeN/gs4Nij/8A1YjPjK4RAAA=</trigger_inputs><trigger_type>record_create</trigger_type></sys_hub_trigger_instance_v2><sys_hub_action_instance_v2 action="delete_multiple" query="flow=74b5121a00a0fd559b5d4d5e59d1ea8a^sys_idNOT IN98970c456b21c0266082465e7fd68a62,e4049a612a1d2345e7bb36189f035bf8" /><sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true"><sys_id>98970c456b21c0266082465e7fd68a62</sys_id><sys_scope display_value="Global">global</sys_scope><sys_update_name>sys_hub_action_instance_v2_98970c456b21c0266082465e7fd68a62</sys_update_name><action_type>e057d2e253b3230034c6ddeeff7b1261</action_type><action_type_parent>e057d2e253b3230034c6ddeeff7b1261</action_type_parent><active>true</active><flow>74b5121a00a0fd559b5d4d5e59d1ea8a</flow><order>1</order><sys_class_name>sys_hub_action_instance_v2</sys_class_name><ui_id>98970c45-6b21-c026-6082-465e7fd68a62</ui_id><values>H4sIAAAAAAAC/71QQQqDMBD8iuQsYj0KHtp+QXopNaxxhUC0kl0Fkfy9idKWFi+99Dizw8zsXBfRQ4cijwRDbVCuKI7EBGZcaZpJjoQ2kI2mwcB82buRsnrgo2I9hVsLhtDTA1jvyF6TR4vgefjOci6O3iVajaahjwIhYJUWzFlaJwFXrbbEG1uWWXqqDDzxspwtAmMjD4karcWek37sarTOVeoOBkmh3IKKl/nee/9L/m087HxNRrlN5NztAWx6zx7GAQAA</values></sys_hub_action_instance_v2><sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true"><sys_id>e4049a612a1d2345e7bb36189f035bf8</sys_id><sys_scope display_value="Global">global</sys_scope><sys_update_name>sys_hub_action_instance_v2_e4049a612a1d2345e7bb36189f035bf8</sys_update_name><action_type>f9d01dd2c31332002841b63b12d3aea1</action_type><action_type_parent>f9d01dd2c31332002841b63b12d3aea1</action_type_parent><active>true</active><flow>74b5121a00a0fd559b5d4d5e59d1ea8a</flow><order>2</order><sys_class_name>sys_hub_action_instance_v2</sys_class_name><ui_id>e4049a61-2a1d-2345-e7bb-36189f035bf8</ui_id><values>H4sIAAAAAAAC/82SzWrDMBCEX0XoHBtHJIpT6KGUPkAh9BJas5Y2IJB/kFaBIPTuVexDSXChufWoWc3sp0HHyHvokD8xTtBabKbTivEz2DDJpldGY09XURs/Wrh8LM28cmakF0XmfJ2dwHrM8gguJxK6rEVOl/F+V0or9gPhUA1O3wDE+OoQCHWzLlVwLu9LaYnm14sPoelBhS5bG6Pv2CYif8Omcc42Q/98OIiqZWH06IgdY9zX+12lNttCtmJdqErIQla1KDZyi7uTljVIUXoCCj6lTxay78+2uabSgqepxRzw9fa+VMr/I3zso2CXn0PYzJXnlG/kEIlnsgIAAA==</values></sys_hub_action_instance_v2><sys_hub_alias_mapping action="delete_multiple" query="source_id=98970c456b21c0266082465e7fd68a62" /><sys_hub_alias_mapping action="delete_multiple" query="source_id=e4049a612a1d2345e7bb36189f035bf8" /><sys_hub_flow_logic_instance_v2 action="delete_multiple" query="flow=74b5121a00a0fd559b5d4d5e59d1ea8a" /></record_update>]]></payload>
+<payload_hash>-180274787</payload_hash>
+<remote_update_set display_value="Transpiler Test 20261119v">e228b53ee0695c680f674ffb2005e81e</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2026-11-20 06:48:53</sys_created_on>
+<sys_id>be68a3309647410419c8cf5997e97993</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>1a1f7b715ba0000001</sys_recorded_at>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2026-11-20 06:48:53</sys_updated_on>
+<table>sys_hub_flow</table>
+<target_name>TT20b Create or Update</target_name>
+<type>Flow</type>
+<update_domain>global</update_domain>
+<update_guid>34355427b7d85d6e9812a5d3caab0175</update_guid>
+<update_guid_history>34355427b7d85d6e9812a5d3caab0175:-180274787</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+</unload>

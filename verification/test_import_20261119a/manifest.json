@@ -1,0 +1,124 @@
+{
+ "generated_utc": "2026-11-19 22:13:02",
+ "update_set": "Transpiler Test 20261119a",
+ "retrieved_set_sys_id": "3eb6e33a8f1ad4d0adcd16dcf27f504c",
+ "flows": [
+  {
+   "name": "TT3a Min A names only",
+   "id": "27b028656ec2f1cc99c4e8f8af0f83fd",
+   "snap": "ea830bdc10e48ad4097d8a928d957592",
+   "trigger": "0a044033d6c062afe20ea2740f26b1c1",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "17bc8f72-f489-4d28-ab7d-aa855970fa43",
+     "id": "304f3911e66cbf9fc346b67f5f7f0965",
+     "sid": "55e26ac02813f6be08c328fad30b5d7d"
+    },
+    {
+     "kind": "logic",
+     "order": 2,
+     "ui": "e8c6e1c9-f656-4873-a935-1c69c3f1b52e",
+     "id": "0a46bd4156eb717292aa62169fd754e3",
+     "sid": "ee09941f0802fb15fb9334367e41b202"
+    },
+    {
+     "kind": "action",
+     "order": 3,
+     "ui": "743a9d07-bebc-4207-88cc-8acb1bedfe82",
+     "id": "a04f470d7dc68d67fdd2dadd4d4596f5",
+     "sid": "30e8de3bd8e8e9c1f30654bab1b62a31"
+    }
+   ]
+  },
+  {
+   "name": "TT3a Min B ids no boilerplate",
+   "id": "10d4a27a1e6708c077f9e508e82974e3",
+   "snap": "0885d68651bfef69227f099a66ee915f",
+   "trigger": "93c0d75ababc8acf4eb8f049f0a5b0e4",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "cfccebf0-d564-43db-acf8-031033676b2f",
+     "id": "467e253fa13545230ba2fe5454d5bc9a",
+     "sid": "9da84e2ef698ea61a547e787a8d91a10"
+    },
+    {
+     "kind": "logic",
+     "order": 2,
+     "ui": "4d8d6fc2-f85c-4dcf-b2b7-bb19e7496b8f",
+     "id": "c78da35b5ac168a8886536e8f237c615",
+     "sid": "4564222952cda9166d2be288853aeef9"
+    },
+    {
+     "kind": "action",
+     "order": 3,
+     "ui": "8b5c2e89-09bb-4134-a9bc-471b6ecf67a8",
+     "id": "9be17f756d70bc1725a7da4859cc83c8",
+     "sid": "dbabf6d429971b1b91fc660a98383f39"
+    }
+   ]
+  },
+  {
+   "name": "TT3a Full with label cache",
+   "id": "ebd2c801296e5f3d597680f354d6446b",
+   "snap": "f54792d11257bf9d5902f6d242ac3d5e",
+   "trigger": "2b06ac2b66c5298c59941b11d36fd663",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "3e4d5286-168a-4f40-93f4-e6afe320066d",
+     "id": "460550fe7bfbcee8ff24e4a9b69be34a",
+     "sid": "ea2cfcc42f0acf342e9187767b8c6d3c"
+    },
+    {
+     "kind": "logic",
+     "order": 2,
+     "ui": "85d72360-c7ba-49af-8ab9-ec59e3cf03a0",
+     "id": "971bab7610cbd6aabc0e86624b953b2b",
+     "sid": "d2e22b63ec86b2f52104f532c2e38288"
+    },
+    {
+     "kind": "action",
+     "order": 3,
+     "ui": "fdbd85dd-9f5a-4376-be4e-546227d36ee7",
+     "id": "871d69b16a895bcef4c94e19d9d01e24",
+     "sid": "ba66f417145571b6e73ab3e320aead5b"
+    }
+   ]
+  },
+  {
+   "name": "TT3a Daily",
+   "id": "0b44ae456040c35c5e464add26432187",
+   "snap": "d87e7fb57a8ea18fcb4317ecb5f4beb5",
+   "trigger": "55b31aa4ac9f97911173fe761ceef7b7",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "f48c704d-76df-4e25-8672-0eec70421848",
+     "id": "500dd0368375845350362fe953235092",
+     "sid": "17aac921e29b3d69bbcd7275d3d4deaf"
+    }
+   ]
+  },
+  {
+   "name": "TT3a Catalog",
+   "id": "3472cc057e10d08a93a5b7790ef5ba40",
+   "snap": "2ad4c69b0da9d45b685f1701796892f5",
+   "trigger": "6da46869e34ead2d94a283e0ea0650ab",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "01047087-805a-4b97-86fb-80df864e0b46",
+     "id": "356caab494c51c1284eedfd26fe54c98",
+     "sid": "2f484586cfe9224083814222496239c3"
+    }
+   ]
+  }
+ ]
+}

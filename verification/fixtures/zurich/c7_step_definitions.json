@@ -1,0 +1,15 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "sys_id": "07a762fb47222200b4fad7527c9a7129",
+   "name": "REST"
+  },
+  {
+   "sys_id": "106afb6647032200b4fad7527c9a71e7",
+   "name": "Script"
+  }
+ ]
+}

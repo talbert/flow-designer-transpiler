@@ -1,0 +1,57 @@
+{
+ "generated_utc": "2026-11-20 01:38:15",
+ "update_set": "Transpiler Test 20261119i",
+ "retrieved_set_sys_id": "3fd374a939ed419c1374aa87fe690931",
+ "action": {
+  "name": "TT8 Multi Step Action",
+  "id": "846ae77bf70de6d1ba3d8b30b540efdd",
+  "snap": "734210a86a9c861f202246f1e603261b",
+  "cid": "ec056ff7-eb89-4cfb-bf55-8803c346a045",
+  "fd": "FD57c18063db4adc478a856b65c243310f"
+ },
+ "dup_action": {
+  "id": "4da5009e0053d3f61d42a1f5c6f29c7a",
+  "snap": "35b7ae50f7dd03c4057acc510846956c",
+  "fd": "FDd0c31385989747c163eacaabccdb37d7"
+ },
+ "flows": [
+  {
+   "name": "TT8 Runtime Multi Step",
+   "id": "abf44d4568e09e4c0bfbb878e4b575f1",
+   "snap": "4d4adb88f85b80b95cb12eaca3415dc9",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "10a9944f-a166-4ce8-8e4d-ffd0c63682e2",
+     "id": "9cadd3ca88bf88fd986223f708f4edad",
+     "sid": "3357c69e765f57209ccd0cec4ccc74cd",
+     "label": "TT8 Multi Step Action"
+    },
+    {
+     "kind": "action",
+     "order": 2,
+     "ui": "389899fe-1345-47f6-ac7b-2ee5114719d9",
+     "id": "3c609670561481016eb7a9c6b12b8509",
+     "sid": "f09d9ef701acdd74ebdb1a91bdfd52f6",
+     "label": "Update Record"
+    }
+   ]
+  },
+  {
+   "name": "TT6 Runtime No Click",
+   "id": "9faac8e4813d6e90b9152953cbb56d43",
+   "snap": "b0426227bbde0318f07ac684ec68fe8f",
+   "steps": [
+    {
+     "kind": "action",
+     "order": 1,
+     "ui": "4880972c-1f21-4646-a369-d5cc15874e7a",
+     "id": "ed3a356f0406713989571bbad16e4aca",
+     "sid": "5a9c1360cc7393a7137406ab982bba9e",
+     "label": "Look Up Record"
+    }
+   ]
+  }
+ ]
+}

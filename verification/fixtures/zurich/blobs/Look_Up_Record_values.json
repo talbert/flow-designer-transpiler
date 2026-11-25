@@ -1,0 +1,286 @@
+{
+ "sys_id": "9ceee9943b1c26101d692a60c5e45a4f",
+ "decoded": [
+  {
+   "id": "d909f99587003300663ca1bb36cb0ba4",
+   "name": "table",
+   "value": "{{subflow.source_table}}",
+   "displayValue": "",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Table Name",
+    "id": "d909f99587003300663ca1bb36cb0ba4",
+    "label": "Table",
+    "name": "table",
+    "type": "table_name",
+    "order": 0,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 80,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+     "filter_table_source": "v_cluster_transaction"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  },
+  {
+   "id": "d509f99587003300663ca1bb36cb0ba9",
+   "name": "conditions",
+   "value": "",
+   "displayValue": "",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Conditions",
+    "id": "d509f99587003300663ca1bb36cb0ba9",
+    "label": "Conditions",
+    "name": "conditions",
+    "type": "conditions",
+    "order": 1,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 4000,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": true,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "ref_qual": "",
+    "dependent_on": "table"
+   },
+   "scriptActive": true,
+   "script": {
+    "conditions": {
+     "scriptActive": true,
+     "script": "return \"sys_id=\" + fd_data.subflow_inputs.source_sys_id;"
+    }
+   }
+  },
+  {
+   "id": "1d09f99587003300663ca1bb36cb0bad",
+   "name": "sort_column",
+   "value": "",
+   "displayValue": "",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Field Name",
+    "id": "1d09f99587003300663ca1bb36cb0bad",
+    "label": "Order by",
+    "name": "sort_column",
+    "type": "field_name",
+    "order": 2,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 80,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": true,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+     "fd_field_inline": "true"
+    },
+    "ref_qual": "",
+    "dependent_on": "table"
+   },
+   "scriptActive": false
+  },
+  {
+   "id": "5d09f99587003300663ca1bb36cb0bb1",
+   "name": "sort_type",
+   "value": "sort_asc",
+   "displayValue": "a to z",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Choice",
+    "id": "5d09f99587003300663ca1bb36cb0bb1",
+    "label": "Sort Type",
+    "name": "sort_type",
+    "type": "choice",
+    "order": 3,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 32,
+    "reference": "",
+    "reference_display": "",
+    "choices": [
+     {
+      "label": "a to z",
+      "value": "sort_asc",
+      "order": 0
+     },
+     {
+      "label": "z to a",
+      "value": "sort_desc",
+      "order": 1
+     }
+    ],
+    "defaultChoices": [
+     {
+      "label": "a to z",
+      "value": "sort_asc",
+      "order": 1
+     },
+     {
+      "label": "z to a",
+      "value": "sort_desc",
+      "order": 2
+     }
+    ],
+    "choiceOption": "3",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "sort_asc",
+    "defaultDisplayValue": "a to z",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "fd_field_inline": "true",
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+     "fd_hide_inline_script_widget": "true",
+     "fd_hide_dotwalk_widget": "true",
+     "fd_display_label": "false"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  },
+  {
+   "id": "1909f99587003300663ca1bb36cb0bb9",
+   "name": "if_multiple_records_are_found_action",
+   "value": "use_first_record",
+   "displayValue": "Return only the first record",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Choice",
+    "id": "1909f99587003300663ca1bb36cb0bb9",
+    "label": "If multiple records are found action",
+    "name": "if_multiple_records_are_found_action",
+    "type": "choice",
+    "order": 4,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 40,
+    "reference": "",
+    "reference_display": "",
+    "choices": [
+     {
+      "label": "Fail the step",
+      "value": "error",
+      "order": 0
+     },
+     {
+      "label": "Return only the first record",
+      "value": "use_first_record",
+      "order": 1
+     }
+    ],
+    "defaultChoices": [
+     {
+      "label": "Fail the step",
+      "value": "error",
+      "order": 1
+     },
+     {
+      "label": "Return only the first record",
+      "value": "use_first_record",
+      "order": 2
+     }
+    ],
+    "choiceOption": "3",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "use_first_record",
+    "defaultDisplayValue": "Return only the first record",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  },
+  {
+   "id": "ceab42a673110010d70877186bf6a74f",
+   "name": "__snc_dont_fail_on_error",
+   "value": "0",
+   "displayValue": "false",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "True/False",
+    "id": "ceab42a673110010d70877186bf6a74f",
+    "label": "Don't fail on error",
+    "name": "__snc_dont_fail_on_error",
+    "type": "boolean",
+    "order": 5,
+    "extended": false,
+    "mandatory": false,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 40,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "uiType": "boolean",
+     "uiTypeLabel": "True/False",
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+     "uiUniqueId": "8e0281dc-8717-4fd6-9da5-a9b573dec4fe"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  }
+ ]
+}

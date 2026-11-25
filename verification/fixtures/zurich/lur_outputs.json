@@ -1,0 +1,1 @@
+{"ok":true,"hasMore":false,"nextOffset":null,"records":[{"label":"Table","internal_type":"table_name","element":"Table","order":"1"},{"label":"Status","internal_type":"choice","element":"status","order":"2"},{"label":"Record","internal_type":"document_id","element":"Record","order":"0"},{"label":"Error Message","internal_type":"string","element":"error_message","order":"3"}]}

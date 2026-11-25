@@ -1,0 +1,84 @@
+{
+ "sys_id": "019d90ba7fdf1a10b8791b46ec8665a3",
+ "decoded": {
+  "outputsToAssign": [],
+  "inputs": [
+   {
+    "name": "condition_name",
+    "value": "Stage is Delivered",
+    "displayValue": "Stage is Delivered",
+    "children": [],
+    "parameter": {
+     "children": [],
+     "type_label": "String",
+     "id": "f0af19c1c32632002841b63b12d3aea3",
+     "label": "Condition Label",
+     "name": "condition_name",
+     "type": "string",
+     "order": 10,
+     "extended": false,
+     "mandatory": false,
+     "readOnly": false,
+     "hint": "",
+     "maxsize": 255,
+     "reference": "",
+     "reference_display": "",
+     "choiceOption": "",
+     "table": "",
+     "columnName": "",
+     "defaultValue": "",
+     "use_dependent": false,
+     "fShowReferenceFinder": false,
+     "local": false,
+     "attributes": {
+      "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+      "use_basic_input": "true"
+     },
+     "ref_qual": "",
+     "dependent_on": ""
+    },
+    "scriptActive": false
+   },
+   {
+    "name": "condition",
+    "value": "{{Created_1.current.stage}}=delivered",
+    "displayValue": "{{Created_1.current.stage}}=delivered",
+    "children": [],
+    "parameter": {
+     "children": [],
+     "type_label": "String",
+     "id": "9a5f5105c32632002841b63b12d3ae46",
+     "label": "Condition",
+     "name": "condition",
+     "type": "string",
+     "order": 20,
+     "extended": false,
+     "mandatory": true,
+     "readOnly": false,
+     "hint": "",
+     "maxsize": 2000,
+     "reference": "",
+     "reference_display": "",
+     "choiceOption": "",
+     "table": "",
+     "columnName": "",
+     "defaultValue": "",
+     "use_dependent": false,
+     "fShowReferenceFinder": false,
+     "local": false,
+     "attributes": {
+      "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper",
+      "is_scriptable": "false"
+     },
+     "ref_qual": "",
+     "dependent_on": ""
+    },
+    "scriptActive": false
+   }
+  ],
+  "variables": [],
+  "decisionTableInputs": [],
+  "dynamicInputs": [],
+  "workflowInputs": []
+ }
+}

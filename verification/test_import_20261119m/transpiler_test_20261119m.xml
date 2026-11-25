@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unload unload_date="2026-11-20 03:03:36">
+<sys_remote_update_set action="INSERT_OR_UPDATE">
+<application display_value="TT11 SDK Probe">8f6baeba9ba94590969cbe31fc69e713</application>
+<application_name>TT11 SDK Probe</application_name>
+<application_scope>x_906694_tt11</application_scope>
+<application_version>0.0.1</application_version>
+<collisions/>
+<commit_date/>
+<deleted/>
+<description>Transpiler prompt test 14: compact flow, to be activated with the Workflow Studio button only. Safe to delete.</description>
+<inserted/>
+<name>Transpiler Test 20261119m</name>
+<origin_sys_id/>
+<parent display_value=""/>
+<release_date/>
+<remote_base_update_set display_value=""/>
+<remote_parent_id/>
+<remote_sys_id>64d4d4a8fd46f82376002d769a1a21d2</remote_sys_id>
+<state>loaded</state>
+<summary/>
+<sys_class_name>sys_remote_update_set</sys_class_name>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2026-11-20 03:03:36</sys_created_on>
+<sys_id>e61b25333f3f45c41cf2cdafc7685cb6</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2026-11-20 03:03:36</sys_updated_on>
+<update_set display_value=""/>
+<update_source display_value=""/>
+<updated/>
+</sys_remote_update_set>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="TT11 SDK Probe">8f6baeba9ba94590969cbe31fc69e713</application>
+<category>retrieved</category>
+<comments/>
+<name>sys_hub_flow_ffe4a4ea237031bdfc889642323292bf</name>
+<payload><![CDATA[<?xml version="1.0"?>
+<record_update table="sys_hub_flow">
+  <sys_hub_flow action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>ffe4a4ea237031bdfc889642323292bf</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_flow_1e75ecd1186301a7f63fb4fffd059468</sys_update_name>
+    <access>public</access>
+    <active>false</active>
+    <allow_high_security_roles>false</allow_high_security_roles>
+    <annotation/>
+    <category/>
+    <description>Transpiler comparison test. Written in Fluent, installed with the SDK. Runs for incidents whose short description starts with TT14RUN. Safe to delete.</description>
+    <flow_priority>MEDIUM</flow_priority>
+    <generation_source>fluent</generation_source>
+    <label_cache>[{"name":"Created_1.current.urgency","label":"Trigger - Record Created➛incident Record➛Urgency","type":"string","base_type":"string","usedInstances":{"0851fbc6-e6b5-4b8e-ab72-7f09ca35a157":["condition"]},"attributes":{}},{"name":"Created_1.current.sys_id","label":"Trigger - Record Created➛incident Record➛Sys Id","type":"reference","base_type":"reference","usedInstances":{"a86e0570-bc15-4e26-9abd-05f6aa50508c":["record"],"93ee417a-23ff-40f2-b90d-4778e4c63e0f":["record"]},"attributes":{}},{"name":"Created_1.current.number","label":"Trigger - Record Created➛incident Record➛Number","type":"string","base_type":"string","usedInstances":{"a86e0570-bc15-4e26-9abd-05f6aa50508c":["values"],"93ee417a-23ff-40f2-b90d-4778e4c63e0f":["values"]},"attributes":{}},{"name":"0da9a9fc-0e4e-4a23-8d3d-99a953169220.Record.name","label":"0da9a9fc-0e4e-4a23-8d3d-99a953169220➛Record➛name","type":"string","base_type":"string","usedInstances":{"a86e0570-bc15-4e26-9abd-05f6aa50508c":["values"]},"attributes":{}}]</label_cache>
+    <name>TT14 Compact Studio Activate</name>
+    <run_as>system</run_as>
+    <run_with_roles/>
+    <show_draft_actions>false</show_draft_actions>
+    <status>draft</status>
+    <sys_policy/>
+    <type>flow</type>
+    <version>2</version>
+  </sys_hub_flow>
+  <sys_hub_trigger_instance_v2 action="delete_multiple" query="flow=ffe4a4ea237031bdfc889642323292bf^sys_idNOT INd0316a8c6f2b59298fe18b4fca3c45bd"/>
+  <sys_hub_trigger_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>b351068a063fd37af0294c4d505f2d7b</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_trigger_instance_v2_d0316a8c6f2b59298fe18b4fca3c45bd</sys_update_name>
+    <category/>
+    <comment/>
+    <flow>ffe4a4ea237031bdfc889642323292bf</flow>
+    <name>Created</name>
+    <trigger_definition>798916a0c31322002841b63b12d3ae7c</trigger_definition>
+    <trigger_inputs>H4sIAAAAAAAC/71XTW/bMAz9K4JPG5ABK7BTb926YQG6Fmjc9VAUhmLRiTBFCiQ6rVHkv4/yRyo7TpMgbk+tKJl8fHwUlYeXCK2czcCOtUOuU5gUbiyi8ygaRYpPQdG/MZ8qoLXUCFZzFRdLIDN6c6L5wu8JWIIWoLH6NJ0bmcKVdLR+eBxFC64FR2OL6BxtDqPIWAE2Oj/7+nUUlS5qf/Ttiqvcr6VOZemRvEu3VLz4u3PnlwRVo3aplUu8SFGu6GzGlQOPRyphQVdoltxSSPQAKP+ebDqI2kSs16NDWLvNNbvR7OczemIEKz922zRWVO2h8CXKmuQ9f7SdXQVxjGZpbik/ZEQ0gyYmNjGz8YLPoHKcTUBBiiA27GR3Llz9kc5JPasNPttN8NKyHV0VIYSGtlOCtjVTH+oRjc11YnTSZBzIp4Ha0U7HfLpwNvXbiWivIjiSnKY50oL8crHykhJNrddHCO5+DppNgKg0/i+ip/RkyU0NzrtFz4xl38nOxt43L1krxXdt9JfQVqMZUoWa+JWvIUJoN16LDb4dUAZEcggKcmbZ8DCO6ZAnkkXiNnJYteva6ZC29X0apAPoAAkP1yOZMk9Uj9Pbgutiqyu8b6mpEQqWGnL/jAOqbcrTfzNrci12xX09wT4JyHiu8POQ17+x8DaA9okPkrcPThdCqOyQqa6+e/beR+WvuPr1N4ymfxgtJFYXSlfRzZY76om2m+00iNVw7ebGYiKgIo72JvHFbTy5H8e/4/js2+3d9XYNjvlmgNqENPRk0sdkuzZPXKNL0CRciCRwt3mOLYwAdRkwXNeNyr/M0UXrgH96HgSPy9xBEpTG+zt24JcTZrBp33et0RjzVxphtQNeJ0ZDYrLewSkzVhNAD6VpwXAOhEJR65CvEsewDwpflC6YS8Nog9kPgXP0OPdBe2Z6Vb1Ou7WM7zjRO5j2CXXgd2/pvdTzVg/MFP1gTFS1N8RF2E65dtzUYLsAh7Nf+giy3F+NVm5vwXuTsL21ePwPtRmhZywQAAA=</trigger_inputs>
+    <trigger_outputs/>
+    <trigger_type>record_create</trigger_type>
+  </sys_hub_trigger_instance_v2>
+  <sys_hub_action_instance_v2 action="delete_multiple" query="flow=ffe4a4ea237031bdfc889642323292bf^sys_idNOT IN47fff54e44826b16f8136ff9ff549241,3c0d037505ddddd523f0910770e44e13,1abcafd42b29146e7dcae6d45ff229fa"/>
+  <sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>65f4d78e5a05bc7fc2eed2a903ee3783</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_instance_v2_47fff54e44826b16f8136ff9ff549241</sys_update_name>
+    <action_type>9d09f99587003300663ca1bb36cb0ba3</action_type>
+    <action_type_parent>9d09f99587003300663ca1bb36cb0ba3</action_type_parent>
+    <active>true</active>
+    <comment/>
+    <display_text/>
+    <flow>ffe4a4ea237031bdfc889642323292bf</flow>
+    <generation_source/>
+    <order>1</order>
+    <parent_ui_id/>
+    <sys_class_name>sys_hub_action_instance_v2</sys_class_name>
+    <ui_id>0da9a9fc-0e4e-4a23-8d3d-99a953169220</ui_id>
+    <updation_source/>
+    <values>H4sIAAAAAAAC/5WRTQqDQAyF75K1JxC66CW6KWVIZ0YaGGeGJAoivXtVij/Vhd3mPd73ktx7iFh7KEESq9EueyigxdDMMxQ7jBxJDtjd9opYpqxXq9QOSoVBfAEZeYhVz1D2MKWWYF+JrIf3u5ihNkVHSinKitqIZzMaLuhqinv43nC+wwJc91B8hs3inZiRcrD4opyGTulT4Q2UKlM3QSkPInub2IlB9qZKTXQG7VhzexZTEYt+zYd3+XX8/5zHB1sYC10TAgAA</values>
+  </sys_hub_action_instance_v2>
+  <sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>3c0d037505ddddd523f0910770e44e13</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_instance_v2_bdc1ad16a1972d6e96e0d64017cfcfb4</sys_update_name>
+    <action_type>f9d01dd2c31332002841b63b12d3aea1</action_type>
+    <action_type_parent>f9d01dd2c31332002841b63b12d3aea1</action_type_parent>
+    <active>true</active>
+    <comment/>
+    <display_text/>
+    <flow>ffe4a4ea237031bdfc889642323292bf</flow>
+    <generation_source/>
+    <order>3</order>
+    <parent_ui_id>0851fbc6-e6b5-4b8e-ab72-7f09ca35a157</parent_ui_id>
+    <sys_class_name>sys_hub_action_instance_v2</sys_class_name>
+    <ui_id>a86e0570-bc15-4e26-9abd-05f6aa50508c</ui_id>
+    <updation_source/>
+    <values>H4sIAAAAAAAC/8WRT0vEMBDFv0rJuS39p9gFDyK74FFZvIiWaWaKgTYtk3ShlHx3s12Q1QrubY9582bebyZvs9DQkdgIC3VL1fIIxQHa8SgqLRWStl5CZYYWptd1xUhWg32QVh18pYHWUCgGYD/KEovNLOw0/IpwLvxOZpI941nqPD8ygSWs0liOzD4mNpOpFDq3JvnHfTEd9nLsfLNv/IG3UJkzPKTTTNXr+/0+LYKnXVAzaPkZND0Hf/HosauJnfOGUaO3JAgllI2MEiooKiDLozvMMSq9epOnt2WWJfHLcpj4yOHcx/Z5vfs1US7/duo8s6XqdEDn3r8ASUpkEHYCAAA=</values>
+  </sys_hub_action_instance_v2>
+  <sys_hub_action_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>1abcafd42b29146e7dcae6d45ff229fa</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_action_instance_v2_c44fd3ffce57b68ade8dacd925db0d63</sys_update_name>
+    <action_type>f9d01dd2c31332002841b63b12d3aea1</action_type>
+    <action_type_parent>f9d01dd2c31332002841b63b12d3aea1</action_type_parent>
+    <active>true</active>
+    <comment/>
+    <display_text/>
+    <flow>ffe4a4ea237031bdfc889642323292bf</flow>
+    <generation_source/>
+    <order>5</order>
+    <parent_ui_id>8e2884be-d6d1-48c6-852c-c4d2e7708f76</parent_ui_id>
+    <sys_class_name>sys_hub_action_instance_v2</sys_class_name>
+    <ui_id>93ee417a-23ff-40f2-b90d-4778e4c63e0f</ui_id>
+    <updation_source/>
+    <values>H4sIAAAAAAAC/62RTwuCMBiHv4rsLILQSegQ4a1LJF2ixtxeaaCbvJuCjH33lkJYBnnouPfP73lednFEsQZIRiwra6DjIyY9q7tnUSouBSgbSkKatmbDedkxHGVrd9zKPnQqVhuIScswRFlAkjlih/YD4X38IiNwjWJGdW6PwCwImia8QwyYxAyGSuH90uTH9Go7oXnXhOWw+KY3WpmZnoApU2q1LYp0E+WHUx6VyBS/R5XG6JuR6poS0Ptbflye8IfE9Z8ATUBboNM53l8f9uu8SwQCAAA=</values>
+  </sys_hub_action_instance_v2>
+  <sys_hub_alias_mapping action="delete_multiple" query="source_id=65f4d78e5a05bc7fc2eed2a903ee3783"/>
+  <sys_hub_alias_mapping action="delete_multiple" query="source_id=3c0d037505ddddd523f0910770e44e13"/>
+  <sys_hub_alias_mapping action="delete_multiple" query="source_id=1abcafd42b29146e7dcae6d45ff229fa"/>
+  <sys_hub_flow_logic_instance_v2 action="delete_multiple" query="flow=ffe4a4ea237031bdfc889642323292bf^sys_idNOT IN81c654df56d2a2658f5161c583f54125,34797ea0b32a512475936f315a610359"/>
+  <sys_hub_flow_logic_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>bf9e7ff94f118d0891c243113406c0ee</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_flow_logic_instance_v2_81c654df56d2a2658f5161c583f54125</sys_update_name>
+    <comment/>
+    <flow>ffe4a4ea237031bdfc889642323292bf</flow>
+    <logic_definition>af4e1945c3e232002841b63b12d3ae3e</logic_definition>
+    <order>2</order>
+    <ui_id>0851fbc6-e6b5-4b8e-ab72-7f09ca35a157</ui_id>
+    <values>H4sIAAAAAAAC/42OsQrDMAxE/0VzCGQNdAiduocuJRTXVlJR1w6ynRCM/702aSFjt9PT3UkRbPBz8K63nXM0GWhvQwWLYBIPjW4fFUpyZE1f2MUU/3exGfEmeUSr5deo7Xpk9NMRSEELUEHOYVbSGkU+V0M5qkNhMZ4ZhUd1b2oZmNH4OvCERm4pnZrsVORmLbbr3wH5JK0y39+ZBefrHhnamCpwkmn2nfS05LZRaIdpSB+GySHZGgEAAA==</values>
+  </sys_hub_flow_logic_instance_v2>
+  <sys_hub_flow_logic_instance_v2 action="INSERT_OR_UPDATE" apply_defaults="true">
+    <sys_id>34797ea0b32a512475936f315a610359</sys_id>
+    <sys_scope display_value="x_906694_tt11">8f6baeba9ba94590969cbe31fc69e713</sys_scope>
+    <sys_update_name>sys_hub_flow_logic_instance_v2_b5f6dbdcf3a0db650b10e6fa4062f76f</sys_update_name>
+    <comment/>
+    <flow>ffe4a4ea237031bdfc889642323292bf</flow>
+    <logic_definition>1f781bf3c32232002841b63b12d3aee6</logic_definition>
+    <order>4</order>
+    <ui_id>8e2884be-d6d1-48c6-852c-c4d2e7708f76</ui_id>
+    <values>H4sIAAAAAAAC/6tWyi8tKSgtKQ7JdywuzkzPU7KKjtVRKkssykxMykkthnBTUpMzizPz80JAYp55IPVQicq8xNzMZGSh8vyi7LSc/HJksUw4uxYAKGKfk3EAAAA=</values>
+  </sys_hub_flow_logic_instance_v2>
+</record_update>]]></payload>
+<payload_hash>1062357607</payload_hash>
+<remote_update_set display_value="Transpiler Test 20261119m">e61b25333f3f45c41cf2cdafc7685cb6</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2026-11-20 03:03:36</sys_created_on>
+<sys_id>87b13fca23c9787b76a13f77d7112cb6</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>1a1f6e8d5520000001</sys_recorded_at>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2026-11-20 03:03:36</sys_updated_on>
+<table>sys_hub_flow</table>
+<target_name>TT14 Compact Studio Activate</target_name>
+<type>Flow</type>
+<update_domain>global</update_domain>
+<update_guid>a822ba7f5865918c1e81dc7b19dbade7</update_guid>
+<update_guid_history>a822ba7f5865918c1e81dc7b19dbade7:1062357607</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+</unload>

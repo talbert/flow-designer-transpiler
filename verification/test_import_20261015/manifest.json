@@ -1,0 +1,42 @@
+{
+ "generated_utc": "2026-10-15 16:00:24",
+ "flow_name": "Transpiler Test 20261015",
+ "update_set_name": "Transpiler Test 20261015 (prompt 20261015)",
+ "sys_ids": {
+  "FLOW": "1f521c92ac13a98c4cde803feb57be31",
+  "SNAP": "cb986e2c7365179f849d402c164662cd",
+  "TRIG": "3360616327c66a05036990002cba3969",
+  "LUR1": "832314323976c7aa262d7a36c8e0b3fc",
+  "LUR2": "7ff1aa358b4e9b13971587f9533a7ca6",
+  "LUR3": "cd5ff8431ee426d22a49bab5544c9b39",
+  "IF": "10b1fa5234a8c31074d5b8156fe7018e",
+  "ELSE": "4c738da5b3d043e827748db0afd6087e",
+  "S_TRIG": "c8d2bbb910b061ad2bf81a4cb21010f9",
+  "S_LUR1": "a1672e70bfc6bfce91a4922bf4f053dc",
+  "S_LUR2": "8539a0393e5c448287fa8aee5939b4ba",
+  "S_LUR3": "ef2d3e516f644355936c8f20b2bca314",
+  "S_IF": "fe49d74fd07f860f3292fc8a13717a45",
+  "S_ELSE": "d1c9f2626629f5aad9b30a1e59193697",
+  "BLK_IF": "719842bc83074e803e03a1f8e3cfe14e",
+  "BLK_ELSE": "b6a8b306a9a492695db6a801c2667436",
+  "S_BLK_IF": "2123634e11258cd2582c5baff0e1166a",
+  "S_BLK_ELSE": "41ecf1e9225d1a366f00c0e0c851983b",
+  "US_A": "e685fc53ba1c9f939e45f2ea749eb738",
+  "US_B": "8f8f707661e644edb20c55aedf182586",
+  "UX_C": "4c11558b7a727a957cdf259097436fae",
+  "UX_D": "0241d400f3b8040caf5c81d118150668"
+ },
+ "ui_ids": {
+  "LUR1": "daa29054-c7ad-41e1-badf-1cee4e974047",
+  "LUR2": "c6eae76d-db08-4ef0-b5f3-1f932df4a4ed",
+  "LUR3": "77964510-43ce-416f-987b-c1cdf921eed0",
+  "IF": "d9fdc603-64dc-4d09-b47b-bdea07d91f6d",
+  "ELSE": "b948fbfc-9ca7-49eb-a23b-1f48ddccb3ac"
+ },
+ "payload_hash": -1830758462,
+ "sys_recorded_at": "1a1404b12390000001",
+ "gaps": [
+  "7.4.1 lists 7 inputs but gives ids for only table/condition/run_on_extended and no full entry objects; used the 7 live Zurich entries (run_when_setting 1e4859f3\u2026, run_flow_in 3f1b9e4e\u2026, run_when_user_setting ed7a5537\u2026, run_when_user_list f89c5177\u2026).",
+  "7.3.3 gives ids/types but no parameter objects for Look Up Record; used live Zurich parameter objects, converted to the full shape per the 7.3 note."
+ ]
+}

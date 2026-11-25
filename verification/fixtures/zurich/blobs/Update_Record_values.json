@@ -1,0 +1,113 @@
+{
+ "sys_id": "00dd1477ff072210c419ffffffffffb9",
+ "decoded": [
+  {
+   "id": "4ed01916c31332002841b63b12d3aee1",
+   "name": "record",
+   "value": "{{c66a62d2-9f14-47d1-9568-86ea9b2fe7d3.Record}}",
+   "displayValue": "",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Document ID",
+    "id": "4ed01916c31332002841b63b12d3aee1",
+    "label": "Record",
+    "name": "record",
+    "type": "document_id",
+    "order": 10,
+    "extended": false,
+    "mandatory": true,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 40,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": true,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "ref_qual": "",
+    "dependent_on": "table_name"
+   },
+   "scriptActive": false
+  },
+  {
+   "id": "b5d01916c31332002841b63b12d3aec9",
+   "name": "table_name",
+   "value": "sn_releaseops_deployment_request",
+   "displayValue": "Deployment Request",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Table Name",
+    "id": "b5d01916c31332002841b63b12d3aec9",
+    "label": "Table",
+    "name": "table_name",
+    "type": "table_name",
+    "order": 50,
+    "extended": false,
+    "mandatory": true,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 80,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": false,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "ref_qual": "",
+    "dependent_on": ""
+   },
+   "scriptActive": false
+  },
+  {
+   "id": "02d01916c31332002841b63b12d3aeee",
+   "name": "values",
+   "value": "state=10",
+   "displayValue": "state=10",
+   "children": [],
+   "parameter": {
+    "children": [],
+    "type_label": "Template Value",
+    "id": "02d01916c31332002841b63b12d3aeee",
+    "label": "Fields",
+    "name": "values",
+    "type": "template_value",
+    "order": 100,
+    "extended": false,
+    "mandatory": true,
+    "readOnly": false,
+    "hint": "",
+    "maxsize": 16000000,
+    "reference": "",
+    "reference_display": "",
+    "choiceOption": "",
+    "table": "",
+    "columnName": "",
+    "defaultValue": "",
+    "use_dependent": true,
+    "fShowReferenceFinder": false,
+    "local": false,
+    "attributes": {
+     "element_mapping_provider": "com.glide.flow_design.action.data.FlowDesignVariableMapper"
+    },
+    "ref_qual": "",
+    "dependent_on": "table_name"
+   },
+   "scriptActive": false
+  }
+ ]
+}

@@ -1,0 +1,47 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "sys_id": "0a76e504c32222002841b63b12d3aeac",
+   "name": "Run Once"
+  },
+  {
+   "sys_id": "2ca52504c32222002841b63b12d3ae4a",
+   "name": "Monthly"
+  },
+  {
+   "sys_id": "798916a0c31322002841b63b12d3ae7c",
+   "name": "Created"
+  },
+  {
+   "sys_id": "7b3308f67fd21210a652b9277c8665f0",
+   "name": "Recurrence"
+  },
+  {
+   "sys_id": "89142dc0c32222002841b63b12d3ae8a",
+   "name": "Daily"
+  },
+  {
+   "sys_id": "a45d9180c32222002841b63b12d3aea7",
+   "name": "Created or Updated"
+  },
+  {
+   "sys_id": "bb695e60c31322002841b63b12d3aea5",
+   "name": "Updated"
+  },
+  {
+   "sys_id": "c43a1011c36813002841b63b12d3ae15",
+   "name": "Service Catalog"
+  },
+  {
+   "sys_id": "cf352104c32222002841b63b12d3ae1f",
+   "name": "Weekly"
+  },
+  {
+   "sys_id": "f63f0d94c32222002841b63b12d3aeed",
+   "name": "Repeat"
+  }
+ ]
+}

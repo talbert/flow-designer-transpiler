@@ -1,0 +1,15 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "name": "instance_name",
+   "value": "dev203052"
+  },
+  {
+   "name": "glide.war",
+   "value": "glide-zurich-07-01-2025__patch10-05-22-2026_06-12-2026_2311.zip"
+  }
+ ]
+}

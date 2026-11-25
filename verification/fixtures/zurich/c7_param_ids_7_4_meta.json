@@ -1,0 +1,77 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "sys_id": "11ffbef2072200103bf10705afd300c2",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "1c4203b6072200103bf10705afd300b8",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "1dda12e0c31322002841b63b12d3aea8",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "231e76460f103300b599bca2ff767e11",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "2b9def50c31132002841b63b12d3ae5b",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "66aadea0c31322002841b63b12d3aebf",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "6cd14b76072200103bf10705afd30093",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "707dd180c32222002841b63b12d3aecb",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "a22a9137c7002300f4eba1425a976376",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "bb9adea0c31322002841b63b12d3ae67",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "cb9d5577c7002300f4eba1425a9763ef",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "cf1e1980c32222002841b63b12d3aea0",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "cfca92e0c31322002841b63b12d3ae00",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  },
+  {
+   "sys_id": "ed3c9d37c7002300f4eba1425a976347",
+   "sys_name": "",
+   "sys_class_name": "sys_hub_trigger_input"
+  }
+ ]
+}

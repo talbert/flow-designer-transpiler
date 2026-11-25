@@ -1,0 +1,91 @@
+{
+ "ok": true,
+ "hasMore": false,
+ "nextOffset": null,
+ "records": [
+  {
+   "sys_id": "11ffbef2072200103bf10705afd300c2",
+   "model": "798916a0c31322002841b63b12d3ae7c",
+   "internal_type": "choice",
+   "element": "run_on_extended"
+  },
+  {
+   "sys_id": "1c4203b6072200103bf10705afd300b8",
+   "model": "a45d9180c32222002841b63b12d3aea7",
+   "internal_type": "choice",
+   "element": "run_on_extended"
+  },
+  {
+   "sys_id": "1dda12e0c31322002841b63b12d3aea8",
+   "model": "",
+   "internal_type": "table_name",
+   "element": "table"
+  },
+  {
+   "sys_id": "231e76460f103300b599bca2ff767e11",
+   "model": "a45d9180c32222002841b63b12d3aea7",
+   "internal_type": "choice",
+   "element": "run_flow_in"
+  },
+  {
+   "sys_id": "2b9def50c31132002841b63b12d3ae5b",
+   "model": "a45d9180c32222002841b63b12d3aea7",
+   "internal_type": "choice",
+   "element": "trigger_strategy"
+  },
+  {
+   "sys_id": "66aadea0c31322002841b63b12d3aebf",
+   "model": "",
+   "internal_type": "conditions",
+   "element": "condition"
+  },
+  {
+   "sys_id": "6cd14b76072200103bf10705afd30093",
+   "model": "bb695e60c31322002841b63b12d3aea5",
+   "internal_type": "choice",
+   "element": "run_on_extended"
+  },
+  {
+   "sys_id": "707dd180c32222002841b63b12d3aecb",
+   "model": "",
+   "internal_type": "conditions",
+   "element": "condition"
+  },
+  {
+   "sys_id": "a22a9137c7002300f4eba1425a976376",
+   "model": "a45d9180c32222002841b63b12d3aea7",
+   "internal_type": "choice",
+   "element": "run_when_setting"
+  },
+  {
+   "sys_id": "bb9adea0c31322002841b63b12d3ae67",
+   "model": "",
+   "internal_type": "conditions",
+   "element": "condition"
+  },
+  {
+   "sys_id": "cb9d5577c7002300f4eba1425a9763ef",
+   "model": "a45d9180c32222002841b63b12d3aea7",
+   "internal_type": "glide_list",
+   "element": "run_when_user_list"
+  },
+  {
+   "sys_id": "cf1e1980c32222002841b63b12d3aea0",
+   "model": "",
+   "internal_type": "table_name",
+   "element": "table"
+  },
+  {
+   "sys_id": "cfca92e0c31322002841b63b12d3ae00",
+   "model": "",
+   "internal_type": "table_name",
+   "element": "table"
+  },
+  {
+   "sys_id": "ed3c9d37c7002300f4eba1425a976347",
+   "model": "a45d9180c32222002841b63b12d3aea7",
+   "internal_type": "choice",
+   "element": "run_when_user_setting"
+  }
+ ]
+}
